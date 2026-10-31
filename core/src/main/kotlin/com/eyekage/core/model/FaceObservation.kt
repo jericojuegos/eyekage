@@ -19,6 +19,9 @@ data class FaceObservation(
     val boundingBoxHeight: Float = 0f,
     val timestampNanos: Long = System.nanoTime()
 ) {
+    val isFaceDetected: Boolean
+        get() = confidence > 0f
+
     init {
         require(confidence in 0f..1f) { "Confidence must be between 0.0 and 1.0, but was $confidence" }
     }

@@ -87,7 +87,7 @@ class CompanionViewModelTest {
     }
 
     @Test
-    fun `selecting new mode updates uiState`() = runTest {
+    fun `selecting new mode updates uiState and persists to preferences`() = runTest {
         val prefs = FakePreferencesRepository()
         val vision = FakeFaceObservationSource()
         val viewModel = CompanionViewModel(prefs, vision)
@@ -101,6 +101,7 @@ class CompanionViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertEquals("mode.crimson_tracker", viewModel.uiState.value.currentModeId)
+        assertEquals("mode.crimson_tracker", prefs.defaultModeFlow.value)
     }
 
     @Test

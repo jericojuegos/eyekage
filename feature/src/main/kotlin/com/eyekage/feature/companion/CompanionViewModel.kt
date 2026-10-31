@@ -68,6 +68,9 @@ class CompanionViewModel(
         when (event) {
             is CompanionUiEvent.SelectMode -> {
                 _currentModeId.value = event.modeId
+                viewModelScope.launch {
+                    preferencesRepository.setDefaultModeId(event.modeId)
+                }
             }
             is CompanionUiEvent.ToggleCamera -> {
                 viewModelScope.launch {

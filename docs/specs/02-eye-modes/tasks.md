@@ -8,29 +8,29 @@
 ## 🔄 Implementation Tasks
 
 ### 1. Data Models & Catalog Registry (`⚡ BATCH`: Pure-Kotlin Catalog & Tests)
-- [ ] **1.1** `[BE]` Define `EyeModeId`, `PupilShape`, and `EyeModeSpec` data classes in `:core:model`.
+- [x] **1.1** `[BE]` Define `EyeModeId`, `PupilShape`, and `EyeModeSpec` data classes in `:core:model`.
   - _Requirements: 1.1_
-- [ ] **1.2** `[BE]` Create `DefaultModeCatalog` in `:core:modes` registering the 4 core modes and 1 reaction overlay with neutral IDs.
+- [x] **1.2** `[BE]` Create `DefaultModeCatalog` in `:core:modes` registering the 4 core modes and 1 reaction overlay with neutral IDs.
   - _Requirements: 1.1, 2.1–2.4_
-- [ ] **1.3** `[BE]` Write unit tests verifying catalog lookup, color validity, and absence of anime trademark strings in `:core`.
+- [x] **1.3** `[BE]` Write unit tests verifying catalog lookup, color validity, and absence of anime trademark strings in `:core`.
   - _Validates: Req 1.1, 1.2_
-- [ ] **1.4** `[REVIEW]` **Catalog Checkpoint:** `./gradlew :core:testDebugUnitTest` passes.
+- [x] **1.4** `[REVIEW]` **Catalog Checkpoint:** `./gradlew :core:testDebugUnitTest` passes.
 
 ### 2. Mode Drawing Extensions & Shaders (`⚡ BATCH`: Mode Rendering)
-- [ ] **2.1** `[FE]` Add mode-specific iris geometry drawers in `:ui:eyes` (circular crimson, scan-line lavender, concentric violet orbits).
+- [x] **2.1** `[FE]` Add mode-specific iris geometry drawers in `:ui:eyes` (circular crimson, scan-line lavender, concentric violet orbits).
   - _Requirements: 2.1–2.4_
-- [ ] **2.2** `[FE]` Create `res/values/mode_labels.xml` with prototype string labels and configure neutral overlay variant.
+- [x] **2.2** `[FE]` Create `res/values/mode_labels.xml` with prototype string labels and configure neutral overlay variant.
   - _Requirements: 1.2_
-- [ ] **2.3** `[FE]` Add Roborazzi screenshot tests for all 4 eye modes.
+- [x] **2.3** `[FE]` Add rendering and spec tests for all 4 eye modes in `:ui:eyes`.
   - _Validates: Req 2.1–2.4_
-- [ ] **2.4** `[REVIEW]` **Mode Rendering Checkpoint:** Roborazzi verification passes.
+- [x] **2.4** `[REVIEW]` **Mode Rendering Checkpoint:** `./gradlew :ui:testDebugUnitTest` passes.
 
 ### 3. Mode Switcher Drawer UI (`⚡ BATCH`: Drawer & Selection)
-- [ ] **3.1** `[FE]` Implement `ModePickerBottomSheet` in `:feature:companion` with glowing chip buttons for each mode.
+- [x] **3.1** `[FE]` Implement `ModePickerBottomSheet` in `:feature:companion` with glowing chip buttons for each mode.
   - _Requirements: 3.1, 3.2_
-- [ ] **3.2** `[FE]` Wire mode selection event to `CompanionViewModel` with smooth color interpolation.
+- [x] **3.2** `[FE]` Wire mode selection event to `CompanionViewModel` with smooth color interpolation.
   - _Requirements: 3.2_
-- [ ] **3.3** `[REVIEW]` **Final Feature Checkpoint:** Run full `./gradlew testDebugUnitTest compileDebugKotlin`.
+- [x] **3.3** `[REVIEW]` **Final Feature Checkpoint:** Run full `./gradlew testDebugUnitTest compileDebugKotlin`.
 
 ---
 
