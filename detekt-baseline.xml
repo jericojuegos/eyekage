@@ -1,5 +1,62 @@
 <?xml version="1.0" ?>
 <SmellBaseline>
   <ManuallySuppressedIssues></ManuallySuppressedIssues>
-  <CurrentIssues></CurrentIssues>
+  <CurrentIssues>
+    <ID>ArgumentListWrapping:BlinkSchedulerTest.kt$BlinkSchedulerTest$("Blink triggered at $blinkTimeMs ms, must be between 3000ms and 7000ms", blinkTimeMs in 3000L..7000L )</ID>
+    <ID>ArgumentListWrapping:EyeMotionEngineTest.kt$EyeMotionEngineTest$("EyelidOpenness (${state.eyelidOpenness}) must be in [0.0, 1.0]", state.eyelidOpenness in 0.0f..1.0f)</ID>
+    <ID>ArgumentListWrapping:OneEuroFilterTest.kt$OneEuroFilterTest$("Filtered jitter ($maxJitterFiltered) should be less than raw jitter ($maxJitterRaw)", maxJitterFiltered &lt; maxJitterRaw * 0.4f )</ID>
+    <ID>ArgumentListWrapping:OneEuroFilterTest.kt$OneEuroFilterTest$("Steps to reach 90% ($stepsToReach90Percent) should be &lt;= 25", stepsToReach90Percent in 1..25 )</ID>
+    <ID>ArgumentListWrapping:SaccadeGeneratorTest.kt$SaccadeGeneratorTest$("Saccade triggered at $saccadeTimeMs ms, must be between 1500ms and 4000ms", saccadeTimeMs in 1500L..4000L )</ID>
+    <ID>LongMethod:RobotEyesCanvas.kt$private fun DrawScope.drawEye( centerX: Float, centerY: Float, eyeWidth: Float, eyeHeight: Float, shiftX: Float, shiftY: Float, openness: Float, pupilScale: Float, spec: EyeSpec )</ID>
+    <ID>LongParameterList:RobotEyesCanvas.kt$( centerX: Float, centerY: Float, eyeWidth: Float, eyeHeight: Float, shiftX: Float, shiftY: Float, openness: Float, pupilScale: Float, spec: EyeSpec )</ID>
+    <ID>MagicNumber:BlinkScheduler.kt$BlinkScheduler$0.1f</ID>
+    <ID>MagicNumber:BlinkScheduler.kt$BlinkScheduler$0.2f</ID>
+    <ID>MagicNumber:BlinkScheduler.kt$BlinkScheduler$0.4f</ID>
+    <ID>MagicNumber:BlinkScheduler.kt$BlinkScheduler$0.8f</ID>
+    <ID>MagicNumber:BlinkScheduler.kt$BlinkScheduler$1000f</ID>
+    <ID>MagicNumber:EyeMotionEngine.kt$EyeMotionEngine$1000.0</ID>
+    <ID>MagicNumber:EyeSpec.kt$EyeSpec$0x6622D3EE</ID>
+    <ID>MagicNumber:EyeSpec.kt$EyeSpec$0xFF0891B2</ID>
+    <ID>MagicNumber:EyeSpec.kt$EyeSpec$0xFF22D3EE</ID>
+    <ID>MagicNumber:EyeSpec.kt$EyeSpec$0xFFA5F3FC</ID>
+    <ID>MagicNumber:FaceObservationTransform.kt$FaceObservationTransform$180</ID>
+    <ID>MagicNumber:FaceObservationTransform.kt$FaceObservationTransform$270</ID>
+    <ID>MagicNumber:FaceObservationTransform.kt$FaceObservationTransform$360</ID>
+    <ID>MagicNumber:FaceObservationTransform.kt$FaceObservationTransform$90</ID>
+    <ID>MagicNumber:RobotEyesCanvas.kt$0.04f</ID>
+    <ID>MagicNumber:RobotEyesCanvas.kt$0.12f</ID>
+    <ID>MagicNumber:RobotEyesCanvas.kt$0.14f</ID>
+    <ID>MagicNumber:RobotEyesCanvas.kt$0.18f</ID>
+    <ID>MagicNumber:RobotEyesCanvas.kt$0.20f</ID>
+    <ID>MagicNumber:RobotEyesCanvas.kt$0.22f</ID>
+    <ID>MagicNumber:RobotEyesCanvas.kt$0.23f</ID>
+    <ID>MagicNumber:RobotEyesCanvas.kt$0.35f</ID>
+    <ID>MagicNumber:RobotEyesCanvas.kt$0.4f</ID>
+    <ID>MagicNumber:RobotEyesCanvas.kt$0.52f</ID>
+    <ID>MagicNumber:RobotEyesCanvas.kt$0.85f</ID>
+    <ID>MagicNumber:RobotEyesCanvas.kt$1.15f</ID>
+    <ID>MagicNumber:RobotEyesCanvas.kt$1.38f</ID>
+    <ID>MagicNumber:RobotEyesCanvas.kt$200f</ID>
+    <ID>MagicNumber:RobotEyesCanvas.kt$320f</ID>
+    <ID>MagicNumber:RobotEyesCanvas.kt$40f</ID>
+    <ID>MagicNumber:RobotEyesCanvas.kt$4f</ID>
+    <ID>MagicNumber:RobotEyesCanvas.kt$80f</ID>
+    <ID>MagicNumber:SaccadeGenerator.kt$SaccadeGenerator$1000f</ID>
+    <ID>MaxLineLength:EyeMotionEngineTest.kt$EyeMotionEngineTest$assertTrue("EyelidOpenness (${state.eyelidOpenness}) must be in [0.0, 1.0]", state.eyelidOpenness in 0.0f..1.0f)</ID>
+    <ID>MaximumLineLength:EyeMotionEngineTest.kt$EyeMotionEngineTest$ </ID>
+    <ID>NoMultipleSpaces:EyeSpec.kt$EyeSpec$ </ID>
+    <ID>NoUnusedImports:BlinkSchedulerTest.kt$com.eyekage.core.motion.BlinkSchedulerTest.kt</ID>
+    <ID>NoUnusedImports:EyeMotionEngineTest.kt$com.eyekage.core.motion.EyeMotionEngineTest.kt</ID>
+    <ID>NoUnusedImports:VisionFaceObservationSourceTest.kt$com.eyekage.platform.vision.VisionFaceObservationSourceTest.kt</ID>
+    <ID>ReturnCount:BlinkScheduler.kt$BlinkScheduler$fun update(currentTimeMs: Long): Float</ID>
+    <ID>TooGenericExceptionCaught:CameraXManager.kt$CameraXManager$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:VisionFaceObservationSource.kt$VisionFaceObservationSource$e: Exception</ID>
+    <ID>UnusedPrivateMember:RobotEyesCanvas.kt$@Preview(name = "Blinking Eyes", widthDp = 360, heightDp = 640) @Composable private fun RobotEyesCanvasPreviewBlink()</ID>
+    <ID>UnusedPrivateMember:RobotEyesCanvas.kt$@Preview(name = "Default Open Eyes", widthDp = 360, heightDp = 640) @Composable private fun RobotEyesCanvasPreviewOpen()</ID>
+    <ID>UnusedPrivateMember:RobotEyesCanvas.kt$@Preview(name = "Eyes Glancing Right", widthDp = 360, heightDp = 640) @Composable private fun RobotEyesCanvasPreviewGlance()</ID>
+    <ID>UnusedPrivateProperty:EyeMotionEngineTest.kt$EyeMotionEngineTest$step</ID>
+    <ID>Wrapping:BlinkSchedulerTest.kt$BlinkSchedulerTest$(</ID>
+    <ID>Wrapping:OneEuroFilterTest.kt$OneEuroFilterTest$(</ID>
+    <ID>Wrapping:SaccadeGeneratorTest.kt$SaccadeGeneratorTest$(</ID>
+  </CurrentIssues>
 </SmellBaseline>

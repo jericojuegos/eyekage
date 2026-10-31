@@ -3,7 +3,9 @@ package com.eyekage.platform.vision
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
+import androidx.lifecycle.LifecycleOwner
 import com.eyekage.core.model.FaceObservation
+import com.eyekage.core.model.FaceObservationTransform
 import com.eyekage.core.ports.FaceObservationSource
 import com.google.mediapipe.framework.image.BitmapImageBuilder
 import com.google.mediapipe.tasks.core.BaseOptions
@@ -18,12 +20,13 @@ private const val TAG = "VisionFaceObservation"
 private const val MODEL_ASSET_NAME = "face_detector.tflite"
 private const val MIN_CONFIDENCE_THRESHOLD = 0.5f
 private const val DEFAULT_CONFIDENCE = 0.5f
-private const val COORDINATE_CENTER_OFFSET = 0.5f
-private const val COORDINATE_SCALE_FACTOR = 2.0f
 
 /**
- * MediaPipe Tasks Vision implementation of [FaceObservationSource].
- * Uses bundled on-device `face_detector.tflite` model with zero network requirements.
+ * MediaPipe Tasks Vision implementation of [FaceObservationSource] powered by CameraX.
+ *
+ * Captures front-facing camera frames headlessly via [CameraXManager], runs inference
+ * through the on-device `face_detector.tflite` model with zero network requirements,
+ * and emits normalized [FaceObservation] values in centered [-1.0, 1.0] coordinates.
  */
 class VisionFaceObservationSource(
     private val context: Context
@@ -37,8 +40,24 @@ class VisionFaceObservationSource(
 
     private var faceDetector: FaceDetector? = null
 
+    private val cameraXManager: CameraXManager by lazy {
+        CameraXManager(context) { imageProxy ->
+            val rotationDegrees = imageProxy.imageInfo.rotationDegrees
+            val timestampNanos = imageProxy.imageInfo.timestamp
+            val bitmap = imageProxy.toBitmap()
+            processBitmap(bitmap, rotationDegrees, timestampNanos)
+        }
+    }
+
     init {
         initDetector()
+    }
+
+    /**
+     * Binds the camera analysis pipeline to an Activity or Fragment lifecycle.
+     */
+    fun bindLifecycle(owner: LifecycleOwner) {
+        cameraXManager.bindLifecycle(owner)
     }
 
     private fun initDetector() {
@@ -54,20 +73,25 @@ class VisionFaceObservationSource(
                 .build()
 
             faceDetector = FaceDetector.createFromOptions(context, options)
-        } catch (e: com.google.mediapipe.framework.MediaPipeException) {
-            Log.w(TAG, "MediaPipe face detector initialization deferred/failed", e)
-            faceDetector = null
-        } catch (e: IllegalArgumentException) {
-            Log.w(TAG, "MediaPipe face detector arguments invalid", e)
+        } catch (e: Exception) {
+            Log.w(TAG, "MediaPipe face detector initialization deferred/failed: ${e.message}")
             faceDetector = null
         }
     }
 
     /**
      * Process a single bitmap frame synchronously or asynchronously.
-     * Normalized coordinates: [-1.0, 1.0] where 0.0 is center.
+     * Normalized coordinates: [-1.0, 1.0] where (0.0, 0.0) is center.
+     *
+     * @param bitmap The frame image bitmap.
+     * @param rotationDegrees Sensor orientation rotation degrees (e.g. 0, 90, 270).
+     * @param timestampNanos Frame capture timestamp in nanoseconds.
      */
-    fun processBitmap(bitmap: Bitmap, timestampNanos: Long = System.nanoTime()) {
+    fun processBitmap(
+        bitmap: Bitmap,
+        rotationDegrees: Int = 0,
+        timestampNanos: Long = System.nanoTime()
+    ) {
         val detector = faceDetector ?: return
         val mpImage = BitmapImageBuilder(bitmap).build()
         val result: FaceDetectorResult = detector.detect(mpImage)
@@ -79,12 +103,25 @@ class VisionFaceObservationSource(
             val imgWidth = bitmap.width.toFloat()
             val imgHeight = bitmap.height.toFloat()
 
-            // Calculate center of face bounding box in normalized [-1.0, 1.0] coordinates
-            val centerX = box.centerX() / imgWidth
-            val centerY = box.centerY() / imgHeight
+            // Calculate raw center coordinates in [0.0, 1.0] image space
+            val rawCenterX = box.centerX() / imgWidth
+            val rawCenterY = box.centerY() / imgHeight
+            val rawWidth = box.width() / imgWidth
+            val rawHeight = box.height() / imgHeight
 
-            val normX = ((centerX - COORDINATE_CENTER_OFFSET) * COORDINATE_SCALE_FACTOR).coerceIn(-1f, 1f)
-            val normY = ((centerY - COORDINATE_CENTER_OFFSET) * COORDINATE_SCALE_FACTOR).coerceIn(-1f, 1f)
+            // Map to centered [-1.0, 1.0] gaze space with front camera mirroring and rotation
+            val (normX, normY) = FaceObservationTransform.mapCoordinates(
+                rawCenterX = rawCenterX,
+                rawCenterY = rawCenterY,
+                rotationDegrees = rotationDegrees,
+                isFrontCamera = true
+            )
+
+            val (normWidth, normHeight) = FaceObservationTransform.mapDimensions(
+                rawWidth = rawWidth,
+                rawHeight = rawHeight,
+                rotationDegrees = rotationDegrees
+            )
 
             val confidence = primaryFace.categories().firstOrNull()?.score() ?: DEFAULT_CONFIDENCE
 
@@ -92,6 +129,8 @@ class VisionFaceObservationSource(
                 normalizedX = normX,
                 normalizedY = normY,
                 confidence = confidence.coerceIn(0f, 1f),
+                boundingBoxWidth = normWidth,
+                boundingBoxHeight = normHeight,
                 timestampNanos = timestampNanos
             )
         }
@@ -101,12 +140,18 @@ class VisionFaceObservationSource(
         if (faceDetector == null) {
             initDetector()
         }
-        _isRunning.value = faceDetector != null
+        val isReady = faceDetector != null
+        _isRunning.value = isReady
+        if (isReady) {
+            cameraXManager.start()
+        }
     }
 
     override fun stop() {
         _isRunning.value = false
+        cameraXManager.stop()
         faceDetector?.close()
         faceDetector = null
+        _observations.value = FaceObservation.Empty
     }
 }
