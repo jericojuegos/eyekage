@@ -38,12 +38,17 @@
 
 ## ADR-004: Face Detector Evaluation Gate (MediaPipe vs. Bundled ML Kit)
 
-- **Status:** Accepted (2026-10-31)
-- **Context:** ML Kit bundled face detection is known to pull in Google Data Transport telemetry and `INTERNET` permissions via manifest merger. MediaPipe Tasks Vision provides fully offline inference with local `.tflite` assets, but its merged manifest must be empirically verified.
-- **Decision:** Conduct a Phase 0 spike comparing MediaPipe Tasks Vision Face Detector vs. ML Kit Bundled behind a common `FaceObservationSource` port. MediaPipe is preferred if it passes all offline and privacy checks. If neither passes without fragile workarounds, development must stop and present findings.
+- **Status:** Resolved / MediaPipe Selected (2026-10-31)
+- **Context:** ML Kit bundled face detection is known to pull in Google Data Transport telemetry and potential network services via manifest merger. MediaPipe Tasks Vision provides fully offline inference with local `.tflite` assets, but its merged manifest and baseline performance had to be empirically verified on the RMX3710 physical device.
+- **Decision:** Following empirical Phase 0 spike testing on the physical baseline device RMX3710, **MediaPipe Tasks Vision Face Detector is selected as the winning vision engine**.
+- **Empirical Findings:**
+  - *Offline Privacy:* Both engines installed and launched cleanly with zero internet connectivity in Airplane Mode. However, MediaPipe runs completely independently of Google Play Services using a self-contained local model asset (`face_detector.tflite`, 229 KB).
+  - *Manifest Hygiene:* Both merged manifests strictly complied with the CI allowlist (`android.permission.CAMERA` only, zero `INTERNET` or telemetry permissions).
+  - *APK Footprint:* MediaPipe debug APK is 56.6 MB vs. ML Kit at 48.3 MB. The ~8 MB differential is well within the acceptable budget for complete GMS-decoupling and cross-platform portable model assets.
+  - *Cross-Platform Compatibility:* MediaPipe's TFLite models can be reused directly on iOS and desktop/robotics platforms without architectural rewrites.
 - **Consequences:**
-  - *Positive:* Prevents silent telemetry or unapproved permissions from entering the application.
-  - *Positive:* Clean port abstraction allows swapping detector engines without modifying eye rendering.
+  - MediaPipe Tasks Vision is promoted to the standard detector for Feature `03-camera-face-detection`.
+  - ML Kit dependency is removed, simplifying build configurations and dependency trees.
 
 ---
 

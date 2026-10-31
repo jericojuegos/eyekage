@@ -1,0 +1,45 @@
+build:
+  maxIssues: 0
+  excludeCorrectable: false
+
+style:
+  ForbiddenImport:
+    active: true
+    imports:
+      - value: 'android.**'
+        reason: 'The :core module must remain 100% pure Kotlin/JVM with zero Android dependencies.'
+      - value: 'androidx.**'
+        reason: 'The :core module must remain 100% pure Kotlin/JVM with zero Android dependencies.'
+      - value: 'com.google.android.**'
+        reason: 'The :core module must remain 100% pure Kotlin/JVM with zero Android dependencies.'
+    includes:
+      - '**/core/**'
+  MagicNumber:
+    active: true
+    ignoreNumbers:
+      - '-1.0'
+      - '0.0'
+      - '1.0'
+      - '2.0'
+      - '-1'
+      - '0'
+      - '1'
+      - '2'
+      - '0.5'
+      - '5000'
+    ignorePropertyDeclaration: true
+    ignoreAnnotation: true
+    ignoreHashCodeFunction: true
+  UnusedPrivateProperty:
+    active: true
+    allowedNames: '(_|context)'
+
+naming:
+  PackageNaming:
+    active: true
+  ClassNaming:
+    active: true
+  FunctionNaming:
+    active: true
+    ignoreAnnotated:
+      - 'Composable'

@@ -30,7 +30,7 @@ flowchart LR
 
 | Wave | Feature Slug | Spec Bundle Path | Primary Output | Depends On | Touches (Isolation Zone) | Status |
 |---|---|---|---|---|---|---|
-| **0** | `00-scaffold` | [`docs/specs/00-scaffold/`](../specs/00-scaffold/tasks.md) | 5-module project, CI privacy guards, detector comparison spike | None | Root, build-logic, all modules | 📋 Ready for `/build` |
+| **0** | `00-scaffold` | [`docs/specs/00-scaffold/`](../specs/00-scaffold/tasks.md) | 5-module project, CI privacy guards, detector comparison spike | None | Root, build-logic, all modules | ✅ `[x]` Complete |
 | **1** | `01-eye-engine` | [`docs/specs/01-eye-engine/`](../specs/01-eye-engine/requirements.md) | Procedural Canvas eyes, saccades, blinks, time-based frame clock, desk mode | `00-scaffold` | `:core:motion`, `:ui:eyes` | 📋 Spec ready |
 | **1** | `03-camera-face-detection` | [`docs/specs/03-camera-face-detection/`](../specs/03-camera-face-detection/requirements.md) | CameraX ImageAnalysis pipeline, winning detector engine, privacy indicator | `00-scaffold` | `:platform:vision`, `:core:model` | 📋 Spec ready |
 | **2** | `02-eye-modes` | [`docs/specs/02-eye-modes/`](../specs/02-eye-modes/requirements.md) | Data-driven mode registry, neutral IDs, swappable string resources, mode drawer UI | `01-eye-engine` | `:core:model`, `:ui`, `:feature:companion` | 📋 Spec ready |

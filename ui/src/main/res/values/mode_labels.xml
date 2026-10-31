@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Neutral Mode Display Labels (Swappable for Rebranding) -->
+    <string name="mode_label_normal">Normal</string>
+    <string name="mode_label_crimson_tracker">Sharingan</string>
+    <string name="mode_label_white_scan">Byakugan</string>
+    <string name="mode_label_purple_orbit">Rinnegan</string>
+    <string name="reaction_label_awakening">Awakening</string>
+</resources>
