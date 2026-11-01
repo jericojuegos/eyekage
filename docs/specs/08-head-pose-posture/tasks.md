@@ -68,16 +68,16 @@
 ---
 
 ### 4. Settings Posture Card & Full Verification (`⚡ BATCH`: Settings & Verification)
-- [ ] **4.1** `[FE]` Build `PostureSettingsCard.kt` in `feature/src/main/kotlin/com/eyekage/feature/settings/`
+- [x] **4.1** `[FE]` Build `PostureSettingsCard.kt` in `feature/src/main/kotlin/com/eyekage/feature/settings/`
   - AMOLED dark card matching design reference: opt-in toggle switch, live posture badge ("● Balanced" / "▲ Slouching"), reminder sensitivity chips (15s, 30s, 45s), and privacy shield
   - _Requirements: 4.2, 4.3, 4.4_
-- [ ] **4.2** `[FE]` Integrate `PostureSettingsCard` into `SettingsScreen.kt` and `SettingsViewModel.kt`
+- [x] **4.2** `[FE]` Integrate `PostureSettingsCard` into `SettingsScreen.kt` and `SettingsViewModel.kt`
   - Mounts directly beneath `VoiceCommandsCard` with reactive state flows
   - _Requirements: 4.2_
-- [ ] **4.3** `[FE]` Write automated unit tests in `feature/src/test/kotlin/com/eyekage/feature/settings/PostureSettingsCardTest.kt`
+- [x] **4.3** `[FE]` Write automated unit tests in `feature/src/test/kotlin/com/eyekage/feature/settings/PostureSettingsCardTest.kt`
   - Tests toggle interaction, sensitivity chip selection, and DataStore state reflection
   - _Requirements: 4.1, 4.2, 4.3_
-- [ ] **4.4** `[REVIEW]` **Final Feature Checkpoint:** Run full verification (`./gradlew testDebugUnitTest checkMergedManifestPermissions compileDebugKotlin`) -> triggers `/ship` & roadmap sync!
+- [x] **4.4** `[REVIEW]` **Final Feature Checkpoint:** Run full verification (`./gradlew testDebugUnitTest checkMergedManifestPermissions compileDebugKotlin`) -> triggers `/ship` & roadmap sync!
   - _Requirements: All_
 
 ---
@@ -105,3 +105,4 @@
 | 2026-11-01 20:07 | Batch 1 (1.1-1.7) | Implemented pure-Kotlin head pose models, transform, ports, gesture engines & unit tests | Passed |
 | 2026-11-01 20:14 | Batch 2 (2.1-2.5) | Implemented VisionHeadPoseSource, DataStore posture preferences, AppContainer DI, and verified manifest allowlist | Passed |
 | 2026-11-01 20:26 | Batch 3 (3.1-3.5) | Wired CompanionViewModel posture events, eye tilt canvas rotation, and HUD posture badge | Passed |
+| 2026-11-01 20:34 | Batch 4 (4.1-4.4) | Implemented PostureSettingsCard, settings UDF wiring, unit tests, and passed full verification | Passed |

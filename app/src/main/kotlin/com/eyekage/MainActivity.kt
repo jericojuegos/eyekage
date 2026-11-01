@@ -61,7 +61,8 @@ class MainActivity : ComponentActivity() {
                             return SettingsViewModel(
                                 preferencesRepository = appContainer.preferencesRepository,
                                 memoryRepository = appContainer.memoryRepository,
-                                personalityEngine = appContainer.personalityEngine
+                                personalityEngine = appContainer.personalityEngine,
+                                postureObservationSource = appContainer.postureObservationSource
                             ) as T
                         }
                     }

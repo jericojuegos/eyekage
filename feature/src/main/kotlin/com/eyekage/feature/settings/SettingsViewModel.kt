@@ -3,22 +3,33 @@ package com.eyekage.feature.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eyekage.core.behavior.PersonalityEngine
+import com.eyekage.core.model.PostureObservation
 import com.eyekage.core.modes.DefaultModeCatalog
 import com.eyekage.core.ports.MemoryRepository
+import com.eyekage.core.ports.PostureObservationSource
 import com.eyekage.core.ports.PreferencesRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 private const val SUBSCRIPTION_TIMEOUT_MS = 5000L
 private const val PERCENT_MULTIPLIER = 100
 
+private data class PostureAndVoiceState(
+    val voiceEnabled: Boolean,
+    val postureReminderEnabled: Boolean,
+    val postureSlouchThresholdSec: Int,
+    val postureObservation: PostureObservation
+)
+
 class SettingsViewModel(
     private val preferencesRepository: PreferencesRepository,
     private val memoryRepository: MemoryRepository,
-    private val personalityEngine: PersonalityEngine = PersonalityEngine()
+    private val personalityEngine: PersonalityEngine = PersonalityEngine(),
+    private val postureObservationSource: PostureObservationSource? = null
 ) : ViewModel() {
 
     private val availableModes = DefaultModeCatalog.getSelectableModes()
@@ -40,14 +51,31 @@ class SettingsViewModel(
         )
     }
 
+    private val postureAndVoiceFlow = combine(
+        preferencesRepository.voiceCommandsEnabled,
+        preferencesRepository.postureReminderEnabled,
+        preferencesRepository.postureSlouchThresholdSec,
+        postureObservationSource?.posture ?: flowOf(PostureObservation.Neutral)
+    ) { voice, postureReminder, thresholdSec, postureObs ->
+        PostureAndVoiceState(
+            voiceEnabled = voice,
+            postureReminderEnabled = postureReminder,
+            postureSlouchThresholdSec = thresholdSec,
+            postureObservation = postureObs
+        )
+    }
+
     val uiState: StateFlow<SettingsUiState> = combine(
         preferencesFlow,
-        preferencesRepository.voiceCommandsEnabled,
+        postureAndVoiceFlow,
         memoryRepository.memory
-    ) { baseState, voiceEnabled, memory ->
+    ) { baseState, postureAndVoice, memory ->
         val vector = personalityEngine.vector
         baseState.copy(
-            isVoiceCommandsEnabled = voiceEnabled,
+            isVoiceCommandsEnabled = postureAndVoice.voiceEnabled,
+            isPostureReminderEnabled = postureAndVoice.postureReminderEnabled,
+            postureSlouchThresholdSec = postureAndVoice.postureSlouchThresholdSec,
+            currentPostureState = postureAndVoice.postureObservation.postureState,
             memory = memory,
             currentMood = personalityEngine.currentMood,
             curiosityPercent = (vector.curiosity * PERCENT_MULTIPLIER).toInt(),
@@ -79,6 +107,12 @@ class SettingsViewModel(
                 }
                 is SettingsUiEvent.SetVoiceCommandsEnabled -> {
                     preferencesRepository.setVoiceCommandsEnabled(event.enabled)
+                }
+                is SettingsUiEvent.SetPostureReminderEnabled -> {
+                    preferencesRepository.setPostureReminderEnabled(event.enabled)
+                }
+                is SettingsUiEvent.SetPostureSlouchThreshold -> {
+                    preferencesRepository.setPostureSlouchThresholdSec(event.seconds)
                 }
                 is SettingsUiEvent.ResetMemory -> {
                     personalityEngine.reset()

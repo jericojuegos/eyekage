@@ -1,7 +1,12 @@
 package com.eyekage.feature.settings
 
 import com.eyekage.core.model.CompanionMemory
+import com.eyekage.core.model.HeadPose
+import com.eyekage.core.model.PostureObservation
+import com.eyekage.core.model.PostureState
+import com.eyekage.core.model.ProximityZone
 import com.eyekage.core.modes.DefaultModeCatalog
+import com.eyekage.core.ports.FakePostureObservationSource
 import com.eyekage.core.ports.MemoryRepository
 import com.eyekage.core.ports.PreferencesRepository
 import kotlinx.coroutines.Dispatchers
@@ -105,6 +110,9 @@ class SettingsViewModelTest {
         assertTrue(state.isHapticsEnabled)
         assertFalse(state.isDeskModeEnabled)
         assertFalse(state.isVoiceCommandsEnabled)
+        assertFalse(state.isPostureReminderEnabled)
+        assertEquals(30, state.postureSlouchThresholdSec)
+        assertEquals(PostureState.BALANCED, state.currentPostureState)
         assertEquals(DefaultModeCatalog.getSelectableModes().size, state.availableModes.size)
         assertEquals(1, state.memory.bondTier)
         assertEquals(0, state.memory.totalPokes)
@@ -248,5 +256,88 @@ class SettingsViewModelTest {
 
         assertFalse(prefs.voiceCommandsEnabledFlow.value)
         assertFalse(viewModel.uiState.value.isVoiceCommandsEnabled)
+    }
+
+    @Test
+    fun `SetPostureReminderEnabled updates preference repository and uiState`() = runTest {
+        val prefs = FakePreferencesRepository()
+        val mem = FakeMemoryRepository()
+        val viewModel = SettingsViewModel(prefs, mem)
+
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.uiState.collect()
+        }
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertFalse(viewModel.uiState.value.isPostureReminderEnabled)
+
+        viewModel.onEvent(SettingsUiEvent.SetPostureReminderEnabled(true))
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertTrue(prefs.postureReminderEnabledFlow.value)
+        assertTrue(viewModel.uiState.value.isPostureReminderEnabled)
+
+        viewModel.onEvent(SettingsUiEvent.SetPostureReminderEnabled(false))
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertFalse(prefs.postureReminderEnabledFlow.value)
+        assertFalse(viewModel.uiState.value.isPostureReminderEnabled)
+    }
+
+    @Test
+    fun `SetPostureSlouchThreshold updates preference repository and uiState`() = runTest {
+        val prefs = FakePreferencesRepository()
+        val mem = FakeMemoryRepository()
+        val viewModel = SettingsViewModel(prefs, mem)
+
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.uiState.collect()
+        }
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(30, viewModel.uiState.value.postureSlouchThresholdSec)
+
+        viewModel.onEvent(SettingsUiEvent.SetPostureSlouchThreshold(15))
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(15, prefs.postureSlouchThresholdSecFlow.value)
+        assertEquals(15, viewModel.uiState.value.postureSlouchThresholdSec)
+
+        viewModel.onEvent(SettingsUiEvent.SetPostureSlouchThreshold(45))
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(45, prefs.postureSlouchThresholdSecFlow.value)
+        assertEquals(45, viewModel.uiState.value.postureSlouchThresholdSec)
+    }
+
+    @Test
+    fun `PostureObservation updates currentPostureState in uiState`() = runTest {
+        val prefs = FakePreferencesRepository()
+        val mem = FakeMemoryRepository()
+        val fakePosture = FakePostureObservationSource()
+        val viewModel = SettingsViewModel(
+            preferencesRepository = prefs,
+            memoryRepository = mem,
+            postureObservationSource = fakePosture
+        )
+
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.uiState.collect()
+        }
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(PostureState.BALANCED, viewModel.uiState.value.currentPostureState)
+
+        fakePosture.emit(
+            PostureObservation(
+                headPose = HeadPose(pitchDegrees = 30f, yawDegrees = 0f, rollDegrees = 0f, timestampNanos = 1000L),
+                proximity = ProximityZone.NEAR,
+                estimatedDistanceRatio = 0.4f,
+                postureState = PostureState.SLOUCHING_DOWN
+            )
+        )
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(PostureState.SLOUCHING_DOWN, viewModel.uiState.value.currentPostureState)
     }
 }

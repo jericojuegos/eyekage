@@ -110,6 +110,13 @@ fun SettingsScreen(
                 isEnabled = uiState.isVoiceCommandsEnabled,
                 onToggle = { onEvent(SettingsUiEvent.SetVoiceCommandsEnabled(it)) }
             )
+            PostureSettingsCard(
+                isEnabled = uiState.isPostureReminderEnabled,
+                slouchThresholdSec = uiState.postureSlouchThresholdSec,
+                postureState = uiState.currentPostureState,
+                onToggle = { onEvent(SettingsUiEvent.SetPostureReminderEnabled(it)) },
+                onSelectThreshold = { onEvent(SettingsUiEvent.SetPostureSlouchThreshold(it)) }
+            )
             CompanionMemoryCard(
                 state = CompanionMemoryCardState(
                     memory = uiState.memory,

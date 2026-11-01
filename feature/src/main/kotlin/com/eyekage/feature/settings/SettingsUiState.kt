@@ -3,6 +3,7 @@ package com.eyekage.feature.settings
 import com.eyekage.core.model.CompanionMemory
 import com.eyekage.core.model.EyeModeSpec
 import com.eyekage.core.model.MoodState
+import com.eyekage.core.model.PostureState
 import com.eyekage.core.modes.DefaultModeCatalog
 
 data class SettingsUiState(
@@ -12,6 +13,9 @@ data class SettingsUiState(
     val isHapticsEnabled: Boolean = true,
     val isDeskModeEnabled: Boolean = false,
     val isVoiceCommandsEnabled: Boolean = false,
+    val isPostureReminderEnabled: Boolean = false,
+    val postureSlouchThresholdSec: Int = 30,
+    val currentPostureState: PostureState = PostureState.BALANCED,
     val availableModes: List<EyeModeSpec> = DefaultModeCatalog.getSelectableModes(),
     val memory: CompanionMemory = CompanionMemory(),
     val currentMood: MoodState = MoodState.ALERT,
@@ -26,5 +30,7 @@ sealed interface SettingsUiEvent {
     data class SetHapticsEnabled(val enabled: Boolean) : SettingsUiEvent
     data class SetDeskModeEnabled(val enabled: Boolean) : SettingsUiEvent
     data class SetVoiceCommandsEnabled(val enabled: Boolean) : SettingsUiEvent
+    data class SetPostureReminderEnabled(val enabled: Boolean) : SettingsUiEvent
+    data class SetPostureSlouchThreshold(val seconds: Int) : SettingsUiEvent
     data object ResetMemory : SettingsUiEvent
 }

@@ -89,4 +89,24 @@ flowchart LR
     F6 --> F7["Wave 5: 07-voice-commands<br/>(On-Device Speech Commands)"]
 ```
 
+---
+
+## 6. Phase 3 Feature Specs Registry & Dependency Matrix
+
+| Wave | Feature Slug | Spec Bundle Path | Primary Output | Depends On | Touches (Isolation Zone) | Status |
+|---|---|---|---|---|---|---|
+| **6** | `08-head-pose-posture` | [`docs/specs/08-head-pose-posture/`](../specs/08-head-pose-posture/requirements.md) | On-device head pose (pitch/yaw/roll), inquisitive eye tilt, affirmative nod reaction, desk slouch reminders | `04-gaze-tracking-reactions`, `06-personality-memory` | `:platform:vision`, `:core:model`, `:core:behavior`, `:core:ports`, `:ui:eyes`, `:feature:companion`, `:feature:settings` | ✅ `[x]` Complete |
+
+---
+
+## 7. Phase 3 Dependency & Wave Graph
+
+```mermaid
+flowchart LR
+    P2["Phase 2<br/>(Shipped & Verified)"] --> F8["Wave 6: 08-head-pose-posture<br/>(Head Pose & Desk Posture)"]
+    F8 --> F9["Wave 7: 09-hand-gestures<br/>(Gesture Reactions)"]
+    F9 --> F10["Wave 8: 10-presence-approach<br/>(Presence & Multi-Person)"]
+```
+
+
 
