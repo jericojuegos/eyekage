@@ -35,7 +35,7 @@ flowchart LR
 | **1** | `03-camera-face-detection` | [`docs/specs/03-camera-face-detection/`](../specs/03-camera-face-detection/requirements.md) | CameraX ImageAnalysis pipeline, winning detector engine, privacy indicator | `00-scaffold` | `:platform:vision`, `:core:model` | ✅ `[x]` Complete |
 | **2** | `02-eye-modes` | [`docs/specs/02-eye-modes/`](../specs/02-eye-modes/requirements.md) | Data-driven mode registry, neutral IDs, swappable string resources, mode drawer UI | `01-eye-engine` | `:core:model`, `:ui`, `:feature:companion` | ✅ `[x]` Complete |
 | **2** | `04-gaze-tracking-reactions` | [`docs/specs/04-gaze-tracking-reactions/`](../specs/04-gaze-tracking-reactions/requirements.md) | Face-to-gaze mapping, One-Euro smoothing, Awakening reaction, touch poke haptics | `01-eye-engine`, `03-camera` | `:core:behavior`, `:feature:companion` | ✅ `[x]` Complete |
-| **3** | `05-settings-privacy` | [`docs/specs/05-settings-privacy/`](../specs/05-settings-privacy/requirements.md) | DataStore preferences (5 keys), camera toggle, reduced motion, storage disclosures | `02-eye-modes` | `:platform:data`, `:feature:settings` | 🚀 `[>]` Building (Wave 3) |
+| **3** | `05-settings-privacy` | [`docs/specs/05-settings-privacy/`](../specs/05-settings-privacy/requirements.md) | DataStore preferences (5 keys), camera toggle, reduced motion, storage disclosures | `02-eye-modes` | `:platform:data`, `:feature:settings` | ✅ `[x]` Complete |
 
 ---
 

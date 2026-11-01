@@ -12,8 +12,8 @@
 
 ## 🚦 Project State
 
-**Stage:** `scaffolded`
-**Stage last updated:** `2026-10-31`
+**Stage:** `active` (Phase 1 MVP Complete & Shipped)
+**Stage last updated:** `2026-11-01`
 
 | Stage | Meaning | Next Action / Skill |
 |---|---|---|

@@ -9,11 +9,19 @@
     <ID>ArgumentListWrapping:SaccadeGeneratorTest.kt$SaccadeGeneratorTest$("Saccade triggered at $saccadeTimeMs ms, must be between 1500ms and 4000ms", saccadeTimeMs in 1500L..4000L )</ID>
     <ID>LongMethod:RobotEyesCanvas.kt$private fun DrawScope.drawEye( centerX: Float, centerY: Float, eyeWidth: Float, eyeHeight: Float, shiftX: Float, shiftY: Float, openness: Float, pupilScale: Float, spec: EyeSpec )</ID>
     <ID>LongParameterList:RobotEyesCanvas.kt$( centerX: Float, centerY: Float, eyeWidth: Float, eyeHeight: Float, shiftX: Float, shiftY: Float, openness: Float, pupilScale: Float, spec: EyeSpec )</ID>
+    <ID>LongParameterList:RobotEyesCanvas.kt$( pupilCenterX: Float, pupilCenterY: Float, coreWidth: Float, coreHeight: Float, openness: Float, coreColor: Color )</ID>
+    <ID>LongParameterList:RobotEyesCanvas.kt$( pupilCenterX: Float, pupilCenterY: Float, coreWidth: Float, coreHeight: Float, openness: Float, spec: EyeSpec )</ID>
+    <ID>MagicNumber:AwakeningOverlay.kt$0.45f</ID>
+    <ID>MagicNumber:AwakeningOverlay.kt$0.4f</ID>
+    <ID>MagicNumber:AwakeningOverlay.kt$0.8f</ID>
+    <ID>MagicNumber:AwakeningOverlay.kt$1.2f</ID>
+    <ID>MagicNumber:AwakeningOverlay.kt$1.6f</ID>
     <ID>MagicNumber:BlinkScheduler.kt$BlinkScheduler$0.1f</ID>
     <ID>MagicNumber:BlinkScheduler.kt$BlinkScheduler$0.2f</ID>
     <ID>MagicNumber:BlinkScheduler.kt$BlinkScheduler$0.4f</ID>
     <ID>MagicNumber:BlinkScheduler.kt$BlinkScheduler$0.8f</ID>
     <ID>MagicNumber:BlinkScheduler.kt$BlinkScheduler$1000f</ID>
+    <ID>MagicNumber:EyeMotionEngine.kt$EyeMotionEngine$0.1f</ID>
     <ID>MagicNumber:EyeMotionEngine.kt$EyeMotionEngine$1000.0</ID>
     <ID>MagicNumber:EyeSpec.kt$EyeSpec$0x6622D3EE</ID>
     <ID>MagicNumber:EyeSpec.kt$EyeSpec$0xFF0891B2</ID>
@@ -23,14 +31,20 @@
     <ID>MagicNumber:FaceObservationTransform.kt$FaceObservationTransform$270</ID>
     <ID>MagicNumber:FaceObservationTransform.kt$FaceObservationTransform$360</ID>
     <ID>MagicNumber:FaceObservationTransform.kt$FaceObservationTransform$90</ID>
+    <ID>MagicNumber:ModePickerBottomSheet.kt$0xFF22D3EE</ID>
     <ID>MagicNumber:RobotEyesCanvas.kt$0.04f</ID>
+    <ID>MagicNumber:RobotEyesCanvas.kt$0.08f</ID>
     <ID>MagicNumber:RobotEyesCanvas.kt$0.12f</ID>
     <ID>MagicNumber:RobotEyesCanvas.kt$0.14f</ID>
+    <ID>MagicNumber:RobotEyesCanvas.kt$0.16f</ID>
     <ID>MagicNumber:RobotEyesCanvas.kt$0.18f</ID>
     <ID>MagicNumber:RobotEyesCanvas.kt$0.20f</ID>
     <ID>MagicNumber:RobotEyesCanvas.kt$0.22f</ID>
     <ID>MagicNumber:RobotEyesCanvas.kt$0.23f</ID>
+    <ID>MagicNumber:RobotEyesCanvas.kt$0.28f</ID>
     <ID>MagicNumber:RobotEyesCanvas.kt$0.35f</ID>
+    <ID>MagicNumber:RobotEyesCanvas.kt$0.42f</ID>
+    <ID>MagicNumber:RobotEyesCanvas.kt$0.48f</ID>
     <ID>MagicNumber:RobotEyesCanvas.kt$0.4f</ID>
     <ID>MagicNumber:RobotEyesCanvas.kt$0.52f</ID>
     <ID>MagicNumber:RobotEyesCanvas.kt$0.85f</ID>
@@ -46,14 +60,18 @@
     <ID>MaximumLineLength:EyeMotionEngineTest.kt$EyeMotionEngineTest$ </ID>
     <ID>NoMultipleSpaces:EyeSpec.kt$EyeSpec$ </ID>
     <ID>NoUnusedImports:BlinkSchedulerTest.kt$com.eyekage.core.motion.BlinkSchedulerTest.kt</ID>
+    <ID>NoUnusedImports:EyeModeRenderingTest.kt$com.eyekage.ui.eyes.EyeModeRenderingTest.kt</ID>
     <ID>NoUnusedImports:EyeMotionEngineTest.kt$com.eyekage.core.motion.EyeMotionEngineTest.kt</ID>
     <ID>NoUnusedImports:VisionFaceObservationSourceTest.kt$com.eyekage.platform.vision.VisionFaceObservationSourceTest.kt</ID>
     <ID>ReturnCount:BlinkScheduler.kt$BlinkScheduler$fun update(currentTimeMs: Long): Float</ID>
     <ID>TooGenericExceptionCaught:CameraXManager.kt$CameraXManager$e: Exception</ID>
     <ID>TooGenericExceptionCaught:VisionFaceObservationSource.kt$VisionFaceObservationSource$e: Exception</ID>
-    <ID>UnusedPrivateMember:RobotEyesCanvas.kt$@Preview(name = "Blinking Eyes", widthDp = 360, heightDp = 640) @Composable private fun RobotEyesCanvasPreviewBlink()</ID>
-    <ID>UnusedPrivateMember:RobotEyesCanvas.kt$@Preview(name = "Default Open Eyes", widthDp = 360, heightDp = 640) @Composable private fun RobotEyesCanvasPreviewOpen()</ID>
-    <ID>UnusedPrivateMember:RobotEyesCanvas.kt$@Preview(name = "Eyes Glancing Right", widthDp = 360, heightDp = 640) @Composable private fun RobotEyesCanvasPreviewGlance()</ID>
+    <ID>TooManyFunctions:CompanionBehaviorStateMachine.kt$CompanionBehaviorStateMachine</ID>
+    <ID>UnusedParameter:RobotEyesCanvas.kt$coreHeight: Float</ID>
+    <ID>UnusedPrivateMember:RobotEyesCanvas.kt$@Preview(name = "Crimson Tracker Mode", widthDp = 360, heightDp = 640) @Composable private fun RobotEyesCanvasPreviewCrimson()</ID>
+    <ID>UnusedPrivateMember:RobotEyesCanvas.kt$@Preview(name = "Normal Mode", widthDp = 360, heightDp = 640) @Composable private fun RobotEyesCanvasPreviewNormal()</ID>
+    <ID>UnusedPrivateMember:RobotEyesCanvas.kt$@Preview(name = "Purple Orbit Mode", widthDp = 360, heightDp = 640) @Composable private fun RobotEyesCanvasPreviewPurpleOrbit()</ID>
+    <ID>UnusedPrivateMember:RobotEyesCanvas.kt$@Preview(name = "White Scan Mode", widthDp = 360, heightDp = 640) @Composable private fun RobotEyesCanvasPreviewWhiteScan()</ID>
     <ID>UnusedPrivateProperty:EyeMotionEngineTest.kt$EyeMotionEngineTest$step</ID>
     <ID>Wrapping:BlinkSchedulerTest.kt$BlinkSchedulerTest$(</ID>
     <ID>Wrapping:OneEuroFilterTest.kt$OneEuroFilterTest$(</ID>
