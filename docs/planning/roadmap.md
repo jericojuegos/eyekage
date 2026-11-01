@@ -70,3 +70,23 @@ flowchart TD
     F5 --> UAT
 ```
 
+---
+
+## 4. Phase 2 Feature Specs Registry & Dependency Matrix
+
+| Wave | Feature Slug | Spec Bundle Path | Primary Output | Depends On | Touches (Isolation Zone) | Status |
+|---|---|---|---|---|---|---|
+| **4** | `06-personality-memory` | [`docs/specs/06-personality-memory/`](../specs/06-personality-memory/requirements.md) | Rule-based personality engine, micro-expressions, local memory DataStore, reset card | `05-settings-privacy` | `:core:behavior`, `:core:model`, `:core:ports`, `:platform:preferences`, `:ui:eyes`, `:feature:settings` | 📋 Spec ready |
+| **5** | `07-voice-commands` | `docs/specs/07-voice-commands/` | On-device keyword spotting, voice-triggered eye modes, audio privacy indicator | `06-personality-memory` | `:platform:audio`, `:core:ports`, `:feature:companion` | ⏳ Planned |
+
+---
+
+## 5. Phase 2 Dependency & Wave Graph
+
+```mermaid
+flowchart LR
+    P1["Phase 1 MVP<br/>(Shipped & Verified)"] --> F6["Wave 4: 06-personality-memory<br/>(Personality Engine & Local Memory)"]
+    F6 --> F7["Wave 5: 07-voice-commands<br/>(On-Device Speech Commands)"]
+```
+
+
