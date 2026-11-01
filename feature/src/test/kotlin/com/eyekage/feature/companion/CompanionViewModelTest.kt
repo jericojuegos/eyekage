@@ -1,5 +1,6 @@
 package com.eyekage.feature.companion
 
+import com.eyekage.core.behavior.CompanionState
 import com.eyekage.core.model.FaceObservation
 import com.eyekage.core.ports.FaceObservationSource
 import com.eyekage.core.ports.PreferencesRepository
@@ -84,6 +85,8 @@ class CompanionViewModelTest {
         assertEquals("mode.normal", state.currentModeId)
         assertFalse(state.isCameraEnabled)
         assertFalse(state.isCameraTrackingActive)
+        assertEquals(CompanionState.Idle, state.behaviorState)
+        assertFalse(state.showDebugOverlay)
     }
 
     @Test
@@ -120,5 +123,68 @@ class CompanionViewModelTest {
 
         assertTrue(vision.isRunning.value)
         assertTrue(viewModel.uiState.value.isCameraEnabled)
+    }
+
+    @Test
+    fun `onPoke event dispatches to behavior state machine immediately`() = runTest {
+        val prefs = FakePreferencesRepository()
+        val vision = FakeFaceObservationSource()
+        val viewModel = CompanionViewModel(prefs, vision)
+
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.uiState.collect()
+        }
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.onEvent(CompanionUiEvent.OnPoke(100f, 200f))
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertTrue(viewModel.behaviorStateMachine.currentState is CompanionState.Poked)
+    }
+
+    @Test
+    fun `toggling debug overlay updates showDebugOverlay in uiState`() = runTest {
+        val prefs = FakePreferencesRepository()
+        val vision = FakeFaceObservationSource()
+        val viewModel = CompanionViewModel(prefs, vision)
+
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.uiState.collect()
+        }
+        testDispatcher.scheduler.advanceUntilIdle()
+        assertFalse(viewModel.uiState.value.showDebugOverlay)
+
+        viewModel.onEvent(CompanionUiEvent.ToggleDebugOverlay)
+        testDispatcher.scheduler.advanceUntilIdle()
+        assertTrue(viewModel.uiState.value.showDebugOverlay)
+
+        viewModel.onEvent(CompanionUiEvent.ToggleDebugOverlay)
+        testDispatcher.scheduler.advanceUntilIdle()
+        assertFalse(viewModel.uiState.value.showDebugOverlay)
+    }
+
+    @Test
+    fun `face observations stream updates faceObservation in uiState`() = runTest {
+        val prefs = FakePreferencesRepository()
+        val vision = FakeFaceObservationSource()
+        val viewModel = CompanionViewModel(prefs, vision)
+
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.uiState.collect()
+        }
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        val observedFace = FaceObservation(
+            normalizedX = 0.45f,
+            normalizedY = -0.30f,
+            confidence = 0.92f,
+            boundingBoxWidth = 0.5f,
+            boundingBoxHeight = 0.6f
+        )
+        vision.observationsFlow.value = observedFace
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(observedFace, viewModel.uiState.value.faceObservation)
+        assertTrue(viewModel.uiState.value.faceObservation.isFaceDetected)
     }
 }

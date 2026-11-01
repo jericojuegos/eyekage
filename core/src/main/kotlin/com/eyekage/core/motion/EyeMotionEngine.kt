@@ -1,5 +1,7 @@
 package com.eyekage.core.motion
 
+import com.eyekage.core.model.FaceObservation
+
 /**
  * Normalized 2D gaze coordinates bounded within [-1.0f, 1.0f].
  */
@@ -59,10 +61,14 @@ class EyeMotionEngine(
      *
      * @param target Normalized target coordinates [-1.0, 1.0].
      * @param timestampMs Frame timestamp in milliseconds.
+     * @param eyelidModifier Multiplier applied to baseline eyelid openness.
+     * @param pupilScaleModifier Multiplier applied to baseline pupil scale.
      */
     fun update(
         target: GazeTarget = GazeTarget.Center,
-        timestampMs: Long
+        timestampMs: Long,
+        eyelidModifier: Float = 1.0f,
+        pupilScaleModifier: Float = 1.0f
     ): EyeMotionState {
         val timestampSec = timestampMs.toDouble() / 1000.0
         val (smoothedX, smoothedY) = filter.filter(target.x, target.y, timestampSec)
@@ -71,12 +77,37 @@ class EyeMotionEngine(
 
         val combinedX = (smoothedX + saccadeX).coerceIn(-1.0f, 1.0f)
         val combinedY = (smoothedY + saccadeY).coerceIn(-1.0f, 1.0f)
+        val finalEyelid = (eyelid * eyelidModifier).coerceIn(0.0f, 1.0f)
+        val finalPupilScale = (1.0f * pupilScaleModifier).coerceAtLeast(0.1f)
 
         return EyeMotionState(
             gazeX = combinedX,
             gazeY = combinedY,
-            eyelidOpenness = eyelid,
-            pupilScale = 1.0f
+            eyelidOpenness = finalEyelid,
+            pupilScale = finalPupilScale
         )
+    }
+
+    /**
+     * Updates motion state directly from a dynamic [FaceObservation].
+     *
+     * Automatically extracts normalized coordinates, applies bounds,
+     * and filters coordinates with One-Euro smoothing.
+     */
+    fun update(
+        observation: FaceObservation,
+        timestampMs: Long,
+        eyelidModifier: Float = 1.0f,
+        pupilScaleModifier: Float = 1.0f
+    ): EyeMotionState {
+        val target = if (observation.isFaceDetected) {
+            GazeTarget(
+                x = observation.normalizedX.coerceIn(-1.0f, 1.0f),
+                y = observation.normalizedY.coerceIn(-1.0f, 1.0f)
+            )
+        } else {
+            GazeTarget.Center
+        }
+        return update(target, timestampMs, eyelidModifier, pupilScaleModifier)
     }
 }

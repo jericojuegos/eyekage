@@ -2,6 +2,8 @@ package com.eyekage.feature.companion
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.eyekage.core.behavior.CompanionBehaviorStateMachine
+import com.eyekage.core.behavior.CompanionState
 import com.eyekage.core.model.FaceObservation
 import com.eyekage.core.ports.FaceObservationSource
 import com.eyekage.core.ports.PreferencesRepository
@@ -19,36 +21,61 @@ data class CompanionUiState(
     val isCameraEnabled: Boolean = false,
     val isCameraTrackingActive: Boolean = false,
     val faceObservation: FaceObservation = FaceObservation.Empty,
-    val isDeskModeEnabled: Boolean = false
+    val isDeskModeEnabled: Boolean = false,
+    val behaviorState: CompanionState = CompanionState.Idle,
+    val showDebugOverlay: Boolean = false,
+    val reducedMotion: Boolean = false
 )
 
 sealed interface CompanionUiEvent {
     data class SelectMode(val modeId: String) : CompanionUiEvent
     data class ToggleCamera(val enabled: Boolean) : CompanionUiEvent
     data class ToggleDeskMode(val enabled: Boolean) : CompanionUiEvent
-    object OnScreenTapped : CompanionUiEvent
+    data object OnScreenTapped : CompanionUiEvent
+    data class OnPoke(val x: Float = 0f, val y: Float = 0f) : CompanionUiEvent
+    data object ToggleDebugOverlay : CompanionUiEvent
 }
 
 class CompanionViewModel(
     private val preferencesRepository: PreferencesRepository,
-    private val faceObservationSource: FaceObservationSource
+    private val faceObservationSource: FaceObservationSource,
+    val behaviorStateMachine: CompanionBehaviorStateMachine = CompanionBehaviorStateMachine()
 ) : ViewModel() {
 
     private val _currentModeId = MutableStateFlow("mode.normal")
+    private val _showDebugOverlay = MutableStateFlow(false)
 
-    val uiState: StateFlow<CompanionUiState> = combine(
+    private val corePrefsFlow = combine(
         _currentModeId,
         preferencesRepository.cameraEnabled,
-        preferencesRepository.deskModeEnabled,
+        preferencesRepository.deskModeEnabled
+    ) { mode, cam, desk ->
+        Triple(mode, cam, desk)
+    }
+
+    private val visionFlow = combine(
         faceObservationSource.isRunning,
         faceObservationSource.observations
-    ) { modeId, cameraEnabled, deskMode, isRunning, observation ->
+    ) { running, obs ->
+        Pair(running, obs)
+    }
+
+    val uiState: StateFlow<CompanionUiState> = combine(
+        corePrefsFlow,
+        visionFlow,
+        preferencesRepository.reducedMotionOverride,
+        _showDebugOverlay
+    ) { (modeId, cameraEnabled, deskMode), (isRunning, observation), reducedMotion, showDebug ->
+        val isReducedMotion = reducedMotion == "ON"
         CompanionUiState(
             currentModeId = modeId,
             isCameraEnabled = cameraEnabled,
             isCameraTrackingActive = isRunning,
             faceObservation = observation,
-            isDeskModeEnabled = deskMode
+            isDeskModeEnabled = deskMode,
+            behaviorState = behaviorStateMachine.currentState,
+            showDebugOverlay = showDebug,
+            reducedMotion = isReducedMotion
         )
     }.stateIn(
         scope = viewModelScope,
@@ -88,7 +115,13 @@ class CompanionViewModel(
                 }
             }
             is CompanionUiEvent.OnScreenTapped -> {
-                // Subtle interaction handler
+                // General screen tap
+            }
+            is CompanionUiEvent.OnPoke -> {
+                behaviorStateMachine.poke(System.currentTimeMillis())
+            }
+            is CompanionUiEvent.ToggleDebugOverlay -> {
+                _showDebugOverlay.value = !_showDebugOverlay.value
             }
         }
     }

@@ -2,6 +2,7 @@ package com.eyekage.ui.eyes
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -12,6 +13,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import com.eyekage.core.model.PupilShape
 import com.eyekage.core.motion.EyeMotionState
@@ -32,16 +34,28 @@ private val OrbitStrokeMedium = Stroke(width = 2.5f)
  *
  * @param state Current motion state (gaze offsets, eyelid openness, pupil scale).
  * @param spec Color, geometry, and pupil shape specification.
+ * @param onPoke Optional tap/poke gesture callback.
  * @param modifier Composable layout modifier.
  */
 @Composable
 fun RobotEyesCanvas(
     state: EyeMotionState,
     spec: EyeSpec = EyeSpec.Default,
+    onPoke: ((Offset) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
+    val gestureModifier = if (onPoke != null) {
+        modifier.pointerInput(onPoke) {
+            detectTapGestures { offset ->
+                onPoke(offset)
+            }
+        }
+    } else {
+        modifier
+    }
+
     Canvas(
-        modifier = modifier
+        modifier = gestureModifier
             .fillMaxSize()
             .background(DarkBackground)
     ) {
