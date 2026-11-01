@@ -29,12 +29,14 @@ class DataStorePreferencesRepository(
         val KEY_REDUCED_MOTION_OVERRIDE = stringPreferencesKey("reduced_motion_override")
         val KEY_HAPTICS_ENABLED = booleanPreferencesKey("haptics_enabled")
         val KEY_DESK_MODE_ENABLED = booleanPreferencesKey("desk_mode_enabled")
+        val KEY_VOICE_COMMANDS_ENABLED = booleanPreferencesKey("voice_commands_enabled")
 
         const val DEFAULT_MODE_ID_VALUE = "mode.normal"
         const val DEFAULT_CAMERA_ENABLED_VALUE = false
         const val DEFAULT_REDUCED_MOTION_VALUE = "SYSTEM"
         const val DEFAULT_HAPTICS_ENABLED_VALUE = true
         const val DEFAULT_DESK_MODE_ENABLED_VALUE = false
+        const val DEFAULT_VOICE_COMMANDS_ENABLED_VALUE = false
     }
 
     override val defaultModeId: Flow<String> = dataStore.data.map { preferences ->
@@ -55,6 +57,10 @@ class DataStorePreferencesRepository(
 
     override val deskModeEnabled: Flow<Boolean> = dataStore.data.map { preferences ->
         preferences[KEY_DESK_MODE_ENABLED] ?: DEFAULT_DESK_MODE_ENABLED_VALUE
+    }
+
+    override val voiceCommandsEnabled: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[KEY_VOICE_COMMANDS_ENABLED] ?: DEFAULT_VOICE_COMMANDS_ENABLED_VALUE
     }
 
     override suspend fun setDefaultModeId(modeId: String) {
@@ -84,6 +90,12 @@ class DataStorePreferencesRepository(
     override suspend fun setDeskModeEnabled(enabled: Boolean) {
         dataStore.edit { preferences ->
             preferences[KEY_DESK_MODE_ENABLED] = enabled
+        }
+    }
+
+    override suspend fun setVoiceCommandsEnabled(enabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[KEY_VOICE_COMMANDS_ENABLED] = enabled
         }
     }
 }

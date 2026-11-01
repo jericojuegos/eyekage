@@ -50,6 +50,7 @@ class DataStorePreferencesRepositoryTest {
         assertEquals(defaultMotion, repository.reducedMotionOverride.first())
         assertTrue(repository.hapticsEnabled.first())
         assertFalse(repository.deskModeEnabled.first())
+        assertFalse(repository.voiceCommandsEnabled.first())
     }
 
     @Test
@@ -87,5 +88,14 @@ class DataStorePreferencesRepositoryTest {
         assertFalse(repository.deskModeEnabled.first())
         repository.setDeskModeEnabled(true)
         assertTrue(repository.deskModeEnabled.first())
+    }
+
+    @Test
+    fun updateVoiceCommandsEnabled_persistsAndEmitsNewValue() = runTest {
+        assertFalse(repository.voiceCommandsEnabled.first())
+        repository.setVoiceCommandsEnabled(true)
+        assertTrue(repository.voiceCommandsEnabled.first())
+        repository.setVoiceCommandsEnabled(false)
+        assertFalse(repository.voiceCommandsEnabled.first())
     }
 }

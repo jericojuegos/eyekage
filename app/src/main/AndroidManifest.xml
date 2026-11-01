@@ -2,10 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Approved hardware permission (Phase 1 MVP) -->
+    <!-- Approved hardware permissions (Phase 1 & Phase 2) -->
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
-    <!-- Optional camera features to support tablets/devices without autofocus or rear cameras -->
+    <!-- Optional camera and audio features to support diverse hardware -->
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
@@ -15,6 +16,9 @@
     <uses-feature
         android:name="android.hardware.camera.autofocus"
         android:required="false" />
+    <uses-feature
+        android:name="android.hardware.microphone"
+        android:required="false" />
 
     <!-- Prohibited permissions explicitly stripped if introduced transitively -->
     <uses-permission
@@ -22,9 +26,6 @@
         tools:node="remove" />
     <uses-permission
         android:name="android.permission.ACCESS_NETWORK_STATE"
-        tools:node="remove" />
-    <uses-permission
-        android:name="android.permission.RECORD_AUDIO"
         tools:node="remove" />
 
     <application

@@ -35,7 +35,8 @@ class PrivacyAndStorageAuditTest {
         "camera_enabled",
         "reduced_motion_override",
         "haptics_enabled",
-        "desk_mode_enabled"
+        "desk_mode_enabled",
+        "voice_commands_enabled"
     )
 
     @Before
@@ -65,21 +66,23 @@ class PrivacyAndStorageAuditTest {
             DataStorePreferencesRepository.KEY_CAMERA_ENABLED.name,
             DataStorePreferencesRepository.KEY_REDUCED_MOTION_OVERRIDE.name,
             DataStorePreferencesRepository.KEY_HAPTICS_ENABLED.name,
-            DataStorePreferencesRepository.KEY_DESK_MODE_ENABLED.name
+            DataStorePreferencesRepository.KEY_DESK_MODE_ENABLED.name,
+            DataStorePreferencesRepository.KEY_VOICE_COMMANDS_ENABLED.name
         )
 
-        assertEquals(5, companionKeys.size)
+        assertEquals(6, companionKeys.size)
         assertEquals(allowedKeys, companionKeys.toSet())
     }
 
     @Test
     fun verifyNoUnauthorizedFilesAreCreatedInSandbox() = runTest {
-        // Exercise all 5 preference writes
+        // Exercise preference writes
         repository.setDefaultModeId("mode.purple_orbit")
         repository.setCameraEnabled(true)
         repository.setReducedMotionOverride("ON")
         repository.setHapticsEnabled(false)
         repository.setDeskModeEnabled(true)
+        repository.setVoiceCommandsEnabled(true)
 
         // Read all back to ensure I/O flushed
         assertEquals("mode.purple_orbit", repository.defaultModeId.first())
@@ -87,6 +90,7 @@ class PrivacyAndStorageAuditTest {
         assertEquals("ON", repository.reducedMotionOverride.first())
         assertFalse(repository.hapticsEnabled.first())
         assertTrue(repository.deskModeEnabled.first())
+        assertTrue(repository.voiceCommandsEnabled.first())
 
         val forbiddenImageExts = setOf("jpg", "png", "webp", "bmp", "raw")
         val forbiddenDbExts = setOf("db", "sqlite", "sqlite-wal")

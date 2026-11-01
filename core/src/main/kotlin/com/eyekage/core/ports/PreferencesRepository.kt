@@ -12,10 +12,12 @@ interface PreferencesRepository {
     val reducedMotionOverride: Flow<String>
     val hapticsEnabled: Flow<Boolean>
     val deskModeEnabled: Flow<Boolean>
+    val voiceCommandsEnabled: Flow<Boolean>
 
     suspend fun setDefaultModeId(modeId: String)
     suspend fun setCameraEnabled(enabled: Boolean)
     suspend fun setReducedMotionOverride(override: String)
     suspend fun setHapticsEnabled(enabled: Boolean)
     suspend fun setDeskModeEnabled(enabled: Boolean)
+    suspend fun setVoiceCommandsEnabled(enabled: Boolean)
 }

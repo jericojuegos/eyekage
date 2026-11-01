@@ -26,20 +26,20 @@
 ---
 
 ### 2. Platform Audio Engine, Preferences & Manifest Allowlist (`⚡ BATCH`: Platform Speech & Allowlist)
-- [ ] **2.1** `[BE]` Update `PreferencesRepository.kt` and `DataStorePreferencesRepository.kt` with `voiceCommandsEnabled: Flow<Boolean>` and `setVoiceCommandsEnabled(enabled: Boolean)`
+- [x] **2.1** `[BE]` Update `PreferencesRepository.kt` and `DataStorePreferencesRepository.kt` with `voiceCommandsEnabled: Flow<Boolean>` and `setVoiceCommandsEnabled(enabled: Boolean)`
   - Uses key `voice_commands_enabled` (default `false`)
   - _Requirements: 4.1_
-- [ ] **2.2** `[BE]` Implement `SpeechRecognizerVoiceSource.kt` in `platform/src/main/kotlin/com/eyekage/platform/audio/`
+- [x] **2.2** `[BE]` Implement `SpeechRecognizerVoiceSource.kt` in `platform/src/main/kotlin/com/eyekage/platform/audio/`
   - Implements `VoiceCommandSource` using `android.speech.SpeechRecognizer` with `EXTRA_PREFER_OFFLINE = true`, lifecycle checks, and zero audio saving
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_
-- [ ] **2.3** `[BE]` Update `app/src/main/AndroidManifest.xml` and `build.gradle.kts`
+- [x] **2.3** `[BE]` Update `app/src/main/AndroidManifest.xml` and `build.gradle.kts`
   - Declares `<uses-permission android:name="android.permission.RECORD_AUDIO" />` (removing `tools:node="remove"`)
   - Updates `checkMergedManifestPermissions` to approve `android.permission.RECORD_AUDIO` in `approvedHardwarePermissions` and remove from `prohibitedPermissions`
   - _Requirements: 5.1, 5.2, 5.3_
-- [ ] **2.4** `[BE]` Provide `VoiceCommandSource` singleton in `app/src/main/kotlin/com/eyekage/di/AppContainer.kt`
+- [x] **2.4** `[BE]` Provide `VoiceCommandSource` singleton in `app/src/main/kotlin/com/eyekage/di/AppContainer.kt`
   - Pure-Kotlin manual dependency injection composition root wiring
   - _Requirements: 2.1_
-- [ ] **2.5** `[REVIEW]` **Platform & Manifest Checkpoint:** Run `./gradlew checkMergedManifestPermissions compileDebugKotlin` — must pass with zero errors (triggers auto-checkpoint commit in `/build`)
+- [x] **2.5** `[REVIEW]` **Platform & Manifest Checkpoint:** Run `./gradlew checkMergedManifestPermissions compileDebugKotlin` — must pass with zero errors (triggers auto-checkpoint commit in `/build`)
 
 ---
 
@@ -95,3 +95,4 @@
 |---|---|---|---|
 | 2026-11-01 12:35 | Spec Init | Created specification bundle for `07-voice-commands` | Ready |
 | 2026-11-01 12:38 | Batch 1 (1.1-1.5) | Implemented VoiceCommand models, VoiceCommandSource port, and VoiceCommandParser with unit tests | Passed |
+| 2026-11-01 12:44 | Batch 2 (2.1-2.5) | Implemented SpeechRecognizerVoiceSource, RECORD_AUDIO allowlist, DataStore preferences, AppContainer DI | Passed |

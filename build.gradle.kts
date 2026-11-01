@@ -32,16 +32,16 @@ dependencies {
 
 tasks.register("checkMergedManifestPermissions") {
     group = "verification"
-    description = "Enforces strict manifest allowlist (CAMERA only) and denylist (INTERNET, etc.)"
+    description = "Enforces strict manifest allowlist (CAMERA, RECORD_AUDIO) and denylist (INTERNET, etc.)"
     dependsOn(":app:processDebugMainManifest")
 
     val approvedHardwarePermissions = setOf(
-        "android.permission.CAMERA"
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
     )
     val prohibitedPermissions = setOf(
         "android.permission.INTERNET",
         "android.permission.ACCESS_NETWORK_STATE",
-        "android.permission.RECORD_AUDIO",
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.READ_EXTERNAL_STORAGE",

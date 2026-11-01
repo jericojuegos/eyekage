@@ -5,6 +5,8 @@ import com.eyekage.core.behavior.PersonalityEngine
 import com.eyekage.core.ports.FaceObservationSource
 import com.eyekage.core.ports.MemoryRepository
 import com.eyekage.core.ports.PreferencesRepository
+import com.eyekage.core.ports.VoiceCommandSource
+import com.eyekage.platform.audio.SpeechRecognizerVoiceSource
 import com.eyekage.platform.preferences.DataStoreMemoryRepository
 import com.eyekage.platform.preferences.DataStorePreferencesRepository
 import com.eyekage.platform.vision.VisionFaceObservationSource
@@ -18,6 +20,7 @@ interface AppContainer {
     val faceObservationSource: FaceObservationSource
     val memoryRepository: MemoryRepository
     val personalityEngine: PersonalityEngine
+    val voiceCommandSource: VoiceCommandSource
 }
 
 class DefaultAppContainer(
@@ -38,5 +41,9 @@ class DefaultAppContainer(
 
     override val personalityEngine: PersonalityEngine by lazy {
         PersonalityEngine()
+    }
+
+    override val voiceCommandSource: VoiceCommandSource by lazy {
+        SpeechRecognizerVoiceSource(appContext)
     }
 }
