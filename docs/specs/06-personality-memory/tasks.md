@@ -1,6 +1,6 @@
 # ✅ Feature Tasks: Personality Engine & Local Memory (`06-personality-memory`)
 
-> **Phase / Wave:** `Phase 2 (Wave 4)` · **Branch / Owner:** `feat/06-personality-memory` · **Status:** `[ ]` Spec Ready  
+> **Phase / Wave:** `Phase 2 (Wave 4)` · **Branch / Owner:** `feat/06-personality-memory` · **Status:** `[>]` In Progress  
 > **Depends On:** `02-eye-modes`, `04-gaze-tracking-reactions`, `05-settings-privacy` · **Touches:** `:core:behavior`, `:core:model`, `:core:ports`, `:platform:preferences`, `:ui:eyes`, `:feature:settings`, `:feature:companion`  
 > **Spec Links:** [`requirements.md`](./requirements.md) · [`design.md`](./design.md) · [`uat.md`](./uat.md) · [`design-reference/stitch-prompt.md`](./design-reference/stitch-prompt.md)
 
@@ -9,15 +9,15 @@
 ## 🔄 Implementation Tasks
 
 ### 1. Domain Models & Personality Engine (`⚡ BATCH`: Pure Kotlin Core)
-- [ ] **1.1** `[BE]` Create domain models (`MoodState`, `PersonalityVector`, `MicroExpression`, `CompanionMemory`) in `core/src/main/kotlin/com/eyekage/core/model/PersonalityModels.kt`.
+- [x] **1.1** `[BE]` Create domain models (`MoodState`, `PersonalityVector`, `MicroExpression`, `CompanionMemory`) in `core/src/main/kotlin/com/eyekage/core/model/PersonalityModels.kt`.
   - _Requirements: 1.1, 2.1–2.4, 3.1_
-- [ ] **1.2** `[BE]` Define `MemoryRepository` interface in `core/src/main/kotlin/com/eyekage/core/ports/MemoryRepository.kt`.
+- [x] **1.2** `[BE]` Define `MemoryRepository` interface in `core/src/main/kotlin/com/eyekage/core/ports/MemoryRepository.kt`.
   - _Requirements: 3.1, 4.3_
-- [ ] **1.3** `[BE]` Implement pure-Kotlin `PersonalityEngine` in `core/src/main/kotlin/com/eyekage/core/behavior/PersonalityEngine.kt` with curiosity/playfulness boosts, energy decay, and bond tier progression.
+- [x] **1.3** `[BE]` Implement pure-Kotlin `PersonalityEngine` in `core/src/main/kotlin/com/eyekage/core/behavior/PersonalityEngine.kt` with curiosity/playfulness boosts, energy decay, and bond tier progression.
   - _Requirements: 1.1–1.5, 3.2_
-- [ ] **1.4** `[BE]` Write unit tests in `core/src/test/kotlin/com/eyekage/core/behavior/PersonalityEngineTest.kt` verifying state transitions, timeouts, and micro-expression outputs.
+- [x] **1.4** `[BE]` Write unit tests in `core/src/test/kotlin/com/eyekage/core/behavior/PersonalityEngineTest.kt` verifying state transitions, timeouts, and micro-expression outputs.
   - _Validates: Req 1.1–1.5, 3.2_
-- [ ] **1.5** `[REVIEW]` **Core Personality Checkpoint:** Run `./gradlew :core:test` — all unit tests pass with zero Android imports.
+- [x] **1.5** `[REVIEW]` **Core Personality Checkpoint:** Run `./gradlew :core:test` — all unit tests pass with zero Android imports.
 
 ---
 
@@ -64,3 +64,4 @@
 | Timestamp | Task(s) | Status | Details |
 |---|---|---|---|
 | 2026-11-01 | Spec Created | `[x]` | Generated complete specification bundle (`requirements.md`, `design.md`, `tasks.md`, `uat.md`, and `stitch-prompt.md`). |
+| 2026-11-01 | Tasks 1.1–1.5 | `[x]` | Implemented pure Kotlin personality models, MemoryRepository port, PersonalityEngine, and full unit test suite. |
