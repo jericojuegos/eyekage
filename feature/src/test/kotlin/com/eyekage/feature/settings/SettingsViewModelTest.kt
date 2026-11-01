@@ -98,6 +98,7 @@ class SettingsViewModelTest {
         assertEquals("SYSTEM", state.reducedMotionOverride)
         assertTrue(state.isHapticsEnabled)
         assertFalse(state.isDeskModeEnabled)
+        assertFalse(state.isVoiceCommandsEnabled)
         assertEquals(DefaultModeCatalog.getSelectableModes().size, state.availableModes.size)
         assertEquals(1, state.memory.bondTier)
         assertEquals(0, state.memory.totalPokes)
@@ -215,5 +216,31 @@ class SettingsViewModelTest {
 
         assertTrue(prefs.deskModeFlow.value)
         assertTrue(viewModel.uiState.value.isDeskModeEnabled)
+    }
+
+    @Test
+    fun `SetVoiceCommandsEnabled updates preference repository and uiState`() = runTest {
+        val prefs = FakePreferencesRepository()
+        val mem = FakeMemoryRepository()
+        val viewModel = SettingsViewModel(prefs, mem)
+
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.uiState.collect()
+        }
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertFalse(viewModel.uiState.value.isVoiceCommandsEnabled)
+
+        viewModel.onEvent(SettingsUiEvent.SetVoiceCommandsEnabled(true))
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertTrue(prefs.voiceCommandsEnabledFlow.value)
+        assertTrue(viewModel.uiState.value.isVoiceCommandsEnabled)
+
+        viewModel.onEvent(SettingsUiEvent.SetVoiceCommandsEnabled(false))
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertFalse(prefs.voiceCommandsEnabledFlow.value)
+        assertFalse(viewModel.uiState.value.isVoiceCommandsEnabled)
     }
 }

@@ -42,10 +42,12 @@ class SettingsViewModel(
 
     val uiState: StateFlow<SettingsUiState> = combine(
         preferencesFlow,
+        preferencesRepository.voiceCommandsEnabled,
         memoryRepository.memory
-    ) { baseState, memory ->
+    ) { baseState, voiceEnabled, memory ->
         val vector = personalityEngine.vector
         baseState.copy(
+            isVoiceCommandsEnabled = voiceEnabled,
             memory = memory,
             currentMood = personalityEngine.currentMood,
             curiosityPercent = (vector.curiosity * PERCENT_MULTIPLIER).toInt(),
@@ -74,6 +76,9 @@ class SettingsViewModel(
                 }
                 is SettingsUiEvent.SetDeskModeEnabled -> {
                     preferencesRepository.setDeskModeEnabled(event.enabled)
+                }
+                is SettingsUiEvent.SetVoiceCommandsEnabled -> {
+                    preferencesRepository.setVoiceCommandsEnabled(event.enabled)
                 }
                 is SettingsUiEvent.ResetMemory -> {
                     personalityEngine.reset()

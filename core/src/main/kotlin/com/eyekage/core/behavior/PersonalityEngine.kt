@@ -23,6 +23,7 @@ private const val ENERGY_DECAY_PER_SEC = 0.01f
 private const val MIN_ENERGY = 0.2f
 private const val DROWSY_ENERGY_THRESHOLD = 0.4f
 private const val AWAKEN_RESTORE_ENERGY = 0.85f
+private const val AWAKEN_CURIOSITY_BOOST = 0.2f
 
 private const val PLAYFUL_ARCH_THRESHOLD = 0.6f
 private const val PLAYFUL_ARCH_RANGE = 0.4f
@@ -111,7 +112,7 @@ class PersonalityEngine(
      */
     fun onAwakening() {
         energy = energy.coerceAtLeast(AWAKEN_RESTORE_ENERGY)
-        curiosity = (curiosity + 0.2f).coerceAtMost(MAX_VAL)
+        curiosity = (curiosity + AWAKEN_CURIOSITY_BOOST).coerceAtMost(MAX_VAL)
         secondsSinceInteraction = 0.0f
     }
 

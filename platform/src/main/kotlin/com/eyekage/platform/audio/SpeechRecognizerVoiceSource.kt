@@ -31,6 +31,7 @@ private const val TAG = "SpeechRecognizerVoice"
  * ([RecognizerIntent.EXTRA_PREFER_OFFLINE] = true). Strips away network and cloud requirements.
  * Raw audio is never saved or buffered to disk. Emits parsed domain events via [VoiceCommandParser].
  */
+@Suppress("TooGenericExceptionCaught")
 class SpeechRecognizerVoiceSource(
     private val context: Context
 ) : VoiceCommandSource {
@@ -99,7 +100,9 @@ class SpeechRecognizerVoiceSource(
                 _events.tryEmit(VoiceCommandEvent.Error(errorMessage, isPermissionError = true))
                 _events.tryEmit(VoiceCommandEvent.ListeningStopped)
             } else {
-                if (isDesiredActive && (error == SpeechRecognizer.ERROR_NO_MATCH || error == SpeechRecognizer.ERROR_SPEECH_TIMEOUT)) {
+                val isTimeoutOrNoMatch = error == SpeechRecognizer.ERROR_NO_MATCH ||
+                    error == SpeechRecognizer.ERROR_SPEECH_TIMEOUT
+                if (isDesiredActive && isTimeoutOrNoMatch) {
                     restartListening()
                 } else {
                     _events.tryEmit(VoiceCommandEvent.Error(errorMessage))
@@ -120,14 +123,26 @@ class SpeechRecognizerVoiceSource(
             handleCandidatePhrases(matches)
         }
 
-        override fun onEvent(eventType: Int, params: Bundle?) {}
+        override fun onEvent(eventType: Int, params: Bundle?) {
+            // Reserved for vendor-specific recognition events
+        }
     }
 
     override fun startListening() {
         mainHandler.post {
-            if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            val hasAudioPermission = ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.RECORD_AUDIO
+            ) == PackageManager.PERMISSION_GRANTED
+
+            if (!hasAudioPermission) {
                 Log.w(TAG, "RECORD_AUDIO permission not granted")
-                _events.tryEmit(VoiceCommandEvent.Error("RECORD_AUDIO permission not granted", isPermissionError = true))
+                _events.tryEmit(
+                    VoiceCommandEvent.Error(
+                        "RECORD_AUDIO permission not granted",
+                        isPermissionError = true
+                    )
+                )
                 return@post
             }
 

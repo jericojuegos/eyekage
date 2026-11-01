@@ -18,7 +18,6 @@ object VoiceCommandParser {
     fun parse(rawText: String?): VoiceCommand? {
         if (rawText.isNullOrBlank()) return null
         val normalized = normalize(rawText)
-        if (normalized.isEmpty()) return null
 
         return when {
             // Awakening reaction

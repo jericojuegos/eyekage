@@ -60,16 +60,16 @@
 ---
 
 ### 4. Settings Voice Commands Card & Full Verification (`⚡ BATCH`: Settings & Verification)
-- [ ] **4.1** `[FE]` Build `VoiceCommandsCard.kt` in `feature/src/main/kotlin/com/eyekage/feature/settings/`
+- [x] **4.1** `[FE]` Build `VoiceCommandsCard.kt` in `feature/src/main/kotlin/com/eyekage/feature/settings/`
   - AMOLED dark surface card with amber mic header icon, opt-in switch, active status indicator, supported command chips, and 100% on-device privacy shield
   - _Requirements: 4.2, 4.3, 4.4_
-- [ ] **4.2** `[FE]` Integrate `VoiceCommandsCard` into `SettingsScreen.kt` and expose toggle in `SettingsViewModel.kt`
+- [x] **4.2** `[FE]` Integrate `VoiceCommandsCard` into `SettingsScreen.kt` and expose toggle in `SettingsViewModel.kt`
   - Mounts directly under `CompanionMemoryCard` with reactive state binding
   - _Requirements: 4.2_
-- [ ] **4.3** `[FE]` Write automated unit test in `feature/src/test/kotlin/com/eyekage/feature/settings/VoiceCommandsCardTest.kt`
+- [x] **4.3** `[FE]` Write automated unit test in `feature/src/test/kotlin/com/eyekage/feature/settings/VoiceCommandsCardTest.kt`
   - Tests toggle interaction and state binding
   - _Requirements: 4.1, 4.2_
-- [ ] **4.4** `[REVIEW]` **Final Feature Checkpoint:** Run full verification (`./gradlew testDebugUnitTest checkMergedManifestPermissions compileDebugKotlin`) -> triggers `/ship` & roadmap sync!
+- [x] **4.4** `[REVIEW]` **Final Feature Checkpoint:** Run full verification (`./gradlew testDebugUnitTest checkMergedManifestPermissions compileDebugKotlin`) -> triggers `/ship` & roadmap sync!
   - _Requirements: All_
 
 ---
@@ -97,3 +97,4 @@
 | 2026-11-01 12:38 | Batch 1 (1.1-1.5) | Implemented VoiceCommand models, VoiceCommandSource port, and VoiceCommandParser with unit tests | Passed |
 | 2026-11-01 12:44 | Batch 2 (2.1-2.5) | Implemented SpeechRecognizerVoiceSource, RECORD_AUDIO allowlist, DataStore preferences, AppContainer DI | Passed |
 | 2026-11-01 12:51 | Batch 3 (3.1-3.4) | Wired CompanionViewModel voice events, top-bar amber mic privacy indicator, and voice tests | Passed |
+| 2026-11-01 13:00 | Batch 4 (4.1-4.4) | Implemented VoiceCommandsCard, settings integration, unit tests, detekt, and full test suite | Passed |

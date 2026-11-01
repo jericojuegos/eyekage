@@ -52,6 +52,8 @@ private const val DEFAULT_FRAME_DELTA_MS = 16L
 private const val MAX_FRAME_DELTA_MS = 100L
 private const val GAZE_TICKER_THRESHOLD_MS = 1000L
 
+private val VoiceIndicatorActive = Color(0xFFF59E0B)
+
 /**
  * Primary companion faceplate screen hosting procedural robot eyes, camera privacy indicators,
  * real-time gaze tracking smoothing, Awakening reaction overlays, and touch/poke feedback.
@@ -206,7 +208,7 @@ private fun BoxScope.CompanionTopControls(
                 modifier = Modifier
                     .size(12.dp)
                     .background(
-                        color = Color(0xFFF59E0B),
+                        color = VoiceIndicatorActive,
                         shape = CircleShape
                     )
             )

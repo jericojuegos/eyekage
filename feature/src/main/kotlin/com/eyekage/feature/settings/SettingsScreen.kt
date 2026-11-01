@@ -106,6 +106,10 @@ fun SettingsScreen(
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             CompanionPreferencesCard(uiState = uiState, onEvent = onEvent)
+            VoiceCommandsCard(
+                isEnabled = uiState.isVoiceCommandsEnabled,
+                onToggle = { onEvent(SettingsUiEvent.SetVoiceCommandsEnabled(it)) }
+            )
             CompanionMemoryCard(
                 state = CompanionMemoryCardState(
                     memory = uiState.memory,

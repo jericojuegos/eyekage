@@ -99,7 +99,11 @@ class CompanionViewModel(
         voiceFlow,
         displayPrefsFlow,
         memoryRepository.memory
-    ) { (modeId, cameraEnabled, deskMode), (isRunning, observation), (voiceEnabled, isListening), (reducedMotion, showDebug), memory ->
+    ) { corePrefs, vision, voice, displayPrefs, memory ->
+        val (modeId, cameraEnabled, deskMode) = corePrefs
+        val (isRunning, observation) = vision
+        val (voiceEnabled, isListening) = voice
+        val (reducedMotion, showDebug) = displayPrefs
         val isReducedMotion = reducedMotion == "ON"
         CompanionUiState(
             currentModeId = modeId,

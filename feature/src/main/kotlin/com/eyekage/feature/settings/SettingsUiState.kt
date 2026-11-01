@@ -11,6 +11,7 @@ data class SettingsUiState(
     val reducedMotionOverride: String = "SYSTEM",
     val isHapticsEnabled: Boolean = true,
     val isDeskModeEnabled: Boolean = false,
+    val isVoiceCommandsEnabled: Boolean = false,
     val availableModes: List<EyeModeSpec> = DefaultModeCatalog.getSelectableModes(),
     val memory: CompanionMemory = CompanionMemory(),
     val currentMood: MoodState = MoodState.ALERT,
@@ -24,5 +25,6 @@ sealed interface SettingsUiEvent {
     data class SetReducedMotion(val option: String) : SettingsUiEvent
     data class SetHapticsEnabled(val enabled: Boolean) : SettingsUiEvent
     data class SetDeskModeEnabled(val enabled: Boolean) : SettingsUiEvent
+    data class SetVoiceCommandsEnabled(val enabled: Boolean) : SettingsUiEvent
     data object ResetMemory : SettingsUiEvent
 }
