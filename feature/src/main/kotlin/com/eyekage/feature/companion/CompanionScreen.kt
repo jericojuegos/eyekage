@@ -48,6 +48,9 @@ import kotlinx.coroutines.isActive
 
 private const val NANOS_TO_MILLIS = 1_000_000L
 private const val COLOR_MORPH_DURATION_MS = 200
+private const val DEFAULT_FRAME_DELTA_MS = 16L
+private const val MAX_FRAME_DELTA_MS = 100L
+private const val GAZE_TICKER_THRESHOLD_MS = 1000L
 
 /**
  * Primary companion faceplate screen hosting procedural robot eyes, camera privacy indicators,
@@ -71,26 +74,22 @@ fun CompanionScreen(
     var motionState by remember { mutableStateOf(EyeMotionState()) }
     var awakeningProgress by remember { mutableFloatStateOf(0.0f) }
 
-    LaunchedEffect(Unit) {
-        while (isActive) {
-            withFrameNanos { frameTimeNanos ->
-                val timeMs = frameTimeNanos / NANOS_TO_MILLIS
-                val output = behaviorStateMachine.update(uiState.faceObservation, timeMs)
-                awakeningProgress = output.awakeningProgress
-                motionState = motionEngine.update(
-                    target = output.targetGaze,
-                    timestampMs = timeMs,
-                    eyelidModifier = output.eyelidModifier,
-                    pupilScaleModifier = output.pupilScaleModifier
-                )
-            }
+    LaunchedEyeFrameLoop(
+        uiState = uiState,
+        behaviorStateMachine = behaviorStateMachine,
+        motionEngine = motionEngine,
+        onEvent = onEvent,
+        onUpdateFrame = { newProgress, newState ->
+            awakeningProgress = newProgress
+            motionState = newState
         }
-    }
+    )
 
     Box(modifier = modifier.fillMaxSize().background(DarkBackground)) {
         RobotEyesCanvas(
             state = motionState,
             spec = activeSpec,
+            microExpression = uiState.microExpression,
             onPoke = {
                 view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
                 behaviorStateMachine.poke(System.currentTimeMillis())
@@ -114,6 +113,48 @@ fun CompanionScreen(
                 onModeSelected = { onEvent(CompanionUiEvent.SelectMode(it)) },
                 onDismissRequest = { showModePicker = false }
             )
+        }
+    }
+}
+
+@Composable
+private fun LaunchedEyeFrameLoop(
+    uiState: CompanionUiState,
+    behaviorStateMachine: CompanionBehaviorStateMachine,
+    motionEngine: EyeMotionEngine,
+    onEvent: (CompanionUiEvent) -> Unit,
+    onUpdateFrame: (Float, EyeMotionState) -> Unit
+) {
+    LaunchedEffect(Unit) {
+        var lastTimeMs = 0L
+        var accumulatedGazeMs = 0L
+        while (isActive) {
+            withFrameNanos { frameTimeNanos ->
+                val timeMs = frameTimeNanos / NANOS_TO_MILLIS
+                val deltaMs = if (lastTimeMs == 0L) {
+                    DEFAULT_FRAME_DELTA_MS
+                } else {
+                    (timeMs - lastTimeMs).coerceIn(0L, MAX_FRAME_DELTA_MS)
+                }
+                lastTimeMs = timeMs
+
+                if (uiState.faceObservation.isFaceDetected) {
+                    accumulatedGazeMs += deltaMs
+                    if (accumulatedGazeMs >= GAZE_TICKER_THRESHOLD_MS) {
+                        onEvent(CompanionUiEvent.RecordGazeDuration(accumulatedGazeMs / GAZE_TICKER_THRESHOLD_MS))
+                        accumulatedGazeMs %= GAZE_TICKER_THRESHOLD_MS
+                    }
+                }
+
+                val output = behaviorStateMachine.update(uiState.faceObservation, timeMs)
+                val newState = motionEngine.update(
+                    target = output.targetGaze,
+                    timestampMs = timeMs,
+                    eyelidModifier = output.eyelidModifier,
+                    pupilScaleModifier = output.pupilScaleModifier
+                )
+                onUpdateFrame(output.awakeningProgress, newState)
+            }
         }
     }
 }

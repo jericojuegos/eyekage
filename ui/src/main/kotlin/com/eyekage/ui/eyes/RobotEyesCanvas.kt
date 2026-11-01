@@ -36,17 +36,26 @@ private const val HAPPY_ARCH_APEX_RATIO = 0.50f
 private const val ARCH_WIDTH_RATIO = 0.55f
 private const val BEZIER_CONTROL_MULTIPLIER = 2.0f
 private const val BOTTOM_PADDING = 30f
+private const val MIN_ARCH_OPENNESS = 0.1f
+
+private data class EyeDrawParams(
+    val centerX: Float,
+    val centerY: Float,
+    val eyeWidth: Float,
+    val eyeHeight: Float,
+    val shiftX: Float,
+    val shiftY: Float,
+    val openness: Float,
+    val pupilScale: Float,
+    val spec: EyeSpec,
+    val bottomEyelidArch: Float = 0.0f,
+    val archPath: Path? = null
+)
 
 /**
  * Procedural Compose Canvas eye renderer.
  * Draws symmetrical, glowing robot eyes on an absolute OLED-black background (#000000)
  * with zero per-frame heap allocations across all data-driven eye modes and personality micro-expressions.
- *
- * @param state Current motion state (gaze offsets, eyelid openness, pupil scale).
- * @param spec Color, geometry, and pupil shape specification.
- * @param microExpression Procedural personality deformation parameters (happy arches, tilts).
- * @param onPoke Optional tap/poke gesture callback.
- * @param modifier Composable layout modifier.
  */
 @Composable
 fun RobotEyesCanvas(
@@ -58,9 +67,7 @@ fun RobotEyesCanvas(
 ) {
     val gestureModifier = if (onPoke != null) {
         modifier.pointerInput(onPoke) {
-            detectTapGestures { offset ->
-                onPoke(offset)
-            }
+            detectTapGestures { offset -> onPoke(offset) }
         }
     } else {
         modifier
@@ -73,414 +80,242 @@ fun RobotEyesCanvas(
             .fillMaxSize()
             .background(DarkBackground)
     ) {
-        val canvasWidth = size.width
-        val canvasHeight = size.height
+        if (size.width <= 0f || size.height <= 0f) return@Canvas
 
-        if (canvasWidth <= 0f || canvasHeight <= 0f) return@Canvas
-
-        // Calculate layout proportions
-        val eyeWidth = (canvasWidth * 0.23f).coerceIn(80f, 320f)
+        val eyeWidth = (size.width * 0.23f).coerceIn(80f, 320f)
         val eyeHeight = eyeWidth * 1.38f
-        val eyeSpacing = (canvasWidth * 0.14f).coerceIn(40f, 200f)
+        val eyeSpacing = (size.width * 0.14f).coerceIn(40f, 200f)
+        val centerY = size.height * 0.5f
 
-        val centerX = canvasWidth * 0.5f
-        val centerY = canvasHeight * 0.5f
+        val leftEyeCenterX = size.width * 0.5f - eyeSpacing * 0.5f - eyeWidth * 0.5f
+        val rightEyeCenterX = size.width * 0.5f + eyeSpacing * 0.5f + eyeWidth * 0.5f
 
-        val leftEyeCenterX = centerX - eyeSpacing * 0.5f - eyeWidth * 0.5f
-        val rightEyeCenterX = centerX + eyeSpacing * 0.5f + eyeWidth * 0.5f
-
-        // Gaze offsets (scaled to eye proportions)
-        val maxShiftX = eyeWidth * 0.22f
-        val maxShiftY = eyeHeight * 0.20f
-        val shiftX = state.gazeX * maxShiftX
-        val shiftY = state.gazeY * maxShiftY
-
+        val shiftX = state.gazeX * eyeWidth * 0.22f
+        val shiftY = state.gazeY * eyeHeight * 0.20f
         val openness = (state.eyelidOpenness * microExpression.eyelidOpennessMultiplier).coerceIn(0.0f, 1.0f)
 
-        val leftTilt = -microExpression.eyeTiltDegrees
-        val rightTilt = microExpression.eyeTiltDegrees * RIGHT_TILT_RATIO
+        val leftParams = EyeDrawParams(
+            centerX = leftEyeCenterX,
+            centerY = centerY,
+            eyeWidth = eyeWidth,
+            eyeHeight = eyeHeight,
+            shiftX = shiftX,
+            shiftY = shiftY,
+            openness = openness,
+            pupilScale = state.pupilScale,
+            spec = spec,
+            bottomEyelidArch = microExpression.bottomEyelidArch,
+            archPath = archPath
+        )
+        drawOrientedEye(-microExpression.eyeTiltDegrees, leftParams)
 
-        // Draw left eye with asymmetrical tilt if active
-        if (leftTilt != 0.0f) {
-            rotate(degrees = leftTilt, pivot = Offset(leftEyeCenterX, centerY)) {
-                drawEye(
-                    centerX = leftEyeCenterX,
-                    centerY = centerY,
-                    eyeWidth = eyeWidth,
-                    eyeHeight = eyeHeight,
-                    shiftX = shiftX,
-                    shiftY = shiftY,
-                    openness = openness,
-                    pupilScale = state.pupilScale,
-                    spec = spec,
-                    bottomEyelidArch = microExpression.bottomEyelidArch,
-                    archPath = archPath
-                )
-            }
-        } else {
-            drawEye(
-                centerX = leftEyeCenterX,
-                centerY = centerY,
-                eyeWidth = eyeWidth,
-                eyeHeight = eyeHeight,
-                shiftX = shiftX,
-                shiftY = shiftY,
-                openness = openness,
-                pupilScale = state.pupilScale,
-                spec = spec,
-                bottomEyelidArch = microExpression.bottomEyelidArch,
-                archPath = archPath
-            )
-        }
-
-        // Draw right eye with asymmetrical tilt if active
-        if (rightTilt != 0.0f) {
-            rotate(degrees = rightTilt, pivot = Offset(rightEyeCenterX, centerY)) {
-                drawEye(
-                    centerX = rightEyeCenterX,
-                    centerY = centerY,
-                    eyeWidth = eyeWidth,
-                    eyeHeight = eyeHeight,
-                    shiftX = shiftX,
-                    shiftY = shiftY,
-                    openness = openness,
-                    pupilScale = state.pupilScale,
-                    spec = spec,
-                    bottomEyelidArch = microExpression.bottomEyelidArch,
-                    archPath = archPath
-                )
-            }
-        } else {
-            drawEye(
-                centerX = rightEyeCenterX,
-                centerY = centerY,
-                eyeWidth = eyeWidth,
-                eyeHeight = eyeHeight,
-                shiftX = shiftX,
-                shiftY = shiftY,
-                openness = openness,
-                pupilScale = state.pupilScale,
-                spec = spec,
-                bottomEyelidArch = microExpression.bottomEyelidArch,
-                archPath = archPath
-            )
-        }
+        val rightParams = leftParams.copy(centerX = rightEyeCenterX)
+        drawOrientedEye(microExpression.eyeTiltDegrees * RIGHT_TILT_RATIO, rightParams)
     }
 }
 
-/**
- * Procedural rendering of a single robot eye.
- * Designed to avoid object allocations on the render thread.
- */
-private fun DrawScope.drawEye(
-    centerX: Float,
-    centerY: Float,
-    eyeWidth: Float,
-    eyeHeight: Float,
-    shiftX: Float,
-    shiftY: Float,
-    openness: Float,
-    pupilScale: Float,
-    spec: EyeSpec,
-    bottomEyelidArch: Float = 0.0f,
-    archPath: Path? = null
+private fun DrawScope.drawOrientedEye(
+    tiltDegrees: Float,
+    params: EyeDrawParams
 ) {
-    if (openness < 0.04f) {
-        // Closed eye / slit state during full blink closure
+    if (tiltDegrees != 0.0f) {
+        rotate(degrees = tiltDegrees, pivot = Offset(params.centerX, params.centerY)) {
+            drawEye(params)
+        }
+    } else {
+        drawEye(params)
+    }
+}
+
+private fun DrawScope.drawEye(params: EyeDrawParams) {
+    if (params.openness < 0.04f) {
         val slitHeight = 4f
-        val slitWidth = eyeWidth * 0.85f
+        val slitWidth = params.eyeWidth * 0.85f
         drawRoundRect(
-            color = spec.primaryColor.copy(alpha = 0.45f),
-            topLeft = Offset(centerX - slitWidth * 0.5f + shiftX, centerY - slitHeight * 0.5f + shiftY),
+            color = params.spec.primaryColor.copy(alpha = 0.45f),
+            topLeft = Offset(params.centerX - slitWidth * 0.5f + params.shiftX, params.centerY - slitHeight * 0.5f + params.shiftY),
             size = Size(slitWidth, slitHeight),
             cornerRadius = CornerRadius(slitHeight * 0.5f, slitHeight * 0.5f)
         )
         return
     }
 
-    val currentEyeHeight = eyeHeight * openness
+    val currentEyeHeight = params.eyeHeight * params.openness
     val eyeCornerRadius = CornerRadius(
-        eyeWidth * 0.5f,
-        (currentEyeHeight * 0.5f).coerceAtMost(eyeWidth * 0.5f)
+        params.eyeWidth * 0.5f,
+        (currentEyeHeight * 0.5f).coerceAtMost(params.eyeWidth * 0.5f)
     )
 
-    // Layer 1: Outer Radial Glow
-    val glowRadius = eyeWidth * spec.glowRadiusMultiplier * openness
-    val pupilCenterX = centerX + shiftX * 1.15f
-    val pupilCenterY = centerY + shiftY * 1.15f
-
+    // Outer Glow & Main Pill
+    val glowRadius = params.eyeWidth * params.spec.glowRadiusMultiplier * params.openness
     drawCircle(
         brush = Brush.radialGradient(
-            colors = listOf(spec.glowColor.copy(alpha = spec.glowColor.alpha * openness), Color.Transparent),
-            center = Offset(centerX + shiftX * 0.4f, centerY + shiftY * 0.4f),
+            colors = listOf(params.spec.glowColor.copy(alpha = params.spec.glowColor.alpha * params.openness), Color.Transparent),
+            center = Offset(params.centerX + params.shiftX * 0.4f, params.centerY + params.shiftY * 0.4f),
             radius = glowRadius
         ),
         radius = glowRadius,
-        center = Offset(centerX + shiftX * 0.4f, centerY + shiftY * 0.4f)
+        center = Offset(params.centerX + params.shiftX * 0.4f, params.centerY + params.shiftY * 0.4f)
     )
-
-    // Layer 2: Main Eye Pill (Iris gradient)
     drawRoundRect(
         brush = Brush.verticalGradient(
-            colors = listOf(spec.primaryColor, spec.secondaryColor),
-            startY = centerY - currentEyeHeight * 0.5f + shiftY,
-            endY = centerY + currentEyeHeight * 0.5f + shiftY
+            colors = listOf(params.spec.primaryColor, params.spec.secondaryColor),
+            startY = params.centerY - currentEyeHeight * 0.5f + params.shiftY,
+            endY = params.centerY + currentEyeHeight * 0.5f + params.shiftY
         ),
-        topLeft = Offset(centerX - eyeWidth * 0.5f + shiftX, centerY - currentEyeHeight * 0.5f + shiftY),
-        size = Size(eyeWidth, currentEyeHeight),
+        topLeft = Offset(params.centerX - params.eyeWidth * 0.5f + params.shiftX, params.centerY - currentEyeHeight * 0.5f + params.shiftY),
+        size = Size(params.eyeWidth, currentEyeHeight),
         cornerRadius = eyeCornerRadius
     )
 
-    // Layer 3: Mode-Specific Procedural Iris Geometry
-    val coreWidth = eyeWidth * 0.52f * pupilScale
-    val coreHeight = (currentEyeHeight * 0.52f * pupilScale).coerceAtLeast(2f)
+    EyeIrisCoreRenderer.drawCore(this, params, currentEyeHeight)
+    drawSpecularDot(params, currentEyeHeight)
+    drawBottomHappyArch(params, currentEyeHeight)
+}
 
-    when (spec.shape) {
-        PupilShape.ROUNDED_PILL -> {
-            drawStandardCore(
-                pupilCenterX = pupilCenterX,
-                pupilCenterY = pupilCenterY,
-                coreWidth = coreWidth,
-                coreHeight = coreHeight,
-                openness = openness,
-                coreColor = spec.coreColor
-            )
-        }
-        PupilShape.GEOMETRIC_TRACKER -> {
-            drawGeometricTrackerCore(
-                pupilCenterX = pupilCenterX,
-                pupilCenterY = pupilCenterY,
-                coreWidth = coreWidth,
-                coreHeight = coreHeight,
-                openness = openness,
-                spec = spec
-            )
-        }
-        PupilShape.SCAN_LINE -> {
-            drawScanLineCore(
-                pupilCenterX = pupilCenterX,
-                pupilCenterY = pupilCenterY,
-                coreWidth = coreWidth,
-                coreHeight = coreHeight,
-                openness = openness,
-                spec = spec
-            )
-        }
-        PupilShape.CONCENTRIC_ORBIT -> {
-            drawConcentricOrbitCore(
-                pupilCenterX = pupilCenterX,
-                pupilCenterY = pupilCenterY,
-                coreWidth = coreWidth,
-                coreHeight = coreHeight,
-                openness = openness,
-                spec = spec
-            )
-        }
-        PupilShape.BURST_RADIAL -> {
-            drawStandardCore(
-                pupilCenterX = pupilCenterX,
-                pupilCenterY = pupilCenterY,
-                coreWidth = coreWidth * 1.15f,
-                coreHeight = coreHeight * 1.15f,
-                openness = openness,
-                coreColor = spec.coreColor
-            )
-        }
-    }
-
-    // Layer 4: Specular Reflection Dot (Alive glance effect)
-    if (openness > 0.35f) {
+private fun DrawScope.drawSpecularDot(params: EyeDrawParams, currentEyeHeight: Float) {
+    if (params.openness > 0.35f) {
+        val coreWidth = params.eyeWidth * 0.52f * params.pupilScale
+        val coreHeight = (currentEyeHeight * 0.52f * params.pupilScale).coerceAtLeast(2f)
+        val pupilCenterX = params.centerX + params.shiftX * 1.15f
+        val pupilCenterY = params.centerY + params.shiftY * 1.15f
         val dotRadius = coreWidth * 0.12f
         drawCircle(
-            color = Color.White.copy(alpha = 0.85f * openness),
+            color = Color.White.copy(alpha = 0.85f * params.openness),
             radius = dotRadius,
-            center = Offset(
-                pupilCenterX - coreWidth * 0.18f,
-                pupilCenterY - coreHeight * 0.22f
-            )
+            center = Offset(pupilCenterX - coreWidth * 0.18f, pupilCenterY - coreHeight * 0.22f)
         )
     }
+}
 
-    // Layer 5: Bottom Eyelid Happy Arch (Micro-expression)
-    if (bottomEyelidArch > 0.0f && archPath != null && openness > 0.1f) {
-        val archProgress = bottomEyelidArch.coerceIn(0.0f, 1.0f)
-        val bottomY = centerY + currentEyeHeight * 0.5f + shiftY
+private fun DrawScope.drawBottomHappyArch(params: EyeDrawParams, currentEyeHeight: Float) {
+    if (params.bottomEyelidArch > 0.0f && params.archPath != null && params.openness > MIN_ARCH_OPENNESS) {
+        val archProgress = params.bottomEyelidArch.coerceIn(0.0f, 1.0f)
+        val bottomY = params.centerY + currentEyeHeight * 0.5f + params.shiftY
         val archApexHeight = currentEyeHeight * HAPPY_ARCH_APEX_RATIO * archProgress
-        val halfArchWidth = eyeWidth * ARCH_WIDTH_RATIO
+        val halfArchWidth = params.eyeWidth * ARCH_WIDTH_RATIO
 
-        archPath.reset()
-        archPath.moveTo(centerX - halfArchWidth + shiftX, bottomY)
-        archPath.quadraticTo(
-            centerX + shiftX,
+        params.archPath.reset()
+        params.archPath.moveTo(params.centerX - halfArchWidth + params.shiftX, bottomY)
+        params.archPath.quadraticTo(
+            params.centerX + params.shiftX,
             bottomY - archApexHeight * BEZIER_CONTROL_MULTIPLIER,
-            centerX + halfArchWidth + shiftX,
+            params.centerX + halfArchWidth + params.shiftX,
             bottomY
         )
-        archPath.lineTo(centerX + halfArchWidth + shiftX, bottomY + BOTTOM_PADDING)
-        archPath.lineTo(centerX - halfArchWidth + shiftX, bottomY + BOTTOM_PADDING)
-        archPath.close()
+        params.archPath.lineTo(params.centerX + halfArchWidth + params.shiftX, bottomY + BOTTOM_PADDING)
+        params.archPath.lineTo(params.centerX - halfArchWidth + params.shiftX, bottomY + BOTTOM_PADDING)
+        params.archPath.close()
 
-        drawPath(
-            path = archPath,
-            color = DarkBackground
-        )
+        drawPath(path = params.archPath, color = DarkBackground)
     }
 }
 
-private fun DrawScope.drawStandardCore(
-    pupilCenterX: Float,
-    pupilCenterY: Float,
-    coreWidth: Float,
-    coreHeight: Float,
-    openness: Float,
-    coreColor: Color
-) {
-    val cornerRadius = CornerRadius(
-        coreWidth * 0.5f,
-        (coreHeight * 0.5f).coerceAtMost(coreWidth * 0.5f)
-    )
-    drawRoundRect(
-        color = coreColor.copy(alpha = 0.90f * openness),
-        topLeft = Offset(pupilCenterX - coreWidth * 0.5f, pupilCenterY - coreHeight * 0.5f),
-        size = Size(coreWidth, coreHeight),
-        cornerRadius = cornerRadius
-    )
-}
+private object EyeIrisCoreRenderer {
+    fun drawCore(
+        scope: DrawScope,
+        params: EyeDrawParams,
+        currentEyeHeight: Float
+    ) {
+        val coreWidth = params.eyeWidth * 0.52f * params.pupilScale
+        val coreHeight = (currentEyeHeight * 0.52f * params.pupilScale).coerceAtLeast(2f)
+        val pupilCenterX = params.centerX + params.shiftX * 1.15f
+        val pupilCenterY = params.centerY + params.shiftY * 1.15f
 
-/**
- * Crimson tracker iris: sharp dark geometric tracking accents placed around a dark pupil.
- */
-private fun DrawScope.drawGeometricTrackerCore(
-    pupilCenterX: Float,
-    pupilCenterY: Float,
-    coreWidth: Float,
-    coreHeight: Float,
-    openness: Float,
-    spec: EyeSpec
-) {
-    // Dark inner pupil
-    val pupilRadius = (coreWidth * 0.28f).coerceAtLeast(2f)
-    drawCircle(
-        color = spec.secondaryColor.copy(alpha = 0.95f * openness),
-        radius = pupilRadius,
-        center = Offset(pupilCenterX, pupilCenterY)
-    )
+        when (params.spec.shape) {
+            PupilShape.ROUNDED_PILL -> drawStandardCore(scope, pupilCenterX, pupilCenterY, coreWidth, coreHeight, params.openness, params.spec.coreColor)
+            PupilShape.GEOMETRIC_TRACKER -> drawGeometricTrackerCore(scope, pupilCenterX, pupilCenterY, coreWidth, params.openness, params.spec)
+            PupilShape.SCAN_LINE -> drawScanLineCore(scope, pupilCenterX, pupilCenterY, coreWidth, coreHeight, params.openness, params.spec)
+            PupilShape.CONCENTRIC_ORBIT -> drawConcentricOrbitCore(scope, pupilCenterX, pupilCenterY, coreWidth, params.openness, params.spec)
+            PupilShape.BURST_RADIAL -> drawStandardCore(scope, pupilCenterX, pupilCenterY, coreWidth * 1.15f, coreHeight * 1.15f, params.openness, params.spec.coreColor)
+        }
+    }
 
-    // Three sharp geometric tracking accents at 120-degree intervals
-    val accentOrbitRadius = coreWidth * 0.42f
-    val accentRadius = (coreWidth * 0.08f).coerceAtLeast(2f)
-    val accentColor = spec.secondaryColor.copy(alpha = 0.90f * openness)
-
-    for (i in 0..2) {
-        val angle = BASE_ANGLE_RAD + i * DEG_120_RAD
-        val ax = pupilCenterX + accentOrbitRadius * cos(angle)
-        val ay = pupilCenterY + accentOrbitRadius * sin(angle)
-        drawCircle(
-            color = accentColor,
-            radius = accentRadius,
-            center = Offset(ax, ay)
+    private fun drawStandardCore(
+        scope: DrawScope,
+        pupilCenterX: Float,
+        pupilCenterY: Float,
+        coreWidth: Float,
+        coreHeight: Float,
+        openness: Float,
+        coreColor: Color
+    ) {
+        val cornerRadius = CornerRadius(coreWidth * 0.5f, (coreHeight * 0.5f).coerceAtMost(coreWidth * 0.5f))
+        scope.drawRoundRect(
+            color = coreColor.copy(alpha = 0.90f * openness),
+            topLeft = Offset(pupilCenterX - coreWidth * 0.5f, pupilCenterY - coreHeight * 0.5f),
+            size = Size(coreWidth, coreHeight),
+            cornerRadius = cornerRadius
         )
     }
 
-    // Outer subtle tracking ring
-    drawCircle(
-        color = spec.secondaryColor.copy(alpha = 0.45f * openness),
-        radius = accentOrbitRadius,
-        center = Offset(pupilCenterX, pupilCenterY),
-        style = OrbitStrokeLight
-    )
-}
+    private fun drawGeometricTrackerCore(
+        scope: DrawScope,
+        pupilCenterX: Float,
+        pupilCenterY: Float,
+        coreWidth: Float,
+        openness: Float,
+        spec: EyeSpec
+    ) {
+        scope.drawCircle(
+            color = spec.secondaryColor.copy(alpha = 0.95f * openness),
+            radius = (coreWidth * 0.28f).coerceAtLeast(2f),
+            center = Offset(pupilCenterX, pupilCenterY)
+        )
+        val accentOrbitRadius = coreWidth * 0.42f
+        val accentRadius = (coreWidth * 0.08f).coerceAtLeast(2f)
+        val accentColor = spec.secondaryColor.copy(alpha = 0.90f * openness)
+        for (i in 0..2) {
+            val angle = BASE_ANGLE_RAD + i * DEG_120_RAD
+            val ax = pupilCenterX + accentOrbitRadius * cos(angle)
+            val ay = pupilCenterY + accentOrbitRadius * sin(angle)
+            scope.drawCircle(color = accentColor, radius = accentRadius, center = Offset(ax, ay))
+        }
+        scope.drawCircle(
+            color = spec.secondaryColor.copy(alpha = 0.45f * openness),
+            radius = accentOrbitRadius,
+            center = Offset(pupilCenterX, pupilCenterY),
+            style = OrbitStrokeLight
+        )
+    }
 
-/**
- * White scan iris: ethereal pale luminescent eye with horizontal scan-line radar pulse.
- */
-private fun DrawScope.drawScanLineCore(
-    pupilCenterX: Float,
-    pupilCenterY: Float,
-    coreWidth: Float,
-    coreHeight: Float,
-    openness: Float,
-    spec: EyeSpec
-) {
-    // Pale lavender-white core fill
-    drawStandardCore(
-        pupilCenterX = pupilCenterX,
-        pupilCenterY = pupilCenterY,
-        coreWidth = coreWidth,
-        coreHeight = coreHeight,
-        openness = openness,
-        coreColor = spec.coreColor
-    )
+    private fun drawScanLineCore(
+        scope: DrawScope,
+        pupilCenterX: Float,
+        pupilCenterY: Float,
+        coreWidth: Float,
+        coreHeight: Float,
+        openness: Float,
+        spec: EyeSpec
+    ) {
+        drawStandardCore(scope, pupilCenterX, pupilCenterY, coreWidth, coreHeight, openness, spec.coreColor)
+        val scanLineColor = spec.secondaryColor.copy(alpha = 0.55f * openness)
+        val halfWidth = coreWidth * 0.48f
+        val yOffset1 = coreHeight * 0.28f
+        scope.drawLine(color = scanLineColor, start = Offset(pupilCenterX - halfWidth * 0.85f, pupilCenterY - yOffset1), end = Offset(pupilCenterX + halfWidth * 0.85f, pupilCenterY - yOffset1), strokeWidth = 2f)
+        scope.drawLine(color = scanLineColor.copy(alpha = 0.75f * openness), start = Offset(pupilCenterX - halfWidth, pupilCenterY), end = Offset(pupilCenterX + halfWidth, pupilCenterY), strokeWidth = 2.5f)
+        scope.drawLine(color = scanLineColor, start = Offset(pupilCenterX - halfWidth * 0.85f, pupilCenterY + yOffset1), end = Offset(pupilCenterX + halfWidth * 0.85f, pupilCenterY + yOffset1), strokeWidth = 2f)
+    }
 
-    // Sweeping horizontal scan-lines
-    val scanLineColor = spec.secondaryColor.copy(alpha = 0.55f * openness)
-    val halfWidth = coreWidth * 0.48f
-    val yOffset1 = coreHeight * 0.28f
-
-    // Top scan line
-    drawLine(
-        color = scanLineColor,
-        start = Offset(pupilCenterX - halfWidth * 0.85f, pupilCenterY - yOffset1),
-        end = Offset(pupilCenterX + halfWidth * 0.85f, pupilCenterY - yOffset1),
-        strokeWidth = 2f
-    )
-    // Center radar scan line
-    drawLine(
-        color = scanLineColor.copy(alpha = 0.75f * openness),
-        start = Offset(pupilCenterX - halfWidth, pupilCenterY),
-        end = Offset(pupilCenterX + halfWidth, pupilCenterY),
-        strokeWidth = 2.5f
-    )
-    // Bottom scan line
-    drawLine(
-        color = scanLineColor,
-        start = Offset(pupilCenterX - halfWidth * 0.85f, pupilCenterY + yOffset1),
-        end = Offset(pupilCenterX + halfWidth * 0.85f, pupilCenterY + yOffset1),
-        strokeWidth = 2f
-    )
-}
-
-/**
- * Purple orbit iris: violet concentric orbital rings that pulse centered on the pupil.
- */
-private fun DrawScope.drawConcentricOrbitCore(
-    pupilCenterX: Float,
-    pupilCenterY: Float,
-    coreWidth: Float,
-    coreHeight: Float,
-    openness: Float,
-    spec: EyeSpec
-) {
-    // Center dark pupil
-    val centerRadius = (coreWidth * 0.16f).coerceAtLeast(2f)
-    drawCircle(
-        color = spec.secondaryColor.copy(alpha = 0.95f * openness),
-        radius = centerRadius,
-        center = Offset(pupilCenterX, pupilCenterY)
-    )
-
-    // Concentric orbital rings
-    val ringColor = spec.coreColor.copy(alpha = 0.75f * openness)
-    val maxRadius = coreWidth * 0.52f
-
-    drawCircle(
-        color = ringColor,
-        radius = maxRadius * 0.40f,
-        center = Offset(pupilCenterX, pupilCenterY),
-        style = OrbitStrokeLight
-    )
-    drawCircle(
-        color = ringColor,
-        radius = maxRadius * 0.72f,
-        center = Offset(pupilCenterX, pupilCenterY),
-        style = OrbitStrokeMedium
-    )
-    drawCircle(
-        color = ringColor.copy(alpha = 0.50f * openness),
-        radius = maxRadius * 0.98f,
-        center = Offset(pupilCenterX, pupilCenterY),
-        style = OrbitStrokeLight
-    )
+    private fun drawConcentricOrbitCore(
+        scope: DrawScope,
+        pupilCenterX: Float,
+        pupilCenterY: Float,
+        coreWidth: Float,
+        openness: Float,
+        spec: EyeSpec
+    ) {
+        scope.drawCircle(
+            color = spec.secondaryColor.copy(alpha = 0.95f * openness),
+            radius = (coreWidth * 0.16f).coerceAtLeast(2f),
+            center = Offset(pupilCenterX, pupilCenterY)
+        )
+        val ringColor = spec.coreColor.copy(alpha = 0.75f * openness)
+        val maxRadius = coreWidth * 0.52f
+        scope.drawCircle(color = ringColor, radius = maxRadius * 0.40f, center = Offset(pupilCenterX, pupilCenterY), style = OrbitStrokeLight)
+        scope.drawCircle(color = ringColor, radius = maxRadius * 0.72f, center = Offset(pupilCenterX, pupilCenterY), style = OrbitStrokeMedium)
+        scope.drawCircle(color = ringColor.copy(alpha = 0.50f * openness), radius = maxRadius * 0.98f, center = Offset(pupilCenterX, pupilCenterY), style = OrbitStrokeLight)
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -520,18 +355,5 @@ private fun RobotEyesCanvasPreviewPurpleOrbit() {
     RobotEyesCanvas(
         state = EyeMotionState(gazeX = 0f, gazeY = 0f, eyelidOpenness = 1.0f),
         spec = EyeSpec.PurpleOrbit
-    )
-}
-
-@Preview(name = "Happy Playful MicroExpression", widthDp = 360, heightDp = 640)
-@Composable
-private fun RobotEyesCanvasPreviewHappyArch() {
-    RobotEyesCanvas(
-        state = EyeMotionState(gazeX = 0f, gazeY = 0f, eyelidOpenness = 1.0f),
-        spec = EyeSpec.Default,
-        microExpression = MicroExpression(
-            bottomEyelidArch = 0.85f,
-            eyeTiltDegrees = 6.0f
-        )
     )
 }

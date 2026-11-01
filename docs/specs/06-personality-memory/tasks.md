@@ -1,6 +1,6 @@
 # ✅ Feature Tasks: Personality Engine & Local Memory (`06-personality-memory`)
 
-> **Phase / Wave:** `Phase 2 (Wave 4)` · **Branch / Owner:** `feat/06-personality-memory` · **Status:** `[>]` In Progress  
+> **Phase / Wave:** `Phase 2 (Wave 4)` · **Branch / Owner:** `feat/06-personality-memory` · **Status:** `✅ [x]` Complete  
 > **Depends On:** `02-eye-modes`, `04-gaze-tracking-reactions`, `05-settings-privacy` · **Touches:** `:core:behavior`, `:core:model`, `:core:ports`, `:platform:preferences`, `:ui:eyes`, `:feature:settings`, `:feature:companion`  
 > **Spec Links:** [`requirements.md`](./requirements.md) · [`design.md`](./design.md) · [`uat.md`](./uat.md) · [`design-reference/stitch-prompt.md`](./design-reference/stitch-prompt.md)
 
@@ -33,15 +33,15 @@
 ---
 
 ### 3. UI Settings Card & Screen Integration (`⚡ BATCH`: UI & End-to-End)
-- [ ] **3.1** `[FE]` Create `CompanionMemoryCard` in `feature/src/main/kotlin/com/eyekage/feature/settings/CompanionMemoryCard.kt` displaying mood chip, bond tier, stats grid, and Reset confirmation dialog.
+- [x] **3.1** `[FE]` Create `CompanionMemoryCard` in `feature/src/main/kotlin/com/eyekage/feature/settings/CompanionMemoryCard.kt` displaying mood chip, bond tier, stats grid, and Reset confirmation dialog.
   - _Requirements: 4.1–4.3_
-- [ ] **3.2** `[FE]` Wire `MemoryRepository` to `SettingsViewModel` and mount `CompanionMemoryCard` inside `SettingsScreen`.
+- [x] **3.2** `[FE]` Wire `MemoryRepository` to `SettingsViewModel` and mount `CompanionMemoryCard` inside `SettingsScreen`.
   - _Requirements: 4.1, 4.3_
-- [ ] **3.3** `[FE]` Connect `PersonalityEngine` and `MemoryRepository` to `CompanionViewModel` to drive live companion loop and persistent bond tracking.
+- [x] **3.3** `[FE]` Connect `PersonalityEngine` and `MemoryRepository` to `CompanionViewModel` to drive live companion loop and persistent bond tracking.
   - _Requirements: 1.1–1.5, 3.3_
-- [ ] **3.4** `[FE]` Write unit tests in `feature/src/test/kotlin/com/eyekage/feature/settings/CompanionMemoryCardTest.kt`.
+- [x] **3.4** `[FE]` Write unit tests in `feature/src/test/kotlin/com/eyekage/feature/settings/CompanionMemoryCardTest.kt`.
   - _Validates: Req 4.1–4.3_
-- [ ] **3.5** `[REVIEW]` **Final Feature Checkpoint:** Run full `./gradlew compileDebugKotlin testDebugUnitTest checkMergedManifestPermissions`.
+- [x] **3.5** `[REVIEW]` **Final Feature Checkpoint:** Run full `./gradlew compileDebugKotlin testDebugUnitTest checkMergedManifestPermissions`.
 
 ---
 
@@ -67,3 +67,5 @@
 | 2026-11-01 | Tasks 1.1–1.5 | `[x]` | Implemented pure Kotlin personality models, MemoryRepository port, PersonalityEngine, and full unit test suite. |
 | 2026-11-01 | Tasks 2.1–2.2 | `[x]` | Implemented DataStoreMemoryRepository with 4 keys and atomic reset, fully verified via DataStore unit tests. |
 | 2026-11-01 | Tasks 2.3–2.4 | `[x]` | Enhanced RobotEyesCanvas with zero-allocation procedural happy arches and asymmetrical eye tilts; verified :ui and :platform checkpoints. |
+| 2026-11-01 | Tasks 3.1–3.5 | `[x]` | Built CompanionMemoryCard, wired ViewModel/Screen integration, verified 246 tasks + detekt clean. |
+| 2026-11-01 | Feature Ship | `[x]` | Shipped 06-personality-memory via /ship, updated roadmap and foundation ADRs. |

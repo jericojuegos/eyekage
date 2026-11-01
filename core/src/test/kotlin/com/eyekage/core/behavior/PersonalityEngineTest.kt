@@ -1,9 +1,7 @@
 package com.eyekage.core.behavior
 
 import com.eyekage.core.model.MoodState
-import com.eyekage.core.model.PersonalityVector
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test

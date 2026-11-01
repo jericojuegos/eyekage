@@ -106,6 +106,15 @@ fun SettingsScreen(
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             CompanionPreferencesCard(uiState = uiState, onEvent = onEvent)
+            CompanionMemoryCard(
+                state = CompanionMemoryCardState(
+                    memory = uiState.memory,
+                    currentMood = uiState.currentMood,
+                    curiosityPercent = uiState.curiosityPercent,
+                    playfulnessPercent = uiState.playfulnessPercent
+                ),
+                onResetMemory = { onEvent(SettingsUiEvent.ResetMemory) }
+            )
             DataPrivacyDisclosureCard()
             SettingsFooter()
         }

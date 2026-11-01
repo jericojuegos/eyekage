@@ -1,8 +1,11 @@
 package com.eyekage.di
 
 import android.content.Context
+import com.eyekage.core.behavior.PersonalityEngine
 import com.eyekage.core.ports.FaceObservationSource
+import com.eyekage.core.ports.MemoryRepository
 import com.eyekage.core.ports.PreferencesRepository
+import com.eyekage.platform.preferences.DataStoreMemoryRepository
 import com.eyekage.platform.preferences.DataStorePreferencesRepository
 import com.eyekage.platform.vision.VisionFaceObservationSource
 
@@ -13,6 +16,8 @@ import com.eyekage.platform.vision.VisionFaceObservationSource
 interface AppContainer {
     val preferencesRepository: PreferencesRepository
     val faceObservationSource: FaceObservationSource
+    val memoryRepository: MemoryRepository
+    val personalityEngine: PersonalityEngine
 }
 
 class DefaultAppContainer(
@@ -25,5 +30,13 @@ class DefaultAppContainer(
 
     override val faceObservationSource: FaceObservationSource by lazy {
         VisionFaceObservationSource(appContext)
+    }
+
+    override val memoryRepository: MemoryRepository by lazy {
+        DataStoreMemoryRepository(appContext)
+    }
+
+    override val personalityEngine: PersonalityEngine by lazy {
+        PersonalityEngine()
     }
 }

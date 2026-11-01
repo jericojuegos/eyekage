@@ -6,11 +6,33 @@
     <ID>ArgumentListWrapping:EyeMotionEngineTest.kt$EyeMotionEngineTest$("EyelidOpenness (${state.eyelidOpenness}) must be in [0.0, 1.0]", state.eyelidOpenness in 0.0f..1.0f)</ID>
     <ID>ArgumentListWrapping:OneEuroFilterTest.kt$OneEuroFilterTest$("Filtered jitter ($maxJitterFiltered) should be less than raw jitter ($maxJitterRaw)", maxJitterFiltered &lt; maxJitterRaw * 0.4f )</ID>
     <ID>ArgumentListWrapping:OneEuroFilterTest.kt$OneEuroFilterTest$("Steps to reach 90% ($stepsToReach90Percent) should be &lt;= 25", stepsToReach90Percent in 1..25 )</ID>
+    <ID>ArgumentListWrapping:RobotEyesCanvas.kt$(alpha = params.spec.glowColor.alpha * params.openness)</ID>
+    <ID>ArgumentListWrapping:RobotEyesCanvas.kt$(params.centerX - params.eyeWidth * 0.5f + params.shiftX, params.centerY - currentEyeHeight * 0.5f + params.shiftY)</ID>
+    <ID>ArgumentListWrapping:RobotEyesCanvas.kt$(params.centerX - slitWidth * 0.5f + params.shiftX, params.centerY - slitHeight * 0.5f + params.shiftY)</ID>
+    <ID>ArgumentListWrapping:RobotEyesCanvas.kt$(params.spec.glowColor.copy(alpha = params.spec.glowColor.alpha * params.openness), Color.Transparent)</ID>
+    <ID>ArgumentListWrapping:RobotEyesCanvas.kt$EyeIrisCoreRenderer$(alpha = 0.50f * openness)</ID>
+    <ID>ArgumentListWrapping:RobotEyesCanvas.kt$EyeIrisCoreRenderer$(alpha = 0.75f * openness)</ID>
+    <ID>ArgumentListWrapping:RobotEyesCanvas.kt$EyeIrisCoreRenderer$(color = ringColor, radius = maxRadius * 0.40f, center = Offset(pupilCenterX, pupilCenterY), style = OrbitStrokeLight)</ID>
+    <ID>ArgumentListWrapping:RobotEyesCanvas.kt$EyeIrisCoreRenderer$(color = ringColor, radius = maxRadius * 0.72f, center = Offset(pupilCenterX, pupilCenterY), style = OrbitStrokeMedium)</ID>
+    <ID>ArgumentListWrapping:RobotEyesCanvas.kt$EyeIrisCoreRenderer$(color = ringColor.copy(alpha = 0.50f * openness), radius = maxRadius * 0.98f, center = Offset(pupilCenterX, pupilCenterY), style = OrbitStrokeLight)</ID>
+    <ID>ArgumentListWrapping:RobotEyesCanvas.kt$EyeIrisCoreRenderer$(color = scanLineColor, start = Offset(pupilCenterX - halfWidth * 0.85f, pupilCenterY + yOffset1), end = Offset(pupilCenterX + halfWidth * 0.85f, pupilCenterY + yOffset1), strokeWidth = 2f)</ID>
+    <ID>ArgumentListWrapping:RobotEyesCanvas.kt$EyeIrisCoreRenderer$(color = scanLineColor, start = Offset(pupilCenterX - halfWidth * 0.85f, pupilCenterY - yOffset1), end = Offset(pupilCenterX + halfWidth * 0.85f, pupilCenterY - yOffset1), strokeWidth = 2f)</ID>
+    <ID>ArgumentListWrapping:RobotEyesCanvas.kt$EyeIrisCoreRenderer$(color = scanLineColor.copy(alpha = 0.75f * openness), start = Offset(pupilCenterX - halfWidth, pupilCenterY), end = Offset(pupilCenterX + halfWidth, pupilCenterY), strokeWidth = 2.5f)</ID>
+    <ID>ArgumentListWrapping:RobotEyesCanvas.kt$EyeIrisCoreRenderer$(pupilCenterX + halfWidth * 0.85f, pupilCenterY + yOffset1)</ID>
+    <ID>ArgumentListWrapping:RobotEyesCanvas.kt$EyeIrisCoreRenderer$(pupilCenterX + halfWidth * 0.85f, pupilCenterY - yOffset1)</ID>
+    <ID>ArgumentListWrapping:RobotEyesCanvas.kt$EyeIrisCoreRenderer$(pupilCenterX + halfWidth, pupilCenterY)</ID>
+    <ID>ArgumentListWrapping:RobotEyesCanvas.kt$EyeIrisCoreRenderer$(pupilCenterX - halfWidth * 0.85f, pupilCenterY + yOffset1)</ID>
+    <ID>ArgumentListWrapping:RobotEyesCanvas.kt$EyeIrisCoreRenderer$(pupilCenterX - halfWidth * 0.85f, pupilCenterY - yOffset1)</ID>
+    <ID>ArgumentListWrapping:RobotEyesCanvas.kt$EyeIrisCoreRenderer$(pupilCenterX - halfWidth, pupilCenterY)</ID>
+    <ID>ArgumentListWrapping:RobotEyesCanvas.kt$EyeIrisCoreRenderer$(pupilCenterX, pupilCenterY)</ID>
+    <ID>ArgumentListWrapping:RobotEyesCanvas.kt$EyeIrisCoreRenderer$(scope, pupilCenterX, pupilCenterY, coreWidth * 1.15f, coreHeight * 1.15f, params.openness, params.spec.coreColor)</ID>
+    <ID>ArgumentListWrapping:RobotEyesCanvas.kt$EyeIrisCoreRenderer$(scope, pupilCenterX, pupilCenterY, coreWidth, coreHeight, params.openness, params.spec)</ID>
+    <ID>ArgumentListWrapping:RobotEyesCanvas.kt$EyeIrisCoreRenderer$(scope, pupilCenterX, pupilCenterY, coreWidth, coreHeight, params.openness, params.spec.coreColor)</ID>
+    <ID>ArgumentListWrapping:RobotEyesCanvas.kt$EyeIrisCoreRenderer$(scope, pupilCenterX, pupilCenterY, coreWidth, params.openness, params.spec)</ID>
     <ID>ArgumentListWrapping:SaccadeGeneratorTest.kt$SaccadeGeneratorTest$("Saccade triggered at $saccadeTimeMs ms, must be between 1500ms and 4000ms", saccadeTimeMs in 1500L..4000L )</ID>
-    <ID>LongMethod:RobotEyesCanvas.kt$private fun DrawScope.drawEye( centerX: Float, centerY: Float, eyeWidth: Float, eyeHeight: Float, shiftX: Float, shiftY: Float, openness: Float, pupilScale: Float, spec: EyeSpec )</ID>
-    <ID>LongParameterList:RobotEyesCanvas.kt$( centerX: Float, centerY: Float, eyeWidth: Float, eyeHeight: Float, shiftX: Float, shiftY: Float, openness: Float, pupilScale: Float, spec: EyeSpec )</ID>
-    <ID>LongParameterList:RobotEyesCanvas.kt$( pupilCenterX: Float, pupilCenterY: Float, coreWidth: Float, coreHeight: Float, openness: Float, coreColor: Color )</ID>
-    <ID>LongParameterList:RobotEyesCanvas.kt$( pupilCenterX: Float, pupilCenterY: Float, coreWidth: Float, coreHeight: Float, openness: Float, spec: EyeSpec )</ID>
+    <ID>LongParameterList:RobotEyesCanvas.kt$EyeIrisCoreRenderer$( scope: DrawScope, pupilCenterX: Float, pupilCenterY: Float, coreWidth: Float, coreHeight: Float, openness: Float, coreColor: Color )</ID>
+    <ID>LongParameterList:RobotEyesCanvas.kt$EyeIrisCoreRenderer$( scope: DrawScope, pupilCenterX: Float, pupilCenterY: Float, coreWidth: Float, coreHeight: Float, openness: Float, spec: EyeSpec )</ID>
+    <ID>LongParameterList:RobotEyesCanvas.kt$EyeIrisCoreRenderer$( scope: DrawScope, pupilCenterX: Float, pupilCenterY: Float, coreWidth: Float, openness: Float, spec: EyeSpec )</ID>
     <ID>MagicNumber:AwakeningOverlay.kt$0.45f</ID>
     <ID>MagicNumber:AwakeningOverlay.kt$0.4f</ID>
     <ID>MagicNumber:AwakeningOverlay.kt$0.8f</ID>
@@ -21,6 +43,7 @@
     <ID>MagicNumber:BlinkScheduler.kt$BlinkScheduler$0.4f</ID>
     <ID>MagicNumber:BlinkScheduler.kt$BlinkScheduler$0.8f</ID>
     <ID>MagicNumber:BlinkScheduler.kt$BlinkScheduler$1000f</ID>
+    <ID>MagicNumber:CompanionMemoryCard.kt$5</ID>
     <ID>MagicNumber:EyeMotionEngine.kt$EyeMotionEngine$0.1f</ID>
     <ID>MagicNumber:EyeMotionEngine.kt$EyeMotionEngine$1000.0</ID>
     <ID>MagicNumber:EyeSpec.kt$EyeSpec$0x6622D3EE</ID>
@@ -33,18 +56,13 @@
     <ID>MagicNumber:FaceObservationTransform.kt$FaceObservationTransform$90</ID>
     <ID>MagicNumber:ModePickerBottomSheet.kt$0xFF22D3EE</ID>
     <ID>MagicNumber:RobotEyesCanvas.kt$0.04f</ID>
-    <ID>MagicNumber:RobotEyesCanvas.kt$0.08f</ID>
     <ID>MagicNumber:RobotEyesCanvas.kt$0.12f</ID>
     <ID>MagicNumber:RobotEyesCanvas.kt$0.14f</ID>
-    <ID>MagicNumber:RobotEyesCanvas.kt$0.16f</ID>
     <ID>MagicNumber:RobotEyesCanvas.kt$0.18f</ID>
     <ID>MagicNumber:RobotEyesCanvas.kt$0.20f</ID>
     <ID>MagicNumber:RobotEyesCanvas.kt$0.22f</ID>
     <ID>MagicNumber:RobotEyesCanvas.kt$0.23f</ID>
-    <ID>MagicNumber:RobotEyesCanvas.kt$0.28f</ID>
     <ID>MagicNumber:RobotEyesCanvas.kt$0.35f</ID>
-    <ID>MagicNumber:RobotEyesCanvas.kt$0.42f</ID>
-    <ID>MagicNumber:RobotEyesCanvas.kt$0.48f</ID>
     <ID>MagicNumber:RobotEyesCanvas.kt$0.4f</ID>
     <ID>MagicNumber:RobotEyesCanvas.kt$0.52f</ID>
     <ID>MagicNumber:RobotEyesCanvas.kt$0.85f</ID>
@@ -55,9 +73,32 @@
     <ID>MagicNumber:RobotEyesCanvas.kt$40f</ID>
     <ID>MagicNumber:RobotEyesCanvas.kt$4f</ID>
     <ID>MagicNumber:RobotEyesCanvas.kt$80f</ID>
+    <ID>MagicNumber:RobotEyesCanvas.kt$EyeIrisCoreRenderer$0.08f</ID>
+    <ID>MagicNumber:RobotEyesCanvas.kt$EyeIrisCoreRenderer$0.28f</ID>
+    <ID>MagicNumber:RobotEyesCanvas.kt$EyeIrisCoreRenderer$0.42f</ID>
+    <ID>MagicNumber:RobotEyesCanvas.kt$EyeIrisCoreRenderer$0.48f</ID>
+    <ID>MagicNumber:RobotEyesCanvas.kt$EyeIrisCoreRenderer$0.52f</ID>
+    <ID>MagicNumber:RobotEyesCanvas.kt$EyeIrisCoreRenderer$0.85f</ID>
+    <ID>MagicNumber:RobotEyesCanvas.kt$EyeIrisCoreRenderer$1.15f</ID>
     <ID>MagicNumber:SaccadeGenerator.kt$SaccadeGenerator$1000f</ID>
     <ID>MaxLineLength:EyeMotionEngineTest.kt$EyeMotionEngineTest$assertTrue("EyelidOpenness (${state.eyelidOpenness}) must be in [0.0, 1.0]", state.eyelidOpenness in 0.0f..1.0f)</ID>
+    <ID>MaxLineLength:RobotEyesCanvas.kt$EyeIrisCoreRenderer$PupilShape.BURST_RADIAL -&gt; drawStandardCore(scope, pupilCenterX, pupilCenterY, coreWidth * 1.15f, coreHeight * 1.15f, params.openness, params.spec.coreColor)</ID>
+    <ID>MaxLineLength:RobotEyesCanvas.kt$EyeIrisCoreRenderer$PupilShape.CONCENTRIC_ORBIT -&gt; drawConcentricOrbitCore(scope, pupilCenterX, pupilCenterY, coreWidth, params.openness, params.spec)</ID>
+    <ID>MaxLineLength:RobotEyesCanvas.kt$EyeIrisCoreRenderer$PupilShape.GEOMETRIC_TRACKER -&gt; drawGeometricTrackerCore(scope, pupilCenterX, pupilCenterY, coreWidth, params.openness, params.spec)</ID>
+    <ID>MaxLineLength:RobotEyesCanvas.kt$EyeIrisCoreRenderer$PupilShape.ROUNDED_PILL -&gt; drawStandardCore(scope, pupilCenterX, pupilCenterY, coreWidth, coreHeight, params.openness, params.spec.coreColor)</ID>
+    <ID>MaxLineLength:RobotEyesCanvas.kt$EyeIrisCoreRenderer$PupilShape.SCAN_LINE -&gt; drawScanLineCore(scope, pupilCenterX, pupilCenterY, coreWidth, coreHeight, params.openness, params.spec)</ID>
+    <ID>MaxLineLength:RobotEyesCanvas.kt$EyeIrisCoreRenderer$scope.drawCircle(color = ringColor, radius = maxRadius * 0.40f, center = Offset(pupilCenterX, pupilCenterY), style = OrbitStrokeLight)</ID>
+    <ID>MaxLineLength:RobotEyesCanvas.kt$EyeIrisCoreRenderer$scope.drawCircle(color = ringColor, radius = maxRadius * 0.72f, center = Offset(pupilCenterX, pupilCenterY), style = OrbitStrokeMedium)</ID>
+    <ID>MaxLineLength:RobotEyesCanvas.kt$EyeIrisCoreRenderer$scope.drawCircle(color = ringColor.copy(alpha = 0.50f * openness), radius = maxRadius * 0.98f, center = Offset(pupilCenterX, pupilCenterY), style = OrbitStrokeLight)</ID>
+    <ID>MaxLineLength:RobotEyesCanvas.kt$EyeIrisCoreRenderer$scope.drawLine(color = scanLineColor, start = Offset(pupilCenterX - halfWidth * 0.85f, pupilCenterY + yOffset1), end = Offset(pupilCenterX + halfWidth * 0.85f, pupilCenterY + yOffset1), strokeWidth = 2f)</ID>
+    <ID>MaxLineLength:RobotEyesCanvas.kt$EyeIrisCoreRenderer$scope.drawLine(color = scanLineColor, start = Offset(pupilCenterX - halfWidth * 0.85f, pupilCenterY - yOffset1), end = Offset(pupilCenterX + halfWidth * 0.85f, pupilCenterY - yOffset1), strokeWidth = 2f)</ID>
+    <ID>MaxLineLength:RobotEyesCanvas.kt$EyeIrisCoreRenderer$scope.drawLine(color = scanLineColor.copy(alpha = 0.75f * openness), start = Offset(pupilCenterX - halfWidth, pupilCenterY), end = Offset(pupilCenterX + halfWidth, pupilCenterY), strokeWidth = 2.5f)</ID>
+    <ID>MaxLineLength:RobotEyesCanvas.kt$colors = listOf(params.spec.glowColor.copy(alpha = params.spec.glowColor.alpha * params.openness), Color.Transparent)</ID>
+    <ID>MaxLineLength:RobotEyesCanvas.kt$topLeft = Offset(params.centerX - params.eyeWidth * 0.5f + params.shiftX, params.centerY - currentEyeHeight * 0.5f + params.shiftY)</ID>
+    <ID>MaxLineLength:RobotEyesCanvas.kt$topLeft = Offset(params.centerX - slitWidth * 0.5f + params.shiftX, params.centerY - slitHeight * 0.5f + params.shiftY)</ID>
     <ID>MaximumLineLength:EyeMotionEngineTest.kt$EyeMotionEngineTest$ </ID>
+    <ID>MaximumLineLength:RobotEyesCanvas.kt$ </ID>
+    <ID>MaximumLineLength:RobotEyesCanvas.kt$EyeIrisCoreRenderer$ </ID>
     <ID>NoMultipleSpaces:EyeSpec.kt$EyeSpec$ </ID>
     <ID>NoUnusedImports:BlinkSchedulerTest.kt$com.eyekage.core.motion.BlinkSchedulerTest.kt</ID>
     <ID>NoUnusedImports:EyeModeRenderingTest.kt$com.eyekage.ui.eyes.EyeModeRenderingTest.kt</ID>
@@ -67,7 +108,6 @@
     <ID>TooGenericExceptionCaught:CameraXManager.kt$CameraXManager$e: Exception</ID>
     <ID>TooGenericExceptionCaught:VisionFaceObservationSource.kt$VisionFaceObservationSource$e: Exception</ID>
     <ID>TooManyFunctions:CompanionBehaviorStateMachine.kt$CompanionBehaviorStateMachine</ID>
-    <ID>UnusedParameter:RobotEyesCanvas.kt$coreHeight: Float</ID>
     <ID>UnusedPrivateMember:RobotEyesCanvas.kt$@Preview(name = "Crimson Tracker Mode", widthDp = 360, heightDp = 640) @Composable private fun RobotEyesCanvasPreviewCrimson()</ID>
     <ID>UnusedPrivateMember:RobotEyesCanvas.kt$@Preview(name = "Normal Mode", widthDp = 360, heightDp = 640) @Composable private fun RobotEyesCanvasPreviewNormal()</ID>
     <ID>UnusedPrivateMember:RobotEyesCanvas.kt$@Preview(name = "Purple Orbit Mode", widthDp = 360, heightDp = 640) @Composable private fun RobotEyesCanvasPreviewPurpleOrbit()</ID>

@@ -1,8 +1,10 @@
 package com.eyekage.feature.companion
 
 import com.eyekage.core.behavior.CompanionState
+import com.eyekage.core.model.CompanionMemory
 import com.eyekage.core.model.FaceObservation
 import com.eyekage.core.ports.FaceObservationSource
+import com.eyekage.core.ports.MemoryRepository
 import com.eyekage.core.ports.PreferencesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -60,6 +62,26 @@ class CompanionViewModelTest {
         override fun stop() { isRunningFlow.value = false }
     }
 
+    private class FakeMemoryRepository : MemoryRepository {
+        val memoryFlow = MutableStateFlow(CompanionMemory())
+        override val memory: StateFlow<CompanionMemory> = memoryFlow
+
+        override suspend fun recordPoke() {
+            val curr = memoryFlow.value
+            memoryFlow.value = curr.copy(totalPokes = curr.totalPokes + 1, lastInteractionTimestamp = 1000L)
+        }
+
+        override suspend fun recordGazeDuration(seconds: Long) {
+            val curr = memoryFlow.value
+            val newSeconds = curr.totalGazeSeconds + seconds
+            memoryFlow.value = curr.copy(totalGazeSeconds = newSeconds, lastInteractionTimestamp = 1000L)
+        }
+
+        override suspend fun clearMemory() {
+            memoryFlow.value = CompanionMemory()
+        }
+    }
+
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
@@ -74,7 +96,8 @@ class CompanionViewModelTest {
     fun `initial uiState matches default preferences`() = runTest {
         val prefs = FakePreferencesRepository()
         val vision = FakeFaceObservationSource()
-        val viewModel = CompanionViewModel(prefs, vision)
+        val mem = FakeMemoryRepository()
+        val viewModel = CompanionViewModel(prefs, vision, mem)
 
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.uiState.collect()
@@ -87,13 +110,15 @@ class CompanionViewModelTest {
         assertFalse(state.isCameraTrackingActive)
         assertEquals(CompanionState.Idle, state.behaviorState)
         assertFalse(state.showDebugOverlay)
+        assertEquals(1, state.bondTier)
     }
 
     @Test
     fun `selecting new mode updates uiState and persists to preferences`() = runTest {
         val prefs = FakePreferencesRepository()
         val vision = FakeFaceObservationSource()
-        val viewModel = CompanionViewModel(prefs, vision)
+        val mem = FakeMemoryRepository()
+        val viewModel = CompanionViewModel(prefs, vision, mem)
 
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.uiState.collect()
@@ -111,7 +136,8 @@ class CompanionViewModelTest {
     fun `toggling camera on starts vision pipeline and updates state`() = runTest {
         val prefs = FakePreferencesRepository()
         val vision = FakeFaceObservationSource()
-        val viewModel = CompanionViewModel(prefs, vision)
+        val mem = FakeMemoryRepository()
+        val viewModel = CompanionViewModel(prefs, vision, mem)
 
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.uiState.collect()
@@ -126,10 +152,11 @@ class CompanionViewModelTest {
     }
 
     @Test
-    fun `onPoke event dispatches to behavior state machine immediately`() = runTest {
+    fun `onPoke event dispatches to behavior state machine and records memory`() = runTest {
         val prefs = FakePreferencesRepository()
         val vision = FakeFaceObservationSource()
-        val viewModel = CompanionViewModel(prefs, vision)
+        val mem = FakeMemoryRepository()
+        val viewModel = CompanionViewModel(prefs, vision, mem)
 
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.uiState.collect()
@@ -140,13 +167,15 @@ class CompanionViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertTrue(viewModel.behaviorStateMachine.currentState is CompanionState.Poked)
+        assertEquals(1, mem.memoryFlow.value.totalPokes)
     }
 
     @Test
     fun `toggling debug overlay updates showDebugOverlay in uiState`() = runTest {
         val prefs = FakePreferencesRepository()
         val vision = FakeFaceObservationSource()
-        val viewModel = CompanionViewModel(prefs, vision)
+        val mem = FakeMemoryRepository()
+        val viewModel = CompanionViewModel(prefs, vision, mem)
 
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.uiState.collect()
@@ -164,10 +193,29 @@ class CompanionViewModelTest {
     }
 
     @Test
+    fun `RecordGazeDuration accumulates gaze seconds in memory repository`() = runTest {
+        val prefs = FakePreferencesRepository()
+        val vision = FakeFaceObservationSource()
+        val mem = FakeMemoryRepository()
+        val viewModel = CompanionViewModel(prefs, vision, mem)
+
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.uiState.collect()
+        }
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.onEvent(CompanionUiEvent.RecordGazeDuration(5L))
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(5L, mem.memoryFlow.value.totalGazeSeconds)
+    }
+
+    @Test
     fun `face observations stream updates faceObservation in uiState`() = runTest {
         val prefs = FakePreferencesRepository()
         val vision = FakeFaceObservationSource()
-        val viewModel = CompanionViewModel(prefs, vision)
+        val mem = FakeMemoryRepository()
+        val viewModel = CompanionViewModel(prefs, vision, mem)
 
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.uiState.collect()

@@ -45,7 +45,9 @@ class MainActivity : ComponentActivity() {
                         override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
                             return CompanionViewModel(
                                 preferencesRepository = appContainer.preferencesRepository,
-                                faceObservationSource = appContainer.faceObservationSource
+                                faceObservationSource = appContainer.faceObservationSource,
+                                memoryRepository = appContainer.memoryRepository,
+                                personalityEngine = appContainer.personalityEngine
                             ) as T
                         }
                     }
@@ -56,7 +58,9 @@ class MainActivity : ComponentActivity() {
                         @Suppress("UNCHECKED_CAST")
                         override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
                             return SettingsViewModel(
-                                preferencesRepository = appContainer.preferencesRepository
+                                preferencesRepository = appContainer.preferencesRepository,
+                                memoryRepository = appContainer.memoryRepository,
+                                personalityEngine = appContainer.personalityEngine
                             ) as T
                         }
                     }

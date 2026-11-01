@@ -98,3 +98,15 @@
   - *Positive:* Zero recurring infrastructure costs, zero billing compliance overhead for Phase 1.
   - *Positive:* Maximum user privacy and frictionless app installation.
 
+---
+
+## ADR-009: Rule-Based Personality Engine & Resettable Local Memory
+
+- **Status:** Accepted (2026-11-01)
+- **Context:** Phase 2 introduces companion adaptation, micro-expressions (bottom eyelid crescent, curious glance tilt, drowsy droop), and affinity progression. Evaluated opaque neural embeddings vs. a deterministic pure-Kotlin state engine with inspectable local storage.
+- **Decision:** Implement a rule-based `PersonalityEngine` in pure Kotlin (`:core:behavior`) operating on normalized vectors (`curiosity`, `playfulness`, `energy`) and 4 transparent DataStore keys (`mem_total_pokes`, `mem_total_gaze_seconds`, `mem_bond_tier`, `mem_last_interaction_ts`). Provide an atomic factory reset in the Settings UI that clears companion affinity without touching user preferences.
+- **Consequences:**
+  - *Positive:* 100% deterministic, testable, and explainable companion behavior without heavy on-device neural models or cloud AI dependencies.
+  - *Positive:* Users retain full data sovereignty with one-tap memory wipe.
+  - *Positive:* Canvas micro-expressions are computed directly from the personality state without allocating heap objects during rendering loops.
+

@@ -12,7 +12,7 @@
 
 ## 🚦 Project State
 
-**Stage:** `active` (Phase 1 MVP Complete & Shipped)
+**Stage:** `active` (Phase 2 Wave 4 Shipped — 06-personality-memory Complete)
 **Stage last updated:** `2026-11-01`
 
 | Stage | Meaning | Next Action / Skill |

@@ -1,6 +1,8 @@
 package com.eyekage.feature.settings
 
+import com.eyekage.core.model.CompanionMemory
 import com.eyekage.core.model.EyeModeSpec
+import com.eyekage.core.model.MoodState
 import com.eyekage.core.modes.DefaultModeCatalog
 
 data class SettingsUiState(
@@ -9,7 +11,11 @@ data class SettingsUiState(
     val reducedMotionOverride: String = "SYSTEM",
     val isHapticsEnabled: Boolean = true,
     val isDeskModeEnabled: Boolean = false,
-    val availableModes: List<EyeModeSpec> = DefaultModeCatalog.getSelectableModes()
+    val availableModes: List<EyeModeSpec> = DefaultModeCatalog.getSelectableModes(),
+    val memory: CompanionMemory = CompanionMemory(),
+    val currentMood: MoodState = MoodState.ALERT,
+    val curiosityPercent: Int = 50,
+    val playfulnessPercent: Int = 50
 )
 
 sealed interface SettingsUiEvent {
@@ -18,4 +24,5 @@ sealed interface SettingsUiEvent {
     data class SetReducedMotion(val option: String) : SettingsUiEvent
     data class SetHapticsEnabled(val enabled: Boolean) : SettingsUiEvent
     data class SetDeskModeEnabled(val enabled: Boolean) : SettingsUiEvent
+    data object ResetMemory : SettingsUiEvent
 }

@@ -4,8 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eyekage.core.behavior.CompanionBehaviorStateMachine
 import com.eyekage.core.behavior.CompanionState
+import com.eyekage.core.behavior.PersonalityEngine
 import com.eyekage.core.model.FaceObservation
+import com.eyekage.core.model.MicroExpression
+import com.eyekage.core.model.MoodState
 import com.eyekage.core.ports.FaceObservationSource
+import com.eyekage.core.ports.MemoryRepository
 import com.eyekage.core.ports.PreferencesRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -24,7 +28,10 @@ data class CompanionUiState(
     val isDeskModeEnabled: Boolean = false,
     val behaviorState: CompanionState = CompanionState.Idle,
     val showDebugOverlay: Boolean = false,
-    val reducedMotion: Boolean = false
+    val reducedMotion: Boolean = false,
+    val microExpression: MicroExpression = MicroExpression(),
+    val moodState: MoodState = MoodState.ALERT,
+    val bondTier: Int = 1
 )
 
 sealed interface CompanionUiEvent {
@@ -33,12 +40,15 @@ sealed interface CompanionUiEvent {
     data class ToggleDeskMode(val enabled: Boolean) : CompanionUiEvent
     data object OnScreenTapped : CompanionUiEvent
     data class OnPoke(val x: Float = 0f, val y: Float = 0f) : CompanionUiEvent
+    data class RecordGazeDuration(val seconds: Long) : CompanionUiEvent
     data object ToggleDebugOverlay : CompanionUiEvent
 }
 
 class CompanionViewModel(
     private val preferencesRepository: PreferencesRepository,
     private val faceObservationSource: FaceObservationSource,
+    private val memoryRepository: MemoryRepository,
+    val personalityEngine: PersonalityEngine = PersonalityEngine(),
     val behaviorStateMachine: CompanionBehaviorStateMachine = CompanionBehaviorStateMachine()
 ) : ViewModel() {
 
@@ -64,8 +74,9 @@ class CompanionViewModel(
         corePrefsFlow,
         visionFlow,
         preferencesRepository.reducedMotionOverride,
+        memoryRepository.memory,
         _showDebugOverlay
-    ) { (modeId, cameraEnabled, deskMode), (isRunning, observation), reducedMotion, showDebug ->
+    ) { (modeId, cameraEnabled, deskMode), (isRunning, observation), reducedMotion, memory, showDebug ->
         val isReducedMotion = reducedMotion == "ON"
         CompanionUiState(
             currentModeId = modeId,
@@ -75,7 +86,10 @@ class CompanionViewModel(
             isDeskModeEnabled = deskMode,
             behaviorState = behaviorStateMachine.currentState,
             showDebugOverlay = showDebug,
-            reducedMotion = isReducedMotion
+            reducedMotion = isReducedMotion,
+            microExpression = personalityEngine.computeMicroExpression(reducedMotion = isReducedMotion),
+            moodState = personalityEngine.currentMood,
+            bondTier = memory.bondTier
         )
     }.stateIn(
         scope = viewModelScope,
@@ -119,6 +133,15 @@ class CompanionViewModel(
             }
             is CompanionUiEvent.OnPoke -> {
                 behaviorStateMachine.poke(System.currentTimeMillis())
+                personalityEngine.onPoke()
+                viewModelScope.launch {
+                    memoryRepository.recordPoke()
+                }
+            }
+            is CompanionUiEvent.RecordGazeDuration -> {
+                viewModelScope.launch {
+                    memoryRepository.recordGazeDuration(event.seconds)
+                }
             }
             is CompanionUiEvent.ToggleDebugOverlay -> {
                 _showDebugOverlay.value = !_showDebugOverlay.value

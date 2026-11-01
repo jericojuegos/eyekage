@@ -41,6 +41,12 @@ private const val TIER_3_SECONDS = 900L
 private const val TIER_4_SECONDS = 1800L
 private const val TIER_5_SECONDS = 3600L
 
+private const val BOND_TIER_1 = 1
+private const val BOND_TIER_2 = 2
+private const val BOND_TIER_3 = 3
+private const val BOND_TIER_4 = 4
+private const val BOND_TIER_5 = 5
+
 /**
  * Pure-Kotlin deterministic personality engine driving companion emotional dynamics
  * and facial micro-expressions.
@@ -168,10 +174,10 @@ class PersonalityEngine(
      * Determines companion bond tier (1 to 5) from cumulative face tracking seconds.
      */
     fun computeBondTier(totalGazeSeconds: Long): Int = when {
-        totalGazeSeconds >= TIER_5_SECONDS -> 5
-        totalGazeSeconds >= TIER_4_SECONDS -> 4
-        totalGazeSeconds >= TIER_3_SECONDS -> 3
-        totalGazeSeconds >= TIER_2_SECONDS -> 2
-        else -> 1
+        totalGazeSeconds >= TIER_5_SECONDS -> BOND_TIER_5
+        totalGazeSeconds >= TIER_4_SECONDS -> BOND_TIER_4
+        totalGazeSeconds >= TIER_3_SECONDS -> BOND_TIER_3
+        totalGazeSeconds >= TIER_2_SECONDS -> BOND_TIER_2
+        else -> BOND_TIER_1
     }
 }

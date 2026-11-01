@@ -1,11 +1,14 @@
 package com.eyekage.feature.settings
 
+import com.eyekage.core.model.CompanionMemory
 import com.eyekage.core.modes.DefaultModeCatalog
+import com.eyekage.core.ports.MemoryRepository
 import com.eyekage.core.ports.PreferencesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -45,6 +48,26 @@ class SettingsViewModelTest {
         override suspend fun setDeskModeEnabled(enabled: Boolean) { deskModeFlow.value = enabled }
     }
 
+    private class FakeMemoryRepository : MemoryRepository {
+        val memoryFlow = MutableStateFlow(CompanionMemory())
+        override val memory: StateFlow<CompanionMemory> = memoryFlow
+
+        override suspend fun recordPoke() {
+            val curr = memoryFlow.value
+            memoryFlow.value = curr.copy(totalPokes = curr.totalPokes + 1, lastInteractionTimestamp = 1000L)
+        }
+
+        override suspend fun recordGazeDuration(seconds: Long) {
+            val curr = memoryFlow.value
+            val newSeconds = curr.totalGazeSeconds + seconds
+            memoryFlow.value = curr.copy(totalGazeSeconds = newSeconds, lastInteractionTimestamp = 1000L)
+        }
+
+        override suspend fun clearMemory() {
+            memoryFlow.value = CompanionMemory()
+        }
+    }
+
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
@@ -58,7 +81,8 @@ class SettingsViewModelTest {
     @Test
     fun `initial uiState matches default preferences and provides selectable modes`() = runTest {
         val prefs = FakePreferencesRepository()
-        val viewModel = SettingsViewModel(prefs)
+        val mem = FakeMemoryRepository()
+        val viewModel = SettingsViewModel(prefs, mem)
 
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.uiState.collect()
@@ -72,12 +96,39 @@ class SettingsViewModelTest {
         assertTrue(state.isHapticsEnabled)
         assertFalse(state.isDeskModeEnabled)
         assertEquals(DefaultModeCatalog.getSelectableModes().size, state.availableModes.size)
+        assertEquals(1, state.memory.bondTier)
+        assertEquals(0, state.memory.totalPokes)
+    }
+
+    @Test
+    fun `ResetMemory restores companion memory to defaults`() = runTest {
+        val prefs = FakePreferencesRepository()
+        val mem = FakeMemoryRepository()
+        mem.recordPoke()
+        mem.recordGazeDuration(300L)
+
+        val viewModel = SettingsViewModel(prefs, mem)
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.uiState.collect()
+        }
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(1, viewModel.uiState.value.memory.totalPokes)
+        assertEquals(300L, viewModel.uiState.value.memory.totalGazeSeconds)
+
+        viewModel.onEvent(SettingsUiEvent.ResetMemory)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(0, viewModel.uiState.value.memory.totalPokes)
+        assertEquals(0L, viewModel.uiState.value.memory.totalGazeSeconds)
+        assertEquals(1, viewModel.uiState.value.memory.bondTier)
     }
 
     @Test
     fun `SetDefaultMode updates preference repository and uiState`() = runTest {
         val prefs = FakePreferencesRepository()
-        val viewModel = SettingsViewModel(prefs)
+        val mem = FakeMemoryRepository()
+        val viewModel = SettingsViewModel(prefs, mem)
 
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.uiState.collect()
@@ -94,7 +145,8 @@ class SettingsViewModelTest {
     @Test
     fun `SetCameraEnabled updates preference repository and uiState`() = runTest {
         val prefs = FakePreferencesRepository()
-        val viewModel = SettingsViewModel(prefs)
+        val mem = FakeMemoryRepository()
+        val viewModel = SettingsViewModel(prefs, mem)
 
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.uiState.collect()
@@ -111,7 +163,8 @@ class SettingsViewModelTest {
     @Test
     fun `SetReducedMotion updates preference repository and uiState`() = runTest {
         val prefs = FakePreferencesRepository()
-        val viewModel = SettingsViewModel(prefs)
+        val mem = FakeMemoryRepository()
+        val viewModel = SettingsViewModel(prefs, mem)
 
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.uiState.collect()
@@ -128,7 +181,8 @@ class SettingsViewModelTest {
     @Test
     fun `SetHapticsEnabled updates preference repository and uiState`() = runTest {
         val prefs = FakePreferencesRepository()
-        val viewModel = SettingsViewModel(prefs)
+        val mem = FakeMemoryRepository()
+        val viewModel = SettingsViewModel(prefs, mem)
 
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.uiState.collect()
@@ -145,7 +199,8 @@ class SettingsViewModelTest {
     @Test
     fun `SetDeskModeEnabled updates preference repository and uiState`() = runTest {
         val prefs = FakePreferencesRepository()
-        val viewModel = SettingsViewModel(prefs)
+        val mem = FakeMemoryRepository()
+        val viewModel = SettingsViewModel(prefs, mem)
 
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.uiState.collect()

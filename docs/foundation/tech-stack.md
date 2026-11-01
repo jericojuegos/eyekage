@@ -45,8 +45,7 @@ The project enforces an automated CI allowlist check on merged debug and release
 
 ## 4. Persisted Data Keys (DataStore)
 
-Only five keys may ever be saved to disk in Phase 1:
-
+### Phase 1: Settings Preferences
 | Key | Type | Default | Description |
 |---|---|---|---|
 | `default_mode_id` | String | `"mode.normal"` | Selected default eye mode on app launch. |
@@ -54,6 +53,14 @@ Only five keys may ever be saved to disk in Phase 1:
 | `reduced_motion_override` | String | `"SYSTEM"` | `"SYSTEM"` \| `"ON"` \| `"OFF"` motion settings. |
 | `haptics_enabled` | Boolean | `true` | Whether subtle tap/poke haptics are enabled. |
 | `desk_mode_enabled` | Boolean | `false` | Whether desk companion mode keeps screen awake. |
+
+### Phase 2: Companion Memory & Affinity (`06-personality-memory`)
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `mem_total_pokes` | Long | `0L` | Cumulative count of user screen taps/pokes. |
+| `mem_total_gaze_seconds` | Long | `0L` | Cumulative seconds face tracking was actively focused. |
+| `mem_bond_tier` | Int | `1` | Affinity bond tier (1 = Stranger, 2 = Acquaintance, 3 = Companion, 4 = Devoted). |
+| `mem_last_interaction_ts` | Long | `0L` | Epoch timestamp (ms) of the most recent user interaction. |
 
 ---
 
