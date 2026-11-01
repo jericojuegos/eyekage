@@ -56,6 +56,27 @@ class CompanionBehaviorStateMachine(
         stateEnterTimeMs = timestampMs
     }
 
+    fun awaken(timestampMs: Long) {
+        state = CompanionState.Awakening(
+            elapsedMs = 0L,
+            totalDurationMs = CompanionState.AWAKENING_DURATION_MS
+        )
+        stateEnterTimeMs = timestampMs
+    }
+
+    fun blink(timestampMs: Long) {
+        val prevState = when (val current = state) {
+            is CompanionState.Poked -> current.previousState
+            else -> current
+        }
+        state = CompanionState.Poked(
+            elapsedMs = 0L,
+            totalDurationMs = CompanionState.POKED_DURATION_MS,
+            previousState = prevState
+        )
+        stateEnterTimeMs = timestampMs
+    }
+
     fun update(
         observation: FaceObservation,
         timestampMs: Long

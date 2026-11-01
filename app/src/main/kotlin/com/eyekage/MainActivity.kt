@@ -47,7 +47,8 @@ class MainActivity : ComponentActivity() {
                                 preferencesRepository = appContainer.preferencesRepository,
                                 faceObservationSource = appContainer.faceObservationSource,
                                 memoryRepository = appContainer.memoryRepository,
-                                personalityEngine = appContainer.personalityEngine
+                                personalityEngine = appContainer.personalityEngine,
+                                voiceCommandSource = appContainer.voiceCommandSource
                             ) as T
                         }
                     }

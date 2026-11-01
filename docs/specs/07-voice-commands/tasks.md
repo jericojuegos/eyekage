@@ -44,18 +44,18 @@
 ---
 
 ### 3. Companion UI Audio Privacy Indicator & Voice Command Dispatch (`⚡ BATCH`: Companion Screen)
-- [ ] **3.1** `[FE]` Wire `VoiceCommandSource` into `CompanionViewModel.kt`
+- [x] **3.1** `[FE]` Wire `VoiceCommandSource` into `CompanionViewModel.kt`
   - Collects `voiceCommandSource.events` when voice is enabled, dispatches eye modes, triggers awakening/reactions, and awards $+1$ poke/interaction to `MemoryRepository`
   - Lifecycle-aware: starts listening when screen resumes (if enabled) and stops on `onStop`
   - _Requirements: 3.2, 3.3, 3.4_
-- [ ] **3.2** `[FE]` Update `CompanionScreen.kt` with Amber Microphone Privacy Indicator
+- [x] **3.2** `[FE]` Update `CompanionScreen.kt` with Amber Microphone Privacy Indicator
   - Renders glowing amber mic badge next to camera indicator when `isVoiceListening == true`
   - Handles runtime `RECORD_AUDIO` permission request flow
   - _Requirements: 3.1_
-- [ ] **3.3** `[FE]` Write automated unit tests in `feature/src/test/kotlin/com/eyekage/feature/companion/CompanionViewModelVoiceTest.kt`
+- [x] **3.3** `[FE]` Write automated unit tests in `feature/src/test/kotlin/com/eyekage/feature/companion/CompanionViewModelVoiceTest.kt`
   - Tests voice-triggered eye mode switching, awakening reaction, and memory progression
   - _Requirements: 3.2, 3.3_
-- [ ] **3.4** `[REVIEW]` **Companion Screen Checkpoint:** Run `./gradlew :feature:testDebugUnitTest` — must pass with zero errors (triggers auto-checkpoint commit in `/build`)
+- [x] **3.4** `[REVIEW]` **Companion Screen Checkpoint:** Run `./gradlew :feature:testDebugUnitTest` — must pass with zero errors (triggers auto-checkpoint commit in `/build`)
 
 ---
 
@@ -96,3 +96,4 @@
 | 2026-11-01 12:35 | Spec Init | Created specification bundle for `07-voice-commands` | Ready |
 | 2026-11-01 12:38 | Batch 1 (1.1-1.5) | Implemented VoiceCommand models, VoiceCommandSource port, and VoiceCommandParser with unit tests | Passed |
 | 2026-11-01 12:44 | Batch 2 (2.1-2.5) | Implemented SpeechRecognizerVoiceSource, RECORD_AUDIO allowlist, DataStore preferences, AppContainer DI | Passed |
+| 2026-11-01 12:51 | Batch 3 (3.1-3.4) | Wired CompanionViewModel voice events, top-bar amber mic privacy indicator, and voice tests | Passed |

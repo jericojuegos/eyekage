@@ -107,6 +107,24 @@ class PersonalityEngine(
     }
 
     /**
+     * Reacts to explicit Awakening command or reaction event.
+     */
+    fun onAwakening() {
+        energy = energy.coerceAtLeast(AWAKEN_RESTORE_ENERGY)
+        curiosity = (curiosity + 0.2f).coerceAtMost(MAX_VAL)
+        secondsSinceInteraction = 0.0f
+    }
+
+    /**
+     * Reacts to explicit Sleep voice command.
+     */
+    fun onSleep() {
+        energy = MIN_ENERGY
+        curiosity = CURIOSITY_MIN
+        playfulness = MIN_VAL
+    }
+
+    /**
      * Updates personality dimensions over elapsed frame time.
      *
      * @param deltaSeconds Time elapsed since last frame in seconds.

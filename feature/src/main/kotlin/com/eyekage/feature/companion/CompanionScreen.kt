@@ -103,6 +103,7 @@ fun CompanionScreen(
         }
         CompanionTopControls(
             isCameraActive = uiState.isCameraTrackingActive,
+            isVoiceActive = uiState.isVoiceListening,
             onToggleDebug = { onEvent(CompanionUiEvent.ToggleDebugOverlay) },
             onNavigateToSettings = onNavigateToSettings
         )
@@ -189,20 +190,37 @@ private fun rememberAnimatedEyeSpec(targetSpec: EyeSpec): EyeSpec {
 @Composable
 private fun BoxScope.CompanionTopControls(
     isCameraActive: Boolean,
+    isVoiceActive: Boolean,
     onToggleDebug: () -> Unit,
     onNavigateToSettings: () -> Unit
 ) {
-    Box(
+    androidx.compose.foundation.layout.Row(
         modifier = Modifier
             .align(Alignment.TopEnd)
-            .padding(24.dp)
-            .size(12.dp)
-            .background(
-                color = if (isCameraActive) CameraIndicatorActive else CameraIndicatorInactive,
-                shape = CircleShape
+            .padding(24.dp),
+        horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if (isVoiceActive) {
+            Box(
+                modifier = Modifier
+                    .size(12.dp)
+                    .background(
+                        color = Color(0xFFF59E0B),
+                        shape = CircleShape
+                    )
             )
-            .clickable { onToggleDebug() }
-    )
+        }
+        Box(
+            modifier = Modifier
+                .size(12.dp)
+                .background(
+                    color = if (isCameraActive) CameraIndicatorActive else CameraIndicatorInactive,
+                    shape = CircleShape
+                )
+                .clickable { onToggleDebug() }
+        )
+    }
 
     IconButton(
         onClick = onNavigateToSettings,
