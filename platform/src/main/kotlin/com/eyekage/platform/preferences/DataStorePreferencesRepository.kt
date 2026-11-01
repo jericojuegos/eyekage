@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.eyekage.core.ports.PreferencesRepository
@@ -30,6 +31,8 @@ class DataStorePreferencesRepository(
         val KEY_HAPTICS_ENABLED = booleanPreferencesKey("haptics_enabled")
         val KEY_DESK_MODE_ENABLED = booleanPreferencesKey("desk_mode_enabled")
         val KEY_VOICE_COMMANDS_ENABLED = booleanPreferencesKey("voice_commands_enabled")
+        val KEY_POSTURE_REMINDER_ENABLED = booleanPreferencesKey("posture_reminder_enabled")
+        val KEY_POSTURE_SLOUCH_THRESHOLD_SEC = intPreferencesKey("posture_slouch_threshold_sec")
 
         const val DEFAULT_MODE_ID_VALUE = "mode.normal"
         const val DEFAULT_CAMERA_ENABLED_VALUE = false
@@ -37,6 +40,8 @@ class DataStorePreferencesRepository(
         const val DEFAULT_HAPTICS_ENABLED_VALUE = true
         const val DEFAULT_DESK_MODE_ENABLED_VALUE = false
         const val DEFAULT_VOICE_COMMANDS_ENABLED_VALUE = false
+        const val DEFAULT_POSTURE_REMINDER_ENABLED_VALUE = false
+        const val DEFAULT_POSTURE_SLOUCH_THRESHOLD_SEC_VALUE = 30
     }
 
     override val defaultModeId: Flow<String> = dataStore.data.map { preferences ->
@@ -61,6 +66,14 @@ class DataStorePreferencesRepository(
 
     override val voiceCommandsEnabled: Flow<Boolean> = dataStore.data.map { preferences ->
         preferences[KEY_VOICE_COMMANDS_ENABLED] ?: DEFAULT_VOICE_COMMANDS_ENABLED_VALUE
+    }
+
+    override val postureReminderEnabled: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[KEY_POSTURE_REMINDER_ENABLED] ?: DEFAULT_POSTURE_REMINDER_ENABLED_VALUE
+    }
+
+    override val postureSlouchThresholdSec: Flow<Int> = dataStore.data.map { preferences ->
+        preferences[KEY_POSTURE_SLOUCH_THRESHOLD_SEC] ?: DEFAULT_POSTURE_SLOUCH_THRESHOLD_SEC_VALUE
     }
 
     override suspend fun setDefaultModeId(modeId: String) {
@@ -96,6 +109,18 @@ class DataStorePreferencesRepository(
     override suspend fun setVoiceCommandsEnabled(enabled: Boolean) {
         dataStore.edit { preferences ->
             preferences[KEY_VOICE_COMMANDS_ENABLED] = enabled
+        }
+    }
+
+    override suspend fun setPostureReminderEnabled(enabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[KEY_POSTURE_REMINDER_ENABLED] = enabled
+        }
+    }
+
+    override suspend fun setPostureSlouchThresholdSec(seconds: Int) {
+        dataStore.edit { preferences ->
+            preferences[KEY_POSTURE_SLOUCH_THRESHOLD_SEC] = seconds
         }
     }
 }

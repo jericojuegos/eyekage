@@ -38,6 +38,8 @@ class VisionFaceObservationSource(
     private val _isRunning = MutableStateFlow(false)
     override val isRunning: StateFlow<Boolean> = _isRunning.asStateFlow()
 
+    var headPoseSource: VisionHeadPoseSource? = null
+
     private var faceDetector: FaceDetector? = null
 
     private val cameraXManager: CameraXManager by lazy {
@@ -133,6 +135,16 @@ class VisionFaceObservationSource(
                 boundingBoxHeight = normHeight,
                 timestampNanos = timestampNanos
             )
+
+            headPoseSource?.processDetection(
+                detection = primaryFace,
+                imageWidth = bitmap.width,
+                imageHeight = bitmap.height,
+                rotationDegrees = rotationDegrees,
+                timestampNanos = timestampNanos
+            )
+        } else {
+            headPoseSource?.onFaceLost()
         }
     }
 
@@ -153,5 +165,6 @@ class VisionFaceObservationSource(
         faceDetector?.close()
         faceDetector = null
         _observations.value = FaceObservation.Empty
+        headPoseSource?.stop()
     }
 }

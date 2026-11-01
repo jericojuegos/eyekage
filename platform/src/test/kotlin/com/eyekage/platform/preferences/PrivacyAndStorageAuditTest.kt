@@ -36,7 +36,9 @@ class PrivacyAndStorageAuditTest {
         "reduced_motion_override",
         "haptics_enabled",
         "desk_mode_enabled",
-        "voice_commands_enabled"
+        "voice_commands_enabled",
+        "posture_reminder_enabled",
+        "posture_slouch_threshold_sec"
     )
 
     @Before
@@ -67,10 +69,12 @@ class PrivacyAndStorageAuditTest {
             DataStorePreferencesRepository.KEY_REDUCED_MOTION_OVERRIDE.name,
             DataStorePreferencesRepository.KEY_HAPTICS_ENABLED.name,
             DataStorePreferencesRepository.KEY_DESK_MODE_ENABLED.name,
-            DataStorePreferencesRepository.KEY_VOICE_COMMANDS_ENABLED.name
+            DataStorePreferencesRepository.KEY_VOICE_COMMANDS_ENABLED.name,
+            DataStorePreferencesRepository.KEY_POSTURE_REMINDER_ENABLED.name,
+            DataStorePreferencesRepository.KEY_POSTURE_SLOUCH_THRESHOLD_SEC.name
         )
 
-        assertEquals(6, companionKeys.size)
+        assertEquals(8, companionKeys.size)
         assertEquals(allowedKeys, companionKeys.toSet())
     }
 
@@ -83,6 +87,8 @@ class PrivacyAndStorageAuditTest {
         repository.setHapticsEnabled(false)
         repository.setDeskModeEnabled(true)
         repository.setVoiceCommandsEnabled(true)
+        repository.setPostureReminderEnabled(true)
+        repository.setPostureSlouchThresholdSec(15)
 
         // Read all back to ensure I/O flushed
         assertEquals("mode.purple_orbit", repository.defaultModeId.first())
@@ -91,6 +97,8 @@ class PrivacyAndStorageAuditTest {
         assertFalse(repository.hapticsEnabled.first())
         assertTrue(repository.deskModeEnabled.first())
         assertTrue(repository.voiceCommandsEnabled.first())
+        assertTrue(repository.postureReminderEnabled.first())
+        assertEquals(15, repository.postureSlouchThresholdSec.first())
 
         val forbiddenImageExts = setOf("jpg", "png", "webp", "bmp", "raw")
         val forbiddenDbExts = setOf("db", "sqlite", "sqlite-wal")

@@ -32,20 +32,20 @@
 ---
 
 ### 2. Platform Vision Source, Preferences & DI (`⚡ BATCH`: Platform Vision & Persistence)
-- [ ] **2.1** `[BE]` Update `PreferencesRepository.kt` and `DataStorePreferencesRepository.kt`
+- [x] **2.1** `[BE]` Update `PreferencesRepository.kt` and `DataStorePreferencesRepository.kt`
   - Persists `posture_reminder_enabled` (boolean, default `false`) and `posture_slouch_threshold_sec` (int, default `30`) in Jetpack Preferences DataStore
   - _Requirements: 4.1_
-- [ ] **2.2** `[BE]` Implement `VisionHeadPoseSource.kt` in `platform/src/main/kotlin/com/eyekage/platform/vision/`
+- [x] **2.2** `[BE]` Implement `VisionHeadPoseSource.kt` in `platform/src/main/kotlin/com/eyekage/platform/vision/`
   - Extracts 6 MediaPipe face keypoints from `VisionFaceObservationSource` / CameraX loop, applies 4-channel `OneEuroFilter`, and emits `PostureObservation`
   - Guarantees zero disk persistence and lifecycle-aware shutdown
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_
-- [ ] **2.3** `[BE]` Provide `PostureObservationSource` singleton in `app/src/main/kotlin/com/eyekage/di/AppContainer.kt`
+- [x] **2.3** `[BE]` Provide `PostureObservationSource` singleton in `app/src/main/kotlin/com/eyekage/di/AppContainer.kt`
   - Wires `VisionHeadPoseSource` into the composition root
   - _Requirements: 2.1_
-- [ ] **2.4** `[BE]` Write automated tests in `platform/src/test/kotlin/com/eyekage/platform/vision/VisionHeadPoseSourceTest.kt`
+- [x] **2.4** `[BE]` Write automated tests in `platform/src/test/kotlin/com/eyekage/platform/vision/VisionHeadPoseSourceTest.kt`
   - Tests filter smoothing, lifecycle start/stop, and empty observation handling
   - _Requirements: 2.1, 2.2, 2.5_
-- [ ] **2.5** `[REVIEW]` **Platform & Manifest Checkpoint:** Run `./gradlew checkMergedManifestPermissions compileDebugKotlin` — must pass with zero errors (triggers auto-checkpoint commit in `/build`)
+- [x] **2.5** `[REVIEW]` **Platform & Manifest Checkpoint:** Run `./gradlew checkMergedManifestPermissions compileDebugKotlin` — must pass with zero errors (triggers auto-checkpoint commit in `/build`)
 
 ---
 
@@ -103,3 +103,4 @@
 |---|---|---|---|
 | 2026-11-01 19:40 | Spec Init | Created specification bundle for `08-head-pose-posture` | Ready |
 | 2026-11-01 20:07 | Batch 1 (1.1-1.7) | Implemented pure-Kotlin head pose models, transform, ports, gesture engines & unit tests | Passed |
+| 2026-11-01 20:14 | Batch 2 (2.1-2.5) | Implemented VisionHeadPoseSource, DataStore posture preferences, AppContainer DI, and verified manifest allowlist | Passed |

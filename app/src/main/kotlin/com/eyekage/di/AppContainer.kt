@@ -4,12 +4,14 @@ import android.content.Context
 import com.eyekage.core.behavior.PersonalityEngine
 import com.eyekage.core.ports.FaceObservationSource
 import com.eyekage.core.ports.MemoryRepository
+import com.eyekage.core.ports.PostureObservationSource
 import com.eyekage.core.ports.PreferencesRepository
 import com.eyekage.core.ports.VoiceCommandSource
 import com.eyekage.platform.audio.SpeechRecognizerVoiceSource
 import com.eyekage.platform.preferences.DataStoreMemoryRepository
 import com.eyekage.platform.preferences.DataStorePreferencesRepository
 import com.eyekage.platform.vision.VisionFaceObservationSource
+import com.eyekage.platform.vision.VisionHeadPoseSource
 
 /**
  * Manual Dependency Injection Container (ADR-007).
@@ -21,6 +23,7 @@ interface AppContainer {
     val memoryRepository: MemoryRepository
     val personalityEngine: PersonalityEngine
     val voiceCommandSource: VoiceCommandSource
+    val postureObservationSource: PostureObservationSource
 }
 
 class DefaultAppContainer(
@@ -31,8 +34,14 @@ class DefaultAppContainer(
         DataStorePreferencesRepository(appContext)
     }
 
+    override val postureObservationSource: PostureObservationSource by lazy {
+        VisionHeadPoseSource()
+    }
+
     override val faceObservationSource: FaceObservationSource by lazy {
-        VisionFaceObservationSource(appContext)
+        VisionFaceObservationSource(appContext).apply {
+            headPoseSource = postureObservationSource as? VisionHeadPoseSource
+        }
     }
 
     override val memoryRepository: MemoryRepository by lazy {

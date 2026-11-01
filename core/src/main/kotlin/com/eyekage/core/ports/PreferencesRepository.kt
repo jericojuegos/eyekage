@@ -13,6 +13,8 @@ interface PreferencesRepository {
     val hapticsEnabled: Flow<Boolean>
     val deskModeEnabled: Flow<Boolean>
     val voiceCommandsEnabled: Flow<Boolean>
+    val postureReminderEnabled: Flow<Boolean>
+    val postureSlouchThresholdSec: Flow<Int>
 
     suspend fun setDefaultModeId(modeId: String)
     suspend fun setCameraEnabled(enabled: Boolean)
@@ -20,4 +22,6 @@ interface PreferencesRepository {
     suspend fun setHapticsEnabled(enabled: Boolean)
     suspend fun setDeskModeEnabled(enabled: Boolean)
     suspend fun setVoiceCommandsEnabled(enabled: Boolean)
+    suspend fun setPostureReminderEnabled(enabled: Boolean)
+    suspend fun setPostureSlouchThresholdSec(seconds: Int)
 }

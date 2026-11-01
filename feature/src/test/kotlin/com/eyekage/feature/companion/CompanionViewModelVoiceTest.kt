@@ -42,6 +42,8 @@ class CompanionViewModelVoiceTest {
         val hapticsEnabledFlow = MutableStateFlow(true)
         val deskModeFlow = MutableStateFlow(false)
         val voiceCommandsEnabledFlow = MutableStateFlow(false)
+        val postureReminderEnabledFlow = MutableStateFlow(false)
+        val postureSlouchThresholdSecFlow = MutableStateFlow(30)
 
         override val defaultModeId: Flow<String> = defaultModeFlow
         override val cameraEnabled: Flow<Boolean> = cameraEnabledFlow
@@ -49,6 +51,8 @@ class CompanionViewModelVoiceTest {
         override val hapticsEnabled: Flow<Boolean> = hapticsEnabledFlow
         override val deskModeEnabled: Flow<Boolean> = deskModeFlow
         override val voiceCommandsEnabled: Flow<Boolean> = voiceCommandsEnabledFlow
+        override val postureReminderEnabled: Flow<Boolean> = postureReminderEnabledFlow
+        override val postureSlouchThresholdSec: Flow<Int> = postureSlouchThresholdSecFlow
 
         override suspend fun setDefaultModeId(modeId: String) { defaultModeFlow.value = modeId }
         override suspend fun setCameraEnabled(enabled: Boolean) { cameraEnabledFlow.value = enabled }
@@ -56,6 +60,8 @@ class CompanionViewModelVoiceTest {
         override suspend fun setHapticsEnabled(enabled: Boolean) { hapticsEnabledFlow.value = enabled }
         override suspend fun setDeskModeEnabled(enabled: Boolean) { deskModeFlow.value = enabled }
         override suspend fun setVoiceCommandsEnabled(enabled: Boolean) { voiceCommandsEnabledFlow.value = enabled }
+        override suspend fun setPostureReminderEnabled(enabled: Boolean) { postureReminderEnabledFlow.value = enabled }
+        override suspend fun setPostureSlouchThresholdSec(seconds: Int) { postureSlouchThresholdSecFlow.value = seconds }
     }
 
     private class FakeFaceObservationSource : FaceObservationSource {

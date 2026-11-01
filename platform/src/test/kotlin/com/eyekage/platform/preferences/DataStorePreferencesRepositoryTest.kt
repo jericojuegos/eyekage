@@ -51,6 +51,8 @@ class DataStorePreferencesRepositoryTest {
         assertTrue(repository.hapticsEnabled.first())
         assertFalse(repository.deskModeEnabled.first())
         assertFalse(repository.voiceCommandsEnabled.first())
+        assertFalse(repository.postureReminderEnabled.first())
+        assertEquals(30, repository.postureSlouchThresholdSec.first())
     }
 
     @Test
@@ -97,5 +99,17 @@ class DataStorePreferencesRepositoryTest {
         assertTrue(repository.voiceCommandsEnabled.first())
         repository.setVoiceCommandsEnabled(false)
         assertFalse(repository.voiceCommandsEnabled.first())
+    }
+
+    @Test
+    fun updatePostureSettings_persistsAndEmitsNewValue() = runTest {
+        assertFalse(repository.postureReminderEnabled.first())
+        assertEquals(30, repository.postureSlouchThresholdSec.first())
+
+        repository.setPostureReminderEnabled(true)
+        repository.setPostureSlouchThresholdSec(15)
+
+        assertTrue(repository.postureReminderEnabled.first())
+        assertEquals(15, repository.postureSlouchThresholdSec.first())
     }
 }
