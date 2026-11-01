@@ -5,16 +5,20 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
+import com.eyekage.core.model.MicroExpression
 import com.eyekage.core.model.PupilShape
 import com.eyekage.core.motion.EyeMotionState
 import com.eyekage.ui.theme.DarkBackground
@@ -27,13 +31,20 @@ private const val BASE_ANGLE_RAD = -0.52359877f // -30 degrees
 private val OrbitStrokeLight = Stroke(width = 1.75f)
 private val OrbitStrokeMedium = Stroke(width = 2.5f)
 
+private const val RIGHT_TILT_RATIO = 0.4f
+private const val HAPPY_ARCH_APEX_RATIO = 0.50f
+private const val ARCH_WIDTH_RATIO = 0.55f
+private const val BEZIER_CONTROL_MULTIPLIER = 2.0f
+private const val BOTTOM_PADDING = 30f
+
 /**
  * Procedural Compose Canvas eye renderer.
  * Draws symmetrical, glowing robot eyes on an absolute OLED-black background (#000000)
- * with zero per-frame heap allocations across all data-driven eye modes.
+ * with zero per-frame heap allocations across all data-driven eye modes and personality micro-expressions.
  *
  * @param state Current motion state (gaze offsets, eyelid openness, pupil scale).
  * @param spec Color, geometry, and pupil shape specification.
+ * @param microExpression Procedural personality deformation parameters (happy arches, tilts).
  * @param onPoke Optional tap/poke gesture callback.
  * @param modifier Composable layout modifier.
  */
@@ -41,6 +52,7 @@ private val OrbitStrokeMedium = Stroke(width = 2.5f)
 fun RobotEyesCanvas(
     state: EyeMotionState,
     spec: EyeSpec = EyeSpec.Default,
+    microExpression: MicroExpression = MicroExpression(),
     onPoke: ((Offset) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
@@ -53,6 +65,8 @@ fun RobotEyesCanvas(
     } else {
         modifier
     }
+
+    val archPath = remember { Path() }
 
     Canvas(
         modifier = gestureModifier
@@ -81,32 +95,76 @@ fun RobotEyesCanvas(
         val shiftX = state.gazeX * maxShiftX
         val shiftY = state.gazeY * maxShiftY
 
-        val openness = state.eyelidOpenness.coerceIn(0.0f, 1.0f)
+        val openness = (state.eyelidOpenness * microExpression.eyelidOpennessMultiplier).coerceIn(0.0f, 1.0f)
 
-        // Draw left and right eyes symmetrically
-        drawEye(
-            centerX = leftEyeCenterX,
-            centerY = centerY,
-            eyeWidth = eyeWidth,
-            eyeHeight = eyeHeight,
-            shiftX = shiftX,
-            shiftY = shiftY,
-            openness = openness,
-            pupilScale = state.pupilScale,
-            spec = spec
-        )
+        val leftTilt = -microExpression.eyeTiltDegrees
+        val rightTilt = microExpression.eyeTiltDegrees * RIGHT_TILT_RATIO
 
-        drawEye(
-            centerX = rightEyeCenterX,
-            centerY = centerY,
-            eyeWidth = eyeWidth,
-            eyeHeight = eyeHeight,
-            shiftX = shiftX,
-            shiftY = shiftY,
-            openness = openness,
-            pupilScale = state.pupilScale,
-            spec = spec
-        )
+        // Draw left eye with asymmetrical tilt if active
+        if (leftTilt != 0.0f) {
+            rotate(degrees = leftTilt, pivot = Offset(leftEyeCenterX, centerY)) {
+                drawEye(
+                    centerX = leftEyeCenterX,
+                    centerY = centerY,
+                    eyeWidth = eyeWidth,
+                    eyeHeight = eyeHeight,
+                    shiftX = shiftX,
+                    shiftY = shiftY,
+                    openness = openness,
+                    pupilScale = state.pupilScale,
+                    spec = spec,
+                    bottomEyelidArch = microExpression.bottomEyelidArch,
+                    archPath = archPath
+                )
+            }
+        } else {
+            drawEye(
+                centerX = leftEyeCenterX,
+                centerY = centerY,
+                eyeWidth = eyeWidth,
+                eyeHeight = eyeHeight,
+                shiftX = shiftX,
+                shiftY = shiftY,
+                openness = openness,
+                pupilScale = state.pupilScale,
+                spec = spec,
+                bottomEyelidArch = microExpression.bottomEyelidArch,
+                archPath = archPath
+            )
+        }
+
+        // Draw right eye with asymmetrical tilt if active
+        if (rightTilt != 0.0f) {
+            rotate(degrees = rightTilt, pivot = Offset(rightEyeCenterX, centerY)) {
+                drawEye(
+                    centerX = rightEyeCenterX,
+                    centerY = centerY,
+                    eyeWidth = eyeWidth,
+                    eyeHeight = eyeHeight,
+                    shiftX = shiftX,
+                    shiftY = shiftY,
+                    openness = openness,
+                    pupilScale = state.pupilScale,
+                    spec = spec,
+                    bottomEyelidArch = microExpression.bottomEyelidArch,
+                    archPath = archPath
+                )
+            }
+        } else {
+            drawEye(
+                centerX = rightEyeCenterX,
+                centerY = centerY,
+                eyeWidth = eyeWidth,
+                eyeHeight = eyeHeight,
+                shiftX = shiftX,
+                shiftY = shiftY,
+                openness = openness,
+                pupilScale = state.pupilScale,
+                spec = spec,
+                bottomEyelidArch = microExpression.bottomEyelidArch,
+                archPath = archPath
+            )
+        }
     }
 }
 
@@ -123,7 +181,9 @@ private fun DrawScope.drawEye(
     shiftY: Float,
     openness: Float,
     pupilScale: Float,
-    spec: EyeSpec
+    spec: EyeSpec,
+    bottomEyelidArch: Float = 0.0f,
+    archPath: Path? = null
 ) {
     if (openness < 0.04f) {
         // Closed eye / slit state during full blink closure
@@ -238,6 +298,31 @@ private fun DrawScope.drawEye(
                 pupilCenterX - coreWidth * 0.18f,
                 pupilCenterY - coreHeight * 0.22f
             )
+        )
+    }
+
+    // Layer 5: Bottom Eyelid Happy Arch (Micro-expression)
+    if (bottomEyelidArch > 0.0f && archPath != null && openness > 0.1f) {
+        val archProgress = bottomEyelidArch.coerceIn(0.0f, 1.0f)
+        val bottomY = centerY + currentEyeHeight * 0.5f + shiftY
+        val archApexHeight = currentEyeHeight * HAPPY_ARCH_APEX_RATIO * archProgress
+        val halfArchWidth = eyeWidth * ARCH_WIDTH_RATIO
+
+        archPath.reset()
+        archPath.moveTo(centerX - halfArchWidth + shiftX, bottomY)
+        archPath.quadraticTo(
+            centerX + shiftX,
+            bottomY - archApexHeight * BEZIER_CONTROL_MULTIPLIER,
+            centerX + halfArchWidth + shiftX,
+            bottomY
+        )
+        archPath.lineTo(centerX + halfArchWidth + shiftX, bottomY + BOTTOM_PADDING)
+        archPath.lineTo(centerX - halfArchWidth + shiftX, bottomY + BOTTOM_PADDING)
+        archPath.close()
+
+        drawPath(
+            path = archPath,
+            color = DarkBackground
         )
     }
 }
@@ -435,5 +520,18 @@ private fun RobotEyesCanvasPreviewPurpleOrbit() {
     RobotEyesCanvas(
         state = EyeMotionState(gazeX = 0f, gazeY = 0f, eyelidOpenness = 1.0f),
         spec = EyeSpec.PurpleOrbit
+    )
+}
+
+@Preview(name = "Happy Playful MicroExpression", widthDp = 360, heightDp = 640)
+@Composable
+private fun RobotEyesCanvasPreviewHappyArch() {
+    RobotEyesCanvas(
+        state = EyeMotionState(gazeX = 0f, gazeY = 0f, eyelidOpenness = 1.0f),
+        spec = EyeSpec.Default,
+        microExpression = MicroExpression(
+            bottomEyelidArch = 0.85f,
+            eyeTiltDegrees = 6.0f
+        )
     )
 }

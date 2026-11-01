@@ -22,13 +22,13 @@
 ---
 
 ### 2. Platform DataStore & Canvas Micro-Expressions (`⚡ BATCH`: Storage & Visuals)
-- [ ] **2.1** `[BE]` Implement `DataStoreMemoryRepository` in `platform/src/main/kotlin/com/eyekage/platform/preferences/DataStoreMemoryRepository.kt` managing the 4 memory keys and atomic reset.
+- [x] **2.1** `[BE]` Implement `DataStoreMemoryRepository` in `platform/src/main/kotlin/com/eyekage/platform/preferences/DataStoreMemoryRepository.kt` managing the 4 memory keys and atomic reset.
   - _Requirements: 3.1, 4.3_
-- [ ] **2.2** `[BE]` Write unit tests in `platform/src/test/kotlin/com/eyekage/platform/preferences/DataStoreMemoryRepositoryTest.kt` validating memory recording and factory reset.
+- [x] **2.2** `[BE]` Write unit tests in `platform/src/test/kotlin/com/eyekage/platform/preferences/DataStoreMemoryRepositoryTest.kt` validating memory recording and factory reset.
   - _Validates: Req 3.1, 4.3_
-- [ ] **2.3** `[FE]` Enhance `RobotEyesCanvas` in `ui/src/main/kotlin/com/eyekage/ui/eyes/RobotEyesCanvas.kt` to draw procedural bottom eyelid happy arches and curious glance tilts without per-frame heap allocations.
+- [x] **2.3** `[FE]` Enhance `RobotEyesCanvas` in `ui/src/main/kotlin/com/eyekage/ui/eyes/RobotEyesCanvas.kt` to draw procedural bottom eyelid happy arches and curious glance tilts without per-frame heap allocations.
   - _Requirements: 2.1–2.4_
-- [ ] **2.4** `[REVIEW]` **Visual & Storage Checkpoint:** Run `./gradlew :ui:compileDebugKotlin :platform:testDebugUnitTest`.
+- [x] **2.4** `[REVIEW]` **Visual & Storage Checkpoint:** Run `./gradlew :ui:compileDebugKotlin :platform:testDebugUnitTest`.
 
 ---
 
@@ -65,3 +65,5 @@
 |---|---|---|---|
 | 2026-11-01 | Spec Created | `[x]` | Generated complete specification bundle (`requirements.md`, `design.md`, `tasks.md`, `uat.md`, and `stitch-prompt.md`). |
 | 2026-11-01 | Tasks 1.1–1.5 | `[x]` | Implemented pure Kotlin personality models, MemoryRepository port, PersonalityEngine, and full unit test suite. |
+| 2026-11-01 | Tasks 2.1–2.2 | `[x]` | Implemented DataStoreMemoryRepository with 4 keys and atomic reset, fully verified via DataStore unit tests. |
+| 2026-11-01 | Tasks 2.3–2.4 | `[x]` | Enhanced RobotEyesCanvas with zero-allocation procedural happy arches and asymmetrical eye tilts; verified :ui and :platform checkpoints. |
