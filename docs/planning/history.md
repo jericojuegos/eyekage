@@ -12,6 +12,27 @@
 
 ---
 
+## Phase 1: Android Companion MVP (2026-11-01)
+
+### Milestones Completed
+- **`00-scaffold`:** 5-module modular architecture (`:app`, `:core`, `:ui`, `:platform`, `:feature`), custom Gradle manifest permission guard, MediaPipe vs. ML Kit comparison spike.
+- **`01-eye-engine`:** Procedural Compose Canvas robot eyes with smooth saccades, micro-jitters, natural blinks, and desk companion mode.
+- **`03-camera-face-detection`:** Decoupled CameraX `ImageAnalysis` front-camera face detector with green LED privacy dot.
+- **`02-eye-modes`:** Data-driven eye palette registry with 4 neutral modes, awakening overlay, and interactive bottom drawer.
+- **`04-gaze-tracking-reactions`:** One-Euro filter smoothed gaze target tracking, touch poke reactions, awakening state machine.
+- **`05-settings-privacy`:** Jetpack DataStore preferences, AMOLED dark settings screen, zero-network security disclosures.
+
+---
+
+## Phase 2: Voice & Personality Engine (2026-11-01)
+
+### Milestones Completed
+- **`06-personality-memory`:** Deterministic pure-Kotlin personality engine (`curiosity`, `playfulness`, `energy`), micro-expressions (eyelid arch, saccade velocity, pupil dilation), persistent local memory DataStore with 5 bond tiers, and inspectable/resettable memory card.
+- **`07-voice-commands`:** On-device speech recognition via Android platform `SpeechRecognizer` (`EXTRA_PREFER_OFFLINE`), pure-Kotlin `VoiceCommandParser` synonym matcher, glowing amber microphone privacy indicator in companion top bar, AMOLED voice commands settings card with active status pill and supported phrase chips.
+- Strict manifest auditing enforcing zero-network policy (`RECORD_AUDIO` allowed for local speech recognition; `INTERNET` and `ACCESS_NETWORK_STATE` strictly prohibited; zero audio persistence to disk).
+
+---
+
 ## New Patterns Identified (Pending Upstream Promotion)
 
 The following architectural patterns were originated in EyeKage and logged for future promotion in `INVENTORY.md`:

@@ -37,7 +37,7 @@ The project enforces an automated CI allowlist check on merged debug and release
 | `android.permission.CAMERA` | Real-time front-camera face tracking | ✅ **Allowed** (Only requested on-demand) |
 | `android.permission.INTERNET` | Network access | 🚫 **STRICTLY PROHIBITED** (Fails build) |
 | `android.permission.ACCESS_NETWORK_STATE` | Network state check | 🚫 **STRICTLY PROHIBITED** (Fails build) |
-| `android.permission.RECORD_AUDIO` | Microphone recording | 🚫 **PROHIBITED in Phase 1** (Revisit P2) |
+| `android.permission.RECORD_AUDIO` | Microphone recording | ✅ **Allowed in Phase 2** (On-device voice commands only; user opt-in) |
 | `android.permission.VIBRATE` | Device vibration | ⚠️ **Avoided** (Using `View.performHapticFeedback` without permission) |
 | `android.permission.WAKE_LOCK` | Keeping screen awake | ⚠️ **Avoided** (Using Compose `keepScreenOn` window flag for desk mode) |
 
@@ -54,13 +54,14 @@ The project enforces an automated CI allowlist check on merged debug and release
 | `haptics_enabled` | Boolean | `true` | Whether subtle tap/poke haptics are enabled. |
 | `desk_mode_enabled` | Boolean | `false` | Whether desk companion mode keeps screen awake. |
 
-### Phase 2: Companion Memory & Affinity (`06-personality-memory`)
+### Phase 2: Companion Memory & Voice Commands (`06-personality-memory`, `07-voice-commands`)
 | Key | Type | Default | Description |
 |---|---|---|---|
 | `mem_total_pokes` | Long | `0L` | Cumulative count of user screen taps/pokes. |
 | `mem_total_gaze_seconds` | Long | `0L` | Cumulative seconds face tracking was actively focused. |
 | `mem_bond_tier` | Int | `1` | Affinity bond tier (1 = Stranger, 2 = Acquaintance, 3 = Companion, 4 = Devoted). |
 | `mem_last_interaction_ts` | Long | `0L` | Epoch timestamp (ms) of the most recent user interaction. |
+| `voice_commands_enabled` | Boolean | `false` | Whether on-device voice recognition is active. |
 
 ---
 

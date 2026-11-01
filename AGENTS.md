@@ -12,7 +12,7 @@
 
 ## 🚦 Project State
 
-**Stage:** `active` (Phase 2 Wave 4 Shipped — 06-personality-memory Complete)
+**Stage:** `active` (Phase 2 Shipped — 06-personality-memory & 07-voice-commands Complete)
 **Stage last updated:** `2026-11-01`
 
 | Stage | Meaning | Next Action / Skill |
