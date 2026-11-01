@@ -9,19 +9,19 @@
 ## 🔄 Implementation Tasks
 
 ### 1. Pure-Kotlin Core Domain & Unit Tests (`⚡ BATCH`: Ports, Models, Parser & Unit Tests)
-- [ ] **1.1** `[BE]` Create `VoiceCommand.kt` and `VoiceCommandEvent.kt` in `core/src/main/kotlin/com/eyekage/core/model/`
+- [x] **1.1** `[BE]` Create `VoiceCommand.kt` and `VoiceCommandEvent.kt` in `core/src/main/kotlin/com/eyekage/core/model/`
   - Defines `VoiceCommand` sealed interface (`SwitchMode`, `TriggerAwakening`, `Sleep`, `Blink`, `CenterGaze`) and `VoiceCommandEvent` sealed hierarchy
   - _Requirements: 1.1, 1.3_
-- [ ] **1.2** `[BE]` Create `VoiceCommandSource.kt` interface and `FakeVoiceCommandSource.kt` test double in `core/src/main/kotlin/com/eyekage/core/ports/`
+- [x] **1.2** `[BE]` Create `VoiceCommandSource.kt` interface and `FakeVoiceCommandSource.kt` test double in `core/src/main/kotlin/com/eyekage/core/ports/`
   - Zero Android imports; exposes `val events: Flow<VoiceCommandEvent>`, `val isListening: StateFlow<Boolean>`, `startListening()`, and `stopListening()`
   - _Requirements: 1.3_
-- [ ] **1.3** `[BE]` Implement `VoiceCommandParser.kt` in `core/src/main/kotlin/com/eyekage/core/behavior/`
+- [x] **1.3** `[BE]` Implement `VoiceCommandParser.kt` in `core/src/main/kotlin/com/eyekage/core/behavior/`
   - Case-insensitive token parser resolving spoken synonyms to canonical `VoiceCommand` variants, returning `null` on unknown phrases
   - _Requirements: 1.2, 1.4_
-- [ ] **1.4** `[BE]` Write automated unit tests in `core/src/test/kotlin/com/eyekage/core/behavior/VoiceCommandParserTest.kt`
+- [x] **1.4** `[BE]` Write automated unit tests in `core/src/test/kotlin/com/eyekage/core/behavior/VoiceCommandParserTest.kt`
   - Tests valid commands, all mode synonyms, awakening phrases, sleep/blink commands, and unknown noise phrases
   - _Requirements: 1.2, 1.4_
-- [ ] **1.5** `[REVIEW]` **Core & Unit Test Checkpoint:** Run `./gradlew :core:test` — must pass with zero errors (triggers auto-checkpoint commit in `/build`)
+- [x] **1.5** `[REVIEW]` **Core & Unit Test Checkpoint:** Run `./gradlew :core:test` — must pass with zero errors (triggers auto-checkpoint commit in `/build`)
 
 ---
 
@@ -94,3 +94,4 @@
 | Timestamp | Task | Action / Summary | Result |
 |---|---|---|---|
 | 2026-11-01 12:35 | Spec Init | Created specification bundle for `07-voice-commands` | Ready |
+| 2026-11-01 12:38 | Batch 1 (1.1-1.5) | Implemented VoiceCommand models, VoiceCommandSource port, and VoiceCommandParser with unit tests | Passed |
