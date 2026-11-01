@@ -50,20 +50,20 @@
 ---
 
 ### 3. Companion UI 3D Eye Tilt, Reactions & HUD Posture Alert (`⚡ BATCH`: Companion Screen & Eye Canvas)
-- [ ] **3.1** `[FE]` Update `RobotEyesCanvas.kt` in `ui/src/main/kotlin/com/eyekage/ui/eyes/`
+- [x] **3.1** `[FE]` Update `RobotEyesCanvas.kt` in `ui/src/main/kotlin/com/eyekage/ui/eyes/`
   - Adds `eyeTiltDegrees: Float` parameter to canvas rendering, applying smooth angular rotation and organic eyebrow squint to mirror user head roll
   - Preserves zero per-frame allocation rule in `DrawScope`
   - _Requirements: 3.1_
-- [ ] **3.2** `[FE]` Wire `PostureObservationSource`, `HeadPoseReactionEngine`, and `PostureMonitor` into `CompanionViewModel.kt`
+- [x] **3.2** `[FE]` Wire `PostureObservationSource`, `HeadPoseReactionEngine`, and `PostureMonitor` into `CompanionViewModel.kt`
   - Listens to posture observations, updates eye tilt angle, acknowledges affirmative nods with $+1$ interaction to `MemoryRepository`, and evaluates slouch alert state
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5_
-- [ ] **3.3** `[FE]` Update `CompanionScreen.kt` with subtle Posture Alert Badge
+- [x] **3.3** `[FE]` Update `CompanionScreen.kt` with subtle Posture Alert Badge
   - Renders amber posture icon (🧘 / ⚠️) in the top HUD when slouching is detected; tap clears the alert
   - _Requirements: 3.4, 3.5_
-- [ ] **3.4** `[FE]` Write automated unit tests in `feature/src/test/kotlin/com/eyekage/feature/companion/CompanionViewModelPostureTest.kt`
+- [x] **3.4** `[FE]` Write automated unit tests in `feature/src/test/kotlin/com/eyekage/feature/companion/CompanionViewModelPostureTest.kt`
   - Tests head tilt propagation, affirmative nod reaction, turned-away gaze pause, and slouch alert emission
   - _Requirements: 3.1, 3.2, 3.3, 3.4_
-- [ ] **3.5** `[REVIEW]` **Companion Screen Checkpoint:** Run `./gradlew :feature:testDebugUnitTest :ui:testDebugUnitTest` — must pass with zero errors (triggers auto-checkpoint commit in `/build`)
+- [x] **3.5** `[REVIEW]` **Companion Screen Checkpoint:** Run `./gradlew :feature:testDebugUnitTest :ui:testDebugUnitTest` — must pass with zero errors (triggers auto-checkpoint commit in `/build`)
 
 ---
 
@@ -104,3 +104,4 @@
 | 2026-11-01 19:40 | Spec Init | Created specification bundle for `08-head-pose-posture` | Ready |
 | 2026-11-01 20:07 | Batch 1 (1.1-1.7) | Implemented pure-Kotlin head pose models, transform, ports, gesture engines & unit tests | Passed |
 | 2026-11-01 20:14 | Batch 2 (2.1-2.5) | Implemented VisionHeadPoseSource, DataStore posture preferences, AppContainer DI, and verified manifest allowlist | Passed |
+| 2026-11-01 20:26 | Batch 3 (3.1-3.5) | Wired CompanionViewModel posture events, eye tilt canvas rotation, and HUD posture badge | Passed |

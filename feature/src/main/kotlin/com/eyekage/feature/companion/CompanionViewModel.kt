@@ -4,14 +4,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eyekage.core.behavior.CompanionBehaviorStateMachine
 import com.eyekage.core.behavior.CompanionState
+import com.eyekage.core.behavior.HeadPoseGesture
+import com.eyekage.core.behavior.HeadPoseReactionEngine
 import com.eyekage.core.behavior.PersonalityEngine
+import com.eyekage.core.behavior.PostureAlertState
+import com.eyekage.core.behavior.PostureMonitor
 import com.eyekage.core.model.FaceObservation
 import com.eyekage.core.model.MicroExpression
 import com.eyekage.core.model.MoodState
+import com.eyekage.core.model.PostureObservation
 import com.eyekage.core.model.VoiceCommand
 import com.eyekage.core.model.VoiceCommandEvent
 import com.eyekage.core.ports.FaceObservationSource
 import com.eyekage.core.ports.MemoryRepository
+import com.eyekage.core.ports.PostureObservationSource
 import com.eyekage.core.ports.PreferencesRepository
 import com.eyekage.core.ports.VoiceCommandSource
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,7 +42,11 @@ data class CompanionUiState(
     val reducedMotion: Boolean = false,
     val microExpression: MicroExpression = MicroExpression(),
     val moodState: MoodState = MoodState.ALERT,
-    val bondTier: Int = 1
+    val bondTier: Int = 1,
+    val postureObservation: PostureObservation = PostureObservation.Neutral,
+    val eyeTiltDegrees: Float = 0.0f,
+    val postureAlert: PostureAlertState = PostureAlertState.None,
+    val isPostureReminderEnabled: Boolean = false
 )
 
 sealed interface CompanionUiEvent {
@@ -50,6 +60,7 @@ sealed interface CompanionUiEvent {
     data object ToggleDebugOverlay : CompanionUiEvent
     data object OnStartListeningVoice : CompanionUiEvent
     data object OnStopListeningVoice : CompanionUiEvent
+    data object DismissPostureAlert : CompanionUiEvent
 }
 
 class CompanionViewModel(
@@ -58,11 +69,17 @@ class CompanionViewModel(
     private val memoryRepository: MemoryRepository,
     val personalityEngine: PersonalityEngine = PersonalityEngine(),
     val behaviorStateMachine: CompanionBehaviorStateMachine = CompanionBehaviorStateMachine(),
-    val voiceCommandSource: VoiceCommandSource? = null
+    val voiceCommandSource: VoiceCommandSource? = null,
+    val postureObservationSource: PostureObservationSource? = null,
+    val headPoseReactionEngine: HeadPoseReactionEngine = HeadPoseReactionEngine(),
+    val postureMonitor: PostureMonitor = PostureMonitor()
 ) : ViewModel() {
 
     private val _currentModeId = MutableStateFlow("mode.normal")
     private val _showDebugOverlay = MutableStateFlow(false)
+    private val _eyeTiltDegrees = MutableStateFlow(0f)
+    private val _postureAlert = MutableStateFlow<PostureAlertState>(PostureAlertState.None)
+    private val _postureObservation = MutableStateFlow(PostureObservation.Neutral)
 
     private val corePrefsFlow = combine(
         _currentModeId,
@@ -93,14 +110,38 @@ class CompanionViewModel(
         Pair(motion, debug)
     }
 
+    private val postureFlow = combine(
+        _eyeTiltDegrees,
+        _postureAlert,
+        _postureObservation,
+        preferencesRepository.postureReminderEnabled
+    ) { tilt, alert, obs, reminderEnabled ->
+        PostureData(tilt, alert, obs, reminderEnabled)
+    }
+
+    private data class PostureData(
+        val tilt: Float,
+        val alert: PostureAlertState,
+        val obs: PostureObservation,
+        val reminderEnabled: Boolean
+    )
+
+    private val visionAndPostureFlow = combine(
+        visionFlow,
+        postureFlow
+    ) { vision, postureData ->
+        Pair(vision, postureData)
+    }
+
     val uiState: StateFlow<CompanionUiState> = combine(
         corePrefsFlow,
-        visionFlow,
+        visionAndPostureFlow,
         voiceFlow,
         displayPrefsFlow,
         memoryRepository.memory
-    ) { corePrefs, vision, voice, displayPrefs, memory ->
+    ) { corePrefs, visionAndPosture, voice, displayPrefs, memory ->
         val (modeId, cameraEnabled, deskMode) = corePrefs
+        val (vision, postureData) = visionAndPosture
         val (isRunning, observation) = vision
         val (voiceEnabled, isListening) = voice
         val (reducedMotion, showDebug) = displayPrefs
@@ -118,7 +159,11 @@ class CompanionViewModel(
             reducedMotion = isReducedMotion,
             microExpression = personalityEngine.computeMicroExpression(reducedMotion = isReducedMotion),
             moodState = personalityEngine.currentMood,
-            bondTier = memory.bondTier
+            bondTier = memory.bondTier,
+            postureObservation = postureData.obs,
+            eyeTiltDegrees = postureData.tilt,
+            postureAlert = postureData.alert,
+            isPostureReminderEnabled = postureData.reminderEnabled
         )
     }.stateIn(
         scope = viewModelScope,
@@ -149,6 +194,57 @@ class CompanionViewModel(
         viewModelScope.launch {
             voiceCommandSource?.events?.collect { event ->
                 handleVoiceEvent(event)
+            }
+        }
+
+        viewModelScope.launch {
+            preferencesRepository.postureSlouchThresholdSec.collect { threshold ->
+                postureMonitor.slouchThresholdSeconds = threshold
+            }
+        }
+
+        if (postureObservationSource != null) {
+            viewModelScope.launch {
+                combine(
+                    postureObservationSource.posture,
+                    preferencesRepository.postureReminderEnabled,
+                    preferencesRepository.reducedMotionOverride
+                ) { obs, reminderEnabled, reducedMotion ->
+                    Triple(obs, reminderEnabled, reducedMotion == "ON")
+                }.collect { (obs, reminderEnabled, isReducedMotion) ->
+                    _postureObservation.value = obs
+                    val now = if (obs.timestampNanos > 0L) obs.timestampNanos / 1_000_000L else System.currentTimeMillis()
+
+                    val gesture = headPoseReactionEngine.processObservation(
+                        observation = obs,
+                        currentTimeMs = now,
+                        reducedMotion = isReducedMotion
+                    )
+
+                    when (gesture) {
+                        is HeadPoseGesture.InquisitiveTilt -> {
+                            _eyeTiltDegrees.value = gesture.eyeTiltDegrees
+                        }
+                        is HeadPoseGesture.AffirmativeNod -> {
+                            behaviorStateMachine.blink(now)
+                            personalityEngine.onPoke()
+                            viewModelScope.launch {
+                                memoryRepository.recordPoke()
+                            }
+                        }
+                        is HeadPoseGesture.TurnedAway, HeadPoseGesture.Idle -> {
+                            _eyeTiltDegrees.value = 0f
+                        }
+                    }
+
+                    if (reminderEnabled) {
+                        val alert = postureMonitor.processObservation(obs, now)
+                        _postureAlert.value = alert
+                    } else {
+                        postureMonitor.reset()
+                        _postureAlert.value = PostureAlertState.None
+                    }
+                }
             }
         }
     }
@@ -212,8 +308,15 @@ class CompanionViewModel(
                     preferencesRepository.setCameraEnabled(event.enabled)
                     if (event.enabled) {
                         faceObservationSource.start()
+                        postureObservationSource?.start()
                     } else {
                         faceObservationSource.stop()
+                        postureObservationSource?.stop()
+                        postureMonitor.reset()
+                        headPoseReactionEngine.reset()
+                        _eyeTiltDegrees.value = 0f
+                        _postureAlert.value = PostureAlertState.None
+                        _postureObservation.value = PostureObservation.Neutral
                     }
                 }
             }
@@ -250,6 +353,10 @@ class CompanionViewModel(
             }
             is CompanionUiEvent.ToggleDebugOverlay -> {
                 _showDebugOverlay.value = !_showDebugOverlay.value
+            }
+            is CompanionUiEvent.DismissPostureAlert -> {
+                postureMonitor.dismissAlert()
+                _postureAlert.value = PostureAlertState.None
             }
         }
     }

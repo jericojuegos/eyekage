@@ -62,6 +62,7 @@ fun RobotEyesCanvas(
     state: EyeMotionState,
     spec: EyeSpec = EyeSpec.Default,
     microExpression: MicroExpression = MicroExpression(),
+    eyeTiltDegrees: Float = 0.0f,
     onPoke: ((Offset) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
@@ -107,10 +108,18 @@ fun RobotEyesCanvas(
             bottomEyelidArch = microExpression.bottomEyelidArch,
             archPath = archPath
         )
-        drawOrientedEye(-microExpression.eyeTiltDegrees, leftParams)
 
-        val rightParams = leftParams.copy(centerX = rightEyeCenterX)
-        drawOrientedEye(microExpression.eyeTiltDegrees * RIGHT_TILT_RATIO, rightParams)
+        if (eyeTiltDegrees != 0.0f) {
+            rotate(degrees = eyeTiltDegrees, pivot = Offset(size.width * 0.5f, centerY)) {
+                drawOrientedEye(-microExpression.eyeTiltDegrees, leftParams)
+                val rightParams = leftParams.copy(centerX = rightEyeCenterX)
+                drawOrientedEye(microExpression.eyeTiltDegrees * RIGHT_TILT_RATIO, rightParams)
+            }
+        } else {
+            drawOrientedEye(-microExpression.eyeTiltDegrees, leftParams)
+            val rightParams = leftParams.copy(centerX = rightEyeCenterX)
+            drawOrientedEye(microExpression.eyeTiltDegrees * RIGHT_TILT_RATIO, rightParams)
+        }
     }
 }
 

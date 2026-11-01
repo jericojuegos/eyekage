@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import com.eyekage.core.behavior.CompanionBehaviorStateMachine
+import com.eyekage.core.behavior.PostureAlertState
 import com.eyekage.core.motion.EyeMotionEngine
 import com.eyekage.core.motion.EyeMotionState
 import com.eyekage.ui.eyes.AwakeningOverlay
@@ -92,6 +93,7 @@ fun CompanionScreen(
             state = motionState,
             spec = activeSpec,
             microExpression = uiState.microExpression,
+            eyeTiltDegrees = uiState.eyeTiltDegrees,
             onPoke = {
                 view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
                 behaviorStateMachine.poke(System.currentTimeMillis())
@@ -106,6 +108,8 @@ fun CompanionScreen(
         CompanionTopControls(
             isCameraActive = uiState.isCameraTrackingActive,
             isVoiceActive = uiState.isVoiceListening,
+            postureAlert = uiState.postureAlert,
+            onDismissPostureAlert = { onEvent(CompanionUiEvent.DismissPostureAlert) },
             onToggleDebug = { onEvent(CompanionUiEvent.ToggleDebugOverlay) },
             onNavigateToSettings = onNavigateToSettings
         )
@@ -193,6 +197,8 @@ private fun rememberAnimatedEyeSpec(targetSpec: EyeSpec): EyeSpec {
 private fun BoxScope.CompanionTopControls(
     isCameraActive: Boolean,
     isVoiceActive: Boolean,
+    postureAlert: PostureAlertState,
+    onDismissPostureAlert: () -> Unit,
     onToggleDebug: () -> Unit,
     onNavigateToSettings: () -> Unit
 ) {
@@ -203,6 +209,23 @@ private fun BoxScope.CompanionTopControls(
         horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        if (postureAlert is PostureAlertState.AlertActive) {
+            Box(
+                modifier = Modifier
+                    .background(
+                        color = Color(0xFFF59E0B).copy(alpha = 0.2f),
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    .clickable { onDismissPostureAlert() }
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
+            ) {
+                androidx.compose.material3.Text(
+                    text = "🧘 Slouch",
+                    color = Color(0xFFF59E0B),
+                    style = androidx.compose.material3.MaterialTheme.typography.labelSmall
+                )
+            }
+        }
         if (isVoiceActive) {
             Box(
                 modifier = Modifier
