@@ -18,64 +18,72 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
  * Strictly enforces only the 5 approved keys.
  */
 class DataStorePreferencesRepository(
-    private val context: Context
+    private val dataStore: DataStore<Preferences>
 ) : PreferencesRepository {
 
-    private object Keys {
-        val DEFAULT_MODE_ID = stringPreferencesKey("default_mode_id")
-        val CAMERA_ENABLED = booleanPreferencesKey("camera_enabled")
-        val REDUCED_MOTION_OVERRIDE = stringPreferencesKey("reduced_motion_override")
-        val HAPTICS_ENABLED = booleanPreferencesKey("haptics_enabled")
-        val DESK_MODE_ENABLED = booleanPreferencesKey("desk_mode_enabled")
+    constructor(context: Context) : this(context.dataStore)
+
+    companion object {
+        val KEY_DEFAULT_MODE_ID = stringPreferencesKey("default_mode_id")
+        val KEY_CAMERA_ENABLED = booleanPreferencesKey("camera_enabled")
+        val KEY_REDUCED_MOTION_OVERRIDE = stringPreferencesKey("reduced_motion_override")
+        val KEY_HAPTICS_ENABLED = booleanPreferencesKey("haptics_enabled")
+        val KEY_DESK_MODE_ENABLED = booleanPreferencesKey("desk_mode_enabled")
+
+        const val DEFAULT_MODE_ID_VALUE = "mode.normal"
+        const val DEFAULT_CAMERA_ENABLED_VALUE = false
+        const val DEFAULT_REDUCED_MOTION_VALUE = "SYSTEM"
+        const val DEFAULT_HAPTICS_ENABLED_VALUE = true
+        const val DEFAULT_DESK_MODE_ENABLED_VALUE = false
     }
 
-    override val defaultModeId: Flow<String> = context.dataStore.data.map { preferences ->
-        preferences[Keys.DEFAULT_MODE_ID] ?: "mode.normal"
+    override val defaultModeId: Flow<String> = dataStore.data.map { preferences ->
+        preferences[KEY_DEFAULT_MODE_ID] ?: DEFAULT_MODE_ID_VALUE
     }
 
-    override val cameraEnabled: Flow<Boolean> = context.dataStore.data.map { preferences ->
-        preferences[Keys.CAMERA_ENABLED] ?: false
+    override val cameraEnabled: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[KEY_CAMERA_ENABLED] ?: DEFAULT_CAMERA_ENABLED_VALUE
     }
 
-    override val reducedMotionOverride: Flow<String> = context.dataStore.data.map { preferences ->
-        preferences[Keys.REDUCED_MOTION_OVERRIDE] ?: "SYSTEM"
+    override val reducedMotionOverride: Flow<String> = dataStore.data.map { preferences ->
+        preferences[KEY_REDUCED_MOTION_OVERRIDE] ?: DEFAULT_REDUCED_MOTION_VALUE
     }
 
-    override val hapticsEnabled: Flow<Boolean> = context.dataStore.data.map { preferences ->
-        preferences[Keys.HAPTICS_ENABLED] ?: true
+    override val hapticsEnabled: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[KEY_HAPTICS_ENABLED] ?: DEFAULT_HAPTICS_ENABLED_VALUE
     }
 
-    override val deskModeEnabled: Flow<Boolean> = context.dataStore.data.map { preferences ->
-        preferences[Keys.DESK_MODE_ENABLED] ?: false
+    override val deskModeEnabled: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[KEY_DESK_MODE_ENABLED] ?: DEFAULT_DESK_MODE_ENABLED_VALUE
     }
 
     override suspend fun setDefaultModeId(modeId: String) {
-        context.dataStore.edit { preferences ->
-            preferences[Keys.DEFAULT_MODE_ID] = modeId
+        dataStore.edit { preferences ->
+            preferences[KEY_DEFAULT_MODE_ID] = modeId
         }
     }
 
     override suspend fun setCameraEnabled(enabled: Boolean) {
-        context.dataStore.edit { preferences ->
-            preferences[Keys.CAMERA_ENABLED] = enabled
+        dataStore.edit { preferences ->
+            preferences[KEY_CAMERA_ENABLED] = enabled
         }
     }
 
     override suspend fun setReducedMotionOverride(override: String) {
-        context.dataStore.edit { preferences ->
-            preferences[Keys.REDUCED_MOTION_OVERRIDE] = override
+        dataStore.edit { preferences ->
+            preferences[KEY_REDUCED_MOTION_OVERRIDE] = override
         }
     }
 
     override suspend fun setHapticsEnabled(enabled: Boolean) {
-        context.dataStore.edit { preferences ->
-            preferences[Keys.HAPTICS_ENABLED] = enabled
+        dataStore.edit { preferences ->
+            preferences[KEY_HAPTICS_ENABLED] = enabled
         }
     }
 
     override suspend fun setDeskModeEnabled(enabled: Boolean) {
-        context.dataStore.edit { preferences ->
-            preferences[Keys.DESK_MODE_ENABLED] = enabled
+        dataStore.edit { preferences ->
+            preferences[KEY_DESK_MODE_ENABLED] = enabled
         }
     }
 }

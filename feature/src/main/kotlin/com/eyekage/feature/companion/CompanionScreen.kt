@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,7 +16,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -26,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import com.eyekage.core.behavior.CompanionBehaviorStateMachine
@@ -41,81 +47,35 @@ import com.eyekage.ui.theme.DarkOutline
 import kotlinx.coroutines.isActive
 
 private const val NANOS_TO_MILLIS = 1_000_000L
+private const val COLOR_MORPH_DURATION_MS = 200
 
 /**
  * Primary companion faceplate screen hosting procedural robot eyes, camera privacy indicators,
  * real-time gaze tracking smoothing, Awakening reaction overlays, and touch/poke feedback.
- *
- * @param uiState Immutable state for companion mode, tracking state, and active eye mode.
- * @param onEvent Discrete UI event callback.
- * @param modifier Root layout modifier.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CompanionScreen(
     uiState: CompanionUiState,
     onEvent: (CompanionUiEvent) -> Unit,
+    onNavigateToSettings: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val view = LocalView.current
-    val interactionSource = remember { MutableInteractionSource() }
     var showModePicker by remember { mutableStateOf(false) }
+    val targetSpec = remember(uiState.currentModeId) { EyeSpec.fromModeId(uiState.currentModeId) }
+    val activeSpec = rememberAnimatedEyeSpec(targetSpec)
 
-    // Resolve target eye styling from active mode identifier
-    val targetSpec = remember(uiState.currentModeId) {
-        EyeSpec.fromModeId(uiState.currentModeId)
-    }
-
-    // 200 ms smooth color morph between mode transitions
-    val animatedPrimary by animateColorAsState(
-        targetValue = targetSpec.primaryColor,
-        animationSpec = tween(durationMillis = 200, easing = FastOutSlowInEasing),
-        label = "EyePrimaryColorMorph"
-    )
-    val animatedSecondary by animateColorAsState(
-        targetValue = targetSpec.secondaryColor,
-        animationSpec = tween(durationMillis = 200, easing = FastOutSlowInEasing),
-        label = "EyeSecondaryColorMorph"
-    )
-    val animatedCore by animateColorAsState(
-        targetValue = targetSpec.coreColor,
-        animationSpec = tween(durationMillis = 200, easing = FastOutSlowInEasing),
-        label = "EyeCoreColorMorph"
-    )
-    val animatedGlow by animateColorAsState(
-        targetValue = targetSpec.glowColor,
-        animationSpec = tween(durationMillis = 200, easing = FastOutSlowInEasing),
-        label = "EyeGlowColorMorph"
-    )
-
-    val activeSpec = remember(targetSpec.shape, animatedPrimary, animatedSecondary, animatedCore, animatedGlow) {
-        targetSpec.copy(
-            primaryColor = animatedPrimary,
-            secondaryColor = animatedSecondary,
-            coreColor = animatedCore,
-            glowColor = animatedGlow
-        )
-    }
-
-    // High-level behavior state machine driving reactions, awakening, searching, and pokes
     val behaviorStateMachine = remember { CompanionBehaviorStateMachine() }
-
-    // Drive procedural eye motion engine at display frame rate (60/90 Hz)
-    val motionEngine = remember { EyeMotionEngine() }
-    motionEngine.reducedMotion = uiState.reducedMotion
-
+    val motionEngine = remember { EyeMotionEngine().apply { reducedMotion = uiState.reducedMotion } }
     var motionState by remember { mutableStateOf(EyeMotionState()) }
     var awakeningProgress by remember { mutableFloatStateOf(0.0f) }
 
-    // Frame-rate synchronized render loop updating behavior state and One-Euro smoothed gaze
     LaunchedEffect(Unit) {
         while (isActive) {
             withFrameNanos { frameTimeNanos ->
                 val timeMs = frameTimeNanos / NANOS_TO_MILLIS
-                val output = behaviorStateMachine.update(
-                    observation = uiState.faceObservation,
-                    timestampMs = timeMs
-                )
+                val output = behaviorStateMachine.update(uiState.faceObservation, timeMs)
                 awakeningProgress = output.awakeningProgress
                 motionState = motionEngine.update(
                     target = output.targetGaze,
@@ -127,78 +87,111 @@ fun CompanionScreen(
         }
     }
 
-    val onPokeTriggered: () -> Unit = {
-        view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
-        behaviorStateMachine.poke(System.currentTimeMillis())
-        onEvent(CompanionUiEvent.OnPoke())
-    }
-
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(DarkBackground)
-    ) {
-        // Zero-allocation procedural robot eye canvas with touch/poke detector
+    Box(modifier = modifier.fillMaxSize().background(DarkBackground)) {
         RobotEyesCanvas(
             state = motionState,
             spec = activeSpec,
-            onPoke = { onPokeTriggered() },
+            onPoke = {
+                view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+                behaviorStateMachine.poke(System.currentTimeMillis())
+                onEvent(CompanionUiEvent.OnPoke())
+            },
             modifier = Modifier.fillMaxSize()
         )
-
-        // Luminous radial amber burst overlay during Awakening reaction
-        AwakeningOverlay(
-            progress = awakeningProgress,
-            reducedMotion = uiState.reducedMotion
-        )
-
-        // Debug bounding box & coordinate shape overlay (debug only, zero raw pixels)
+        AwakeningOverlay(progress = awakeningProgress, reducedMotion = uiState.reducedMotion)
         if (uiState.showDebugOverlay) {
             DebugFaceOverlay(observation = uiState.faceObservation)
         }
-
-        // Privacy Camera Active/Inactive Indicator (top-end, tap to toggle debug shapes)
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(24.dp)
-                .size(12.dp)
-                .background(
-                    color = if (uiState.isCameraTrackingActive) CameraIndicatorActive else CameraIndicatorInactive,
-                    shape = CircleShape
-                )
-                .clickable {
-                    onEvent(CompanionUiEvent.ToggleDebugOverlay)
-                }
+        CompanionTopControls(
+            isCameraActive = uiState.isCameraTrackingActive,
+            onToggleDebug = { onEvent(CompanionUiEvent.ToggleDebugOverlay) },
+            onNavigateToSettings = onNavigateToSettings
         )
-
-        // Subtle mode switcher drawer menu pill (bottom-center)
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 20.dp)
-                .width(48.dp)
-                .height(5.dp)
-                .background(DarkOutline, RoundedCornerShape(2.5.dp))
-                .clickable(
-                    interactionSource = interactionSource,
-                    indication = null
-                ) {
-                    showModePicker = true
-                }
-        )
-
-        // Mode Switcher Bottom Sheet
+        ModeDrawerMenuPill(onOpenPicker = { showModePicker = true })
         if (showModePicker) {
             ModePickerBottomSheet(
                 currentModeId = uiState.currentModeId,
-                onModeSelected = { selectedModeId ->
-                    onEvent(CompanionUiEvent.SelectMode(selectedModeId))
-                },
-                onDismissRequest = {
-                    showModePicker = false
-                }
+                onModeSelected = { onEvent(CompanionUiEvent.SelectMode(it)) },
+                onDismissRequest = { showModePicker = false }
             )
         }
     }
+}
+
+@Composable
+private fun rememberAnimatedEyeSpec(targetSpec: EyeSpec): EyeSpec {
+    val primary by animateColorAsState(
+        targetValue = targetSpec.primaryColor,
+        animationSpec = tween(COLOR_MORPH_DURATION_MS, easing = FastOutSlowInEasing),
+        label = "EyePrimaryMorph"
+    )
+    val secondary by animateColorAsState(
+        targetValue = targetSpec.secondaryColor,
+        animationSpec = tween(COLOR_MORPH_DURATION_MS, easing = FastOutSlowInEasing),
+        label = "EyeSecondaryMorph"
+    )
+    val core by animateColorAsState(
+        targetValue = targetSpec.coreColor,
+        animationSpec = tween(COLOR_MORPH_DURATION_MS, easing = FastOutSlowInEasing),
+        label = "EyeCoreMorph"
+    )
+    val glow by animateColorAsState(
+        targetValue = targetSpec.glowColor,
+        animationSpec = tween(COLOR_MORPH_DURATION_MS, easing = FastOutSlowInEasing),
+        label = "EyeGlowMorph"
+    )
+    return remember(targetSpec.shape, primary, secondary, core, glow) {
+        targetSpec.copy(primaryColor = primary, secondaryColor = secondary, coreColor = core, glowColor = glow)
+    }
+}
+
+@Composable
+private fun BoxScope.CompanionTopControls(
+    isCameraActive: Boolean,
+    onToggleDebug: () -> Unit,
+    onNavigateToSettings: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .align(Alignment.TopEnd)
+            .padding(24.dp)
+            .size(12.dp)
+            .background(
+                color = if (isCameraActive) CameraIndicatorActive else CameraIndicatorInactive,
+                shape = CircleShape
+            )
+            .clickable { onToggleDebug() }
+    )
+
+    IconButton(
+        onClick = onNavigateToSettings,
+        modifier = Modifier
+            .align(Alignment.TopStart)
+            .padding(16.dp)
+    ) {
+        Icon(
+            imageVector = Icons.Default.Settings,
+            contentDescription = "Settings",
+            tint = Color.White.copy(alpha = 0.5f)
+        )
+    }
+}
+
+@Composable
+private fun BoxScope.ModeDrawerMenuPill(
+    onOpenPicker: () -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    Box(
+        modifier = Modifier
+            .align(Alignment.BottomCenter)
+            .padding(bottom = 20.dp)
+            .width(48.dp)
+            .height(5.dp)
+            .background(DarkOutline, RoundedCornerShape(2.5.dp))
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null
+            ) { onOpenPicker() }
+    )
 }

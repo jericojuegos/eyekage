@@ -5,7 +5,10 @@
     <!-- Approved hardware permission (Phase 1 MVP) -->
     <uses-permission android:name="android.permission.CAMERA" />
 
-    <!-- Optional camera features to support tablets/devices without autofocus -->
+    <!-- Optional camera features to support tablets/devices without autofocus or rear cameras -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
     <uses-feature
         android:name="android.hardware.camera.front"
         android:required="false" />
