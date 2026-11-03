@@ -117,6 +117,13 @@ fun SettingsScreen(
                 onToggle = { onEvent(SettingsUiEvent.SetPostureReminderEnabled(it)) },
                 onSelectThreshold = { onEvent(SettingsUiEvent.SetPostureSlouchThreshold(it)) }
             )
+            HandGestureSettingsCard(
+                isEnabled = uiState.isGestureRecognitionEnabled,
+                sensitivity = uiState.gestureSensitivity,
+                activeGesture = uiState.currentHandGesture,
+                onToggle = { onEvent(SettingsUiEvent.SetGestureRecognitionEnabled(it)) },
+                onSelectSensitivity = { onEvent(SettingsUiEvent.SetGestureSensitivity(it)) }
+            )
             CompanionMemoryCard(
                 state = CompanionMemoryCardState(
                     memory = uiState.memory,

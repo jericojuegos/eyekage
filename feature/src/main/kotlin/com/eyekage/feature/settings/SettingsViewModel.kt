@@ -3,8 +3,10 @@ package com.eyekage.feature.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eyekage.core.behavior.PersonalityEngine
+import com.eyekage.core.model.HandObservation
 import com.eyekage.core.model.PostureObservation
 import com.eyekage.core.modes.DefaultModeCatalog
+import com.eyekage.core.ports.HandGestureSource
 import com.eyekage.core.ports.MemoryRepository
 import com.eyekage.core.ports.PostureObservationSource
 import com.eyekage.core.ports.PreferencesRepository
@@ -29,7 +31,8 @@ class SettingsViewModel(
     private val preferencesRepository: PreferencesRepository,
     private val memoryRepository: MemoryRepository,
     private val personalityEngine: PersonalityEngine = PersonalityEngine(),
-    private val postureObservationSource: PostureObservationSource? = null
+    private val postureObservationSource: PostureObservationSource? = null,
+    private val handGestureSource: HandGestureSource? = null
 ) : ViewModel() {
 
     private val availableModes = DefaultModeCatalog.getSelectableModes()
@@ -65,17 +68,29 @@ class SettingsViewModel(
         )
     }
 
+    private val gestureFlow = combine(
+        preferencesRepository.gestureRecognitionEnabled,
+        preferencesRepository.gestureSensitivity,
+        handGestureSource?.handGestures ?: flowOf(HandObservation.Empty)
+    ) { enabled, sensitivity, gestureObs ->
+        Triple(enabled, sensitivity, gestureObs)
+    }
+
     val uiState: StateFlow<SettingsUiState> = combine(
         preferencesFlow,
         postureAndVoiceFlow,
+        gestureFlow,
         memoryRepository.memory
-    ) { baseState, postureAndVoice, memory ->
+    ) { baseState, postureAndVoice, gestureData, memory ->
         val vector = personalityEngine.vector
         baseState.copy(
             isVoiceCommandsEnabled = postureAndVoice.voiceEnabled,
             isPostureReminderEnabled = postureAndVoice.postureReminderEnabled,
             postureSlouchThresholdSec = postureAndVoice.postureSlouchThresholdSec,
             currentPostureState = postureAndVoice.postureObservation.postureState,
+            isGestureRecognitionEnabled = gestureData.first,
+            gestureSensitivity = gestureData.second,
+            currentHandGesture = gestureData.third,
             memory = memory,
             currentMood = personalityEngine.currentMood,
             curiosityPercent = (vector.curiosity * PERCENT_MULTIPLIER).toInt(),
@@ -113,6 +128,12 @@ class SettingsViewModel(
                 }
                 is SettingsUiEvent.SetPostureSlouchThreshold -> {
                     preferencesRepository.setPostureSlouchThresholdSec(event.seconds)
+                }
+                is SettingsUiEvent.SetGestureRecognitionEnabled -> {
+                    preferencesRepository.setGestureRecognitionEnabled(event.enabled)
+                }
+                is SettingsUiEvent.SetGestureSensitivity -> {
+                    preferencesRepository.setGestureSensitivity(event.sensitivity)
                 }
                 is SettingsUiEvent.ResetMemory -> {
                     personalityEngine.reset()

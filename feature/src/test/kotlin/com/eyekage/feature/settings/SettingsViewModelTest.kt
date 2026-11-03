@@ -346,4 +346,75 @@ class SettingsViewModelTest {
 
         assertEquals(PostureState.SLOUCHING_DOWN, viewModel.uiState.value.currentPostureState)
     }
+
+    @Test
+    fun `SetGestureRecognitionEnabled updates preference repository and uiState`() = runTest {
+        val prefs = FakePreferencesRepository()
+        val mem = FakeMemoryRepository()
+        val viewModel = SettingsViewModel(prefs, mem)
+
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.uiState.collect()
+        }
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertTrue(viewModel.uiState.value.isGestureRecognitionEnabled)
+
+        viewModel.onEvent(SettingsUiEvent.SetGestureRecognitionEnabled(false))
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertFalse(prefs.gestureRecognitionEnabledFlow.value)
+        assertFalse(viewModel.uiState.value.isGestureRecognitionEnabled)
+    }
+
+    @Test
+    fun `SetGestureSensitivity updates preference repository and uiState`() = runTest {
+        val prefs = FakePreferencesRepository()
+        val mem = FakeMemoryRepository()
+        val viewModel = SettingsViewModel(prefs, mem)
+
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.uiState.collect()
+        }
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals("NORMAL", viewModel.uiState.value.gestureSensitivity)
+
+        viewModel.onEvent(SettingsUiEvent.SetGestureSensitivity("HIGH"))
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals("HIGH", prefs.gestureSensitivityFlow.value)
+        assertEquals("HIGH", viewModel.uiState.value.gestureSensitivity)
+    }
+
+    @Test
+    fun `HandObservation updates currentHandGesture in uiState`() = runTest {
+        val prefs = FakePreferencesRepository()
+        val mem = FakeMemoryRepository()
+        val fakeGesture = com.eyekage.core.ports.FakeHandGestureSource()
+        val viewModel = SettingsViewModel(
+            preferencesRepository = prefs,
+            memoryRepository = mem,
+            handGestureSource = fakeGesture
+        )
+
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.uiState.collect()
+        }
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(com.eyekage.core.model.HandObservation.Empty, viewModel.uiState.value.currentHandGesture)
+
+        val obs = com.eyekage.core.model.HandObservation(
+            gesture = com.eyekage.core.model.HandGesture.PEACE_SIGN,
+            confidence = 0.88f,
+            normalizedCenterX = 0.5f,
+            normalizedCenterY = 0.5f,
+            boundingBoxArea = 0.12f
+        )
+        fakeGesture.emit(obs)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(obs, viewModel.uiState.value.currentHandGesture)
+    }
 }

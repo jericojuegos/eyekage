@@ -67,18 +67,18 @@
 ---
 
 ### 4. Settings Screen, Card & Final Verification (`⚡ BATCH`: Settings & Verification)
-- [ ] **4.1** `[FE]` Implement `HandGestureSettingsCard.kt` in `feature/src/main/kotlin/com/eyekage/feature/settings/`:
+- [x] **4.1** `[FE]` Implement `HandGestureSettingsCard.kt` in `feature/src/main/kotlin/com/eyekage/feature/settings/`:
   - AMOLED dark card matching design system tokens (`#0A0A12`, `#26263A`, `#22D3EE`, `#10B981`)
   - Features opt-in switch, real-time live detection pill, sensitivity chips (`Low`, `Normal`, `High`), and privacy shield disclosure
   - _Requirements: 4.2, 4.3, 4.4, 4.5_
-- [ ] **4.2** `[FE]` Update `SettingsScreen.kt` and `SettingsViewModel.kt`:
+- [x] **4.2** `[FE]` Update `SettingsScreen.kt` and `SettingsViewModel.kt`:
   - Mounts `HandGestureSettingsCard` directly beneath `PostureSettingsCard`
   - Wires preference toggles and sensitivity chip selections to `PreferencesRepository`
   - _Requirements: 4.1, 4.2, 4.3_
-- [ ] **4.3** `[FE]` Write unit tests in `feature/src/test/kotlin/com/eyekage/feature/settings/HandGestureSettingsCardTest.kt`:
+- [x] **4.3** `[FE]` Write unit tests in `feature/src/test/kotlin/com/eyekage/feature/settings/HandGestureSettingsCardTest.kt`:
   - Verify card UI interactions, switch toggles, sensitivity persistence, and live status pill
   - _Requirements: 4.1–4.5_
-- [ ] **4.4** `[REVIEW]` **Final Feature Checkpoint:** Run `./gradlew checkMergedManifestPermissions testDebugUnitTest` — all checks must pass with zero errors (triggers automatic `/ship` & roadmap sync!).
+- [x] **4.4** `[REVIEW]` **Final Feature Checkpoint:** Run `./gradlew checkMergedManifestPermissions testDebugUnitTest` — all checks must pass with zero errors (triggers automatic `/ship` & roadmap sync!).
 
 ---
 
@@ -107,7 +107,7 @@
 ---
 
 ## 🧪 Feature Verification & UAT Gate
-- [ ] **Level 1 (Automated Build & Unit Tests):** Typecheck, unit tests (`testDebugUnitTest`), and privacy guard (`checkMergedManifestPermissions`) pass with zero errors
+- [x] **Level 1 (Automated Build & Unit Tests):** Typecheck, unit tests (`testDebugUnitTest`), and privacy guard (`checkMergedManifestPermissions`) pass with zero errors
 - [ ] **Level 2 & 3 (UAT & Visual Match):** `/verify` completed in [`uat.md`](./uat.md)
 
 ---
@@ -125,3 +125,4 @@
 | 2026-11-03 | Batch 1 (1.1-1.5) | Implemented pure-Kotlin domain models, ports, `HandGestureReactionEngine`, and unit tests. All passed. |
 | 2026-11-03 | Batch 2 (2.1-2.5) | Implemented `VisionHandGestureSource`, DataStore preferences, `AppContainer` DI, and platform tests. Passed. |
 | 2026-11-03 | Batch 3 (3.1-3.5) | Implemented asymmetrical eye wink modifiers, CompanionViewModel gesture reactions & memory increments, top HUD feedback chip, and gesture unit tests. Passed. |
+| 2026-11-03 | Batch 4 (4.1-4.4) | Implemented `HandGestureSettingsCard.kt`, mounted in `SettingsScreen.kt`, wired `SettingsViewModel.kt`, wrote unit tests, and verified full manifest & test suite. Passed. |
