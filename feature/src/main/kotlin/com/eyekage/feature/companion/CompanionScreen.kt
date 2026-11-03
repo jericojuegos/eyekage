@@ -36,6 +36,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import com.eyekage.core.behavior.CompanionBehaviorStateMachine
 import com.eyekage.core.behavior.PostureAlertState
+import com.eyekage.core.model.HandGestureReaction
 import com.eyekage.core.motion.EyeMotionEngine
 import com.eyekage.core.motion.EyeMotionState
 import com.eyekage.ui.eyes.AwakeningOverlay
@@ -94,6 +95,8 @@ fun CompanionScreen(
             spec = activeSpec,
             microExpression = uiState.microExpression,
             eyeTiltDegrees = uiState.eyeTiltDegrees,
+            leftEyeOpennessMultiplier = uiState.leftEyeOpennessMultiplier,
+            rightEyeOpennessMultiplier = uiState.rightEyeOpennessMultiplier,
             onPoke = {
                 view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
                 behaviorStateMachine.poke(System.currentTimeMillis())
@@ -109,6 +112,8 @@ fun CompanionScreen(
             isCameraActive = uiState.isCameraTrackingActive,
             isVoiceActive = uiState.isVoiceListening,
             postureAlert = uiState.postureAlert,
+            gestureLabel = uiState.activeGestureFeedbackLabel,
+            onDismissGestureLabel = { onEvent(CompanionUiEvent.DismissGestureBadge) },
             onDismissPostureAlert = { onEvent(CompanionUiEvent.DismissPostureAlert) },
             onToggleDebug = { onEvent(CompanionUiEvent.ToggleDebugOverlay) },
             onNavigateToSettings = onNavigateToSettings
@@ -135,6 +140,7 @@ private fun LaunchedEyeFrameLoop(
     LaunchedEffect(Unit) {
         var lastTimeMs = 0L
         var accumulatedGazeMs = 0L
+        var currentMotionState = EyeMotionState()
         while (isActive) {
             withFrameNanos { frameTimeNanos ->
                 val timeMs = frameTimeNanos / NANOS_TO_MILLIS
@@ -154,12 +160,19 @@ private fun LaunchedEyeFrameLoop(
                 }
 
                 val output = behaviorStateMachine.update(uiState.faceObservation, timeMs)
+                val isFrozen = uiState.handGestureReaction is HandGestureReaction.HoldStop && uiState.handGestureReaction.isFrozen
+                val isFist = uiState.handGestureReaction is HandGestureReaction.FistResolve
+                val effectiveTarget = if (isFrozen) com.eyekage.core.motion.GazeTarget(currentMotionState.gazeX, currentMotionState.gazeY) else output.targetGaze
+                val effectivePupilModifier = if (isFist) 0.75f else output.pupilScaleModifier
+                val effectiveEyelidModifier = if (isFrozen) 1.0f else output.eyelidModifier
+
                 val newState = motionEngine.update(
-                    target = output.targetGaze,
+                    target = effectiveTarget,
                     timestampMs = timeMs,
-                    eyelidModifier = output.eyelidModifier,
-                    pupilScaleModifier = output.pupilScaleModifier
+                    eyelidModifier = effectiveEyelidModifier,
+                    pupilScaleModifier = effectivePupilModifier
                 )
+                currentMotionState = newState
                 onUpdateFrame(output.awakeningProgress, newState)
             }
         }
@@ -198,6 +211,8 @@ private fun BoxScope.CompanionTopControls(
     isCameraActive: Boolean,
     isVoiceActive: Boolean,
     postureAlert: PostureAlertState,
+    gestureLabel: String? = null,
+    onDismissGestureLabel: () -> Unit = {},
     onDismissPostureAlert: () -> Unit,
     onToggleDebug: () -> Unit,
     onNavigateToSettings: () -> Unit
@@ -209,6 +224,23 @@ private fun BoxScope.CompanionTopControls(
         horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        if (gestureLabel != null) {
+            Box(
+                modifier = Modifier
+                    .background(
+                        color = Color(0xFF10B981).copy(alpha = 0.2f),
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    .clickable { onDismissGestureLabel() }
+                    .padding(horizontal = 10.dp, vertical = 4.dp)
+            ) {
+                androidx.compose.material3.Text(
+                    text = gestureLabel,
+                    color = Color(0xFF10B981),
+                    style = androidx.compose.material3.MaterialTheme.typography.labelSmall
+                )
+            }
+        }
         if (postureAlert is PostureAlertState.AlertActive) {
             Box(
                 modifier = Modifier

@@ -63,6 +63,8 @@ fun RobotEyesCanvas(
     spec: EyeSpec = EyeSpec.Default,
     microExpression: MicroExpression = MicroExpression(),
     eyeTiltDegrees: Float = 0.0f,
+    leftEyeOpennessMultiplier: Float = 1.0f,
+    rightEyeOpennessMultiplier: Float = 1.0f,
     onPoke: ((Offset) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
@@ -93,7 +95,9 @@ fun RobotEyesCanvas(
 
         val shiftX = state.gazeX * eyeWidth * 0.22f
         val shiftY = state.gazeY * eyeHeight * 0.20f
-        val openness = (state.eyelidOpenness * microExpression.eyelidOpennessMultiplier).coerceIn(0.0f, 1.0f)
+        val baseOpenness = (state.eyelidOpenness * microExpression.eyelidOpennessMultiplier).coerceIn(0.0f, 1.0f)
+        val leftOpenness = (baseOpenness * leftEyeOpennessMultiplier).coerceIn(0.0f, 1.0f)
+        val rightOpenness = (baseOpenness * rightEyeOpennessMultiplier).coerceIn(0.0f, 1.0f)
 
         val leftParams = EyeDrawParams(
             centerX = leftEyeCenterX,
@@ -102,7 +106,7 @@ fun RobotEyesCanvas(
             eyeHeight = eyeHeight,
             shiftX = shiftX,
             shiftY = shiftY,
-            openness = openness,
+            openness = leftOpenness,
             pupilScale = state.pupilScale,
             spec = spec,
             bottomEyelidArch = microExpression.bottomEyelidArch,
@@ -112,12 +116,12 @@ fun RobotEyesCanvas(
         if (eyeTiltDegrees != 0.0f) {
             rotate(degrees = eyeTiltDegrees, pivot = Offset(size.width * 0.5f, centerY)) {
                 drawOrientedEye(-microExpression.eyeTiltDegrees, leftParams)
-                val rightParams = leftParams.copy(centerX = rightEyeCenterX)
+                val rightParams = leftParams.copy(centerX = rightEyeCenterX, openness = rightOpenness)
                 drawOrientedEye(microExpression.eyeTiltDegrees * RIGHT_TILT_RATIO, rightParams)
             }
         } else {
             drawOrientedEye(-microExpression.eyeTiltDegrees, leftParams)
-            val rightParams = leftParams.copy(centerX = rightEyeCenterX)
+            val rightParams = leftParams.copy(centerX = rightEyeCenterX, openness = rightOpenness)
             drawOrientedEye(microExpression.eyeTiltDegrees * RIGHT_TILT_RATIO, rightParams)
         }
     }

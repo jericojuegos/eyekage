@@ -48,21 +48,21 @@
 ---
 
 ### 3. Eyes Canvas Reactions & Companion Screen HUD (`⚡ BATCH`: Companion Expressions & Feedback)
-- [ ] **3.1** `[FE]` Update `RobotEyesCanvas.kt` in `ui/src/main/kotlin/com/eyekage/ui/eyes/`:
+- [x] **3.1** `[FE]` Update `RobotEyesCanvas.kt` in `ui/src/main/kotlin/com/eyekage/ui/eyes/`:
   - Adds asymmetrical left/right eye openness modifiers (`leftEyeOpennessMultiplier`, `rightEyeOpennessMultiplier`) to support natural winks
   - _Requirements: 3.2_
-- [ ] **3.2** `[FE]` Update `CompanionViewModel.kt` in `feature/src/main/kotlin/com/eyekage/feature/companion/`:
+- [x] **3.2** `[FE]` Update `CompanionViewModel.kt` in `feature/src/main/kotlin/com/eyekage/feature/companion/`:
   - Injects `HandGestureSource` and `HandGestureReactionEngine`
   - Dispatches procedural reactions: Wave (happy crescent + double blink + memory increment), Peace (playful wink), Thumbs Up (affirmative bounce + memory increment), Fist (focused pupil scale), Hold (frozen saccades)
   - Manages active gesture feedback chip state with 1.8s auto-dismiss
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6_
-- [ ] **3.3** `[FE]` Update `CompanionScreen.kt` in `feature/src/main/kotlin/com/eyekage/feature/companion/`:
+- [x] **3.3** `[FE]` Update `CompanionScreen.kt` in `feature/src/main/kotlin/com/eyekage/feature/companion/`:
   - Mounts animated emerald Active Gesture Feedback chip in top HUD bar when a gesture is recognized
   - _Requirements: 3.4, 3.6_
-- [ ] **3.4** `[FE]` Write unit tests in `feature/src/test/kotlin/com/eyekage/feature/companion/CompanionViewModelGestureTest.kt`:
+- [x] **3.4** `[FE]` Write unit tests in `feature/src/test/kotlin/com/eyekage/feature/companion/CompanionViewModelGestureTest.kt`:
   - Verify gesture reaction dispatch, memory increment on wave/thumbs-up, wink trigger, and HUD chip emission
   - _Requirements: 3.1–3.6_
-- [ ] **3.5** `[REVIEW]` **Companion Checkpoint:** Run `./gradlew compileDebugKotlin` — must pass with zero warnings or errors.
+- [x] **3.5** `[REVIEW]` **Companion Checkpoint:** Run `./gradlew compileDebugKotlin` — must pass with zero warnings or errors.
 
 ---
 
@@ -124,3 +124,4 @@
 | 2026-11-01 | Init | Feature spec bundle created for `09-hand-gestures`. |
 | 2026-11-03 | Batch 1 (1.1-1.5) | Implemented pure-Kotlin domain models, ports, `HandGestureReactionEngine`, and unit tests. All passed. |
 | 2026-11-03 | Batch 2 (2.1-2.5) | Implemented `VisionHandGestureSource`, DataStore preferences, `AppContainer` DI, and platform tests. Passed. |
+| 2026-11-03 | Batch 3 (3.1-3.5) | Implemented asymmetrical eye wink modifiers, CompanionViewModel gesture reactions & memory increments, top HUD feedback chip, and gesture unit tests. Passed. |
