@@ -12,8 +12,8 @@
 
 ## 🚦 Project State
 
-**Stage:** `active` (Phase 3 Wave 6 Shipped — `08-head-pose-posture` Complete)
-**Stage last updated:** `2026-11-01`
+**Stage:** `active` (Phase 3 Wave 7 Shipped — `09-hand-gestures` Complete)
+**Stage last updated:** `2026-11-03`
 
 | Stage | Meaning | Next Action / Skill |
 |---|---|---|

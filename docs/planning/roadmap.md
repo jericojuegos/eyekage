@@ -96,6 +96,7 @@ flowchart LR
 | Wave | Feature Slug | Spec Bundle Path | Primary Output | Depends On | Touches (Isolation Zone) | Status |
 |---|---|---|---|---|---|---|
 | **6** | `08-head-pose-posture` | [`docs/specs/08-head-pose-posture/`](../specs/08-head-pose-posture/requirements.md) | On-device head pose (pitch/yaw/roll), inquisitive eye tilt, affirmative nod reaction, desk slouch reminders | `04-gaze-tracking-reactions`, `06-personality-memory` | `:platform:vision`, `:core:model`, `:core:behavior`, `:core:ports`, `:ui:eyes`, `:feature:companion`, `:feature:settings` | ✅ `[x]` Complete |
+| **7** | `09-hand-gestures` | [`docs/specs/09-hand-gestures/`](../specs/09-hand-gestures/requirements.md) | On-device hand gesture recognition (Wave, Peace, Thumbs Up, Fist, Palm), winks, expressive reactions, HUD chips, settings card | `08-head-pose-posture`, `06-personality-memory` | `:core:model`, `:core:behavior`, `:core:ports`, `:platform:vision`, `:platform:preferences`, `:ui:eyes`, `:feature:companion`, `:feature:settings`, `:app` | ✅ `[x]` Complete |
 
 ---
 
