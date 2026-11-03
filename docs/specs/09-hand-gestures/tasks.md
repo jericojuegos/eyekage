@@ -30,20 +30,20 @@
 ---
 
 ### 2. Platform Vision Source, Preferences & DI (`⚡ BATCH`: Platform Vision & Persistence)
-- [ ] **2.1** `[BE]` Update `PreferencesRepository.kt` and `DataStorePreferencesRepository.kt`:
+- [x] **2.1** `[BE]` Update `PreferencesRepository.kt` and `DataStorePreferencesRepository.kt`:
   - Persists `gesture_recognition_enabled` (boolean, default `true`) and `gesture_sensitivity` (string, default `"NORMAL"`) in Jetpack Preferences DataStore
   - _Requirements: 4.1_
-- [ ] **2.2** `[BE]` Implement `VisionHandGestureSource.kt` in `platform/src/main/kotlin/com/eyekage/platform/vision/`:
+- [x] **2.2** `[BE]` Implement `VisionHandGestureSource.kt` in `platform/src/main/kotlin/com/eyekage/platform/vision/`:
   - Connects to front camera frame analysis loop, maps normalized bounding coordinates to centered `[-1.0, 1.0]` space, and emits `HandObservation`
   - Enforces zero camera frame or handprint persistence and lifecycle-aware cleanup
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_
-- [ ] **2.3** `[BE]` Provide `HandGestureSource` singleton in `app/src/main/kotlin/com/eyekage/di/AppContainer.kt`:
+- [x] **2.3** `[BE]` Provide `HandGestureSource` singleton in `app/src/main/kotlin/com/eyekage/di/AppContainer.kt`:
   - Wires `VisionHandGestureSource` into the application composition root
   - _Requirements: 5.1, 5.2_
-- [ ] **2.4** `[BE]` Write automated tests in `platform/src/test/kotlin/com/eyekage/platform/vision/VisionHandGestureSourceTest.kt`:
+- [x] **2.4** `[BE]` Write automated tests in `platform/src/test/kotlin/com/eyekage/platform/vision/VisionHandGestureSourceTest.kt`:
   - Test coordinate normalization, lifecycle release, and empty frame fallbacks
   - _Requirements: 2.1–2.5_
-- [ ] **2.5** `[REVIEW]` **Platform Checkpoint:** Run `./gradlew :platform:test` — must pass with zero errors.
+- [x] **2.5** `[REVIEW]` **Platform Checkpoint:** Run `./gradlew :platform:test` — must pass with zero errors.
 
 ---
 
@@ -123,3 +123,4 @@
 | :--- | :--- | :--- |
 | 2026-11-01 | Init | Feature spec bundle created for `09-hand-gestures`. |
 | 2026-11-03 | Batch 1 (1.1-1.5) | Implemented pure-Kotlin domain models, ports, `HandGestureReactionEngine`, and unit tests. All passed. |
+| 2026-11-03 | Batch 2 (2.1-2.5) | Implemented `VisionHandGestureSource`, DataStore preferences, `AppContainer` DI, and platform tests. Passed. |

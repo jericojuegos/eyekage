@@ -3,6 +3,7 @@ package com.eyekage.di
 import android.content.Context
 import com.eyekage.core.behavior.PersonalityEngine
 import com.eyekage.core.ports.FaceObservationSource
+import com.eyekage.core.ports.HandGestureSource
 import com.eyekage.core.ports.MemoryRepository
 import com.eyekage.core.ports.PostureObservationSource
 import com.eyekage.core.ports.PreferencesRepository
@@ -11,6 +12,7 @@ import com.eyekage.platform.audio.SpeechRecognizerVoiceSource
 import com.eyekage.platform.preferences.DataStoreMemoryRepository
 import com.eyekage.platform.preferences.DataStorePreferencesRepository
 import com.eyekage.platform.vision.VisionFaceObservationSource
+import com.eyekage.platform.vision.VisionHandGestureSource
 import com.eyekage.platform.vision.VisionHeadPoseSource
 
 /**
@@ -24,6 +26,7 @@ interface AppContainer {
     val personalityEngine: PersonalityEngine
     val voiceCommandSource: VoiceCommandSource
     val postureObservationSource: PostureObservationSource
+    val handGestureSource: HandGestureSource
 }
 
 class DefaultAppContainer(
@@ -38,9 +41,14 @@ class DefaultAppContainer(
         VisionHeadPoseSource()
     }
 
+    override val handGestureSource: HandGestureSource by lazy {
+        VisionHandGestureSource(appContext)
+    }
+
     override val faceObservationSource: FaceObservationSource by lazy {
         VisionFaceObservationSource(appContext).apply {
             headPoseSource = postureObservationSource as? VisionHeadPoseSource
+            handGestureSource = this@DefaultAppContainer.handGestureSource as? VisionHandGestureSource
         }
     }
 

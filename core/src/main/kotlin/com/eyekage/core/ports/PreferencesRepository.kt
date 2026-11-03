@@ -15,6 +15,8 @@ interface PreferencesRepository {
     val voiceCommandsEnabled: Flow<Boolean>
     val postureReminderEnabled: Flow<Boolean>
     val postureSlouchThresholdSec: Flow<Int>
+    val gestureRecognitionEnabled: Flow<Boolean>
+    val gestureSensitivity: Flow<String>
 
     suspend fun setDefaultModeId(modeId: String)
     suspend fun setCameraEnabled(enabled: Boolean)
@@ -24,4 +26,6 @@ interface PreferencesRepository {
     suspend fun setVoiceCommandsEnabled(enabled: Boolean)
     suspend fun setPostureReminderEnabled(enabled: Boolean)
     suspend fun setPostureSlouchThresholdSec(seconds: Int)
+    suspend fun setGestureRecognitionEnabled(enabled: Boolean)
+    suspend fun setGestureSensitivity(sensitivity: String)
 }

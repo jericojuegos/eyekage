@@ -39,6 +39,7 @@ class VisionFaceObservationSource(
     override val isRunning: StateFlow<Boolean> = _isRunning.asStateFlow()
 
     var headPoseSource: VisionHeadPoseSource? = null
+    var handGestureSource: VisionHandGestureSource? = null
 
     private var faceDetector: FaceDetector? = null
 
@@ -146,6 +147,12 @@ class VisionFaceObservationSource(
         } else {
             headPoseSource?.onFaceLost()
         }
+
+        handGestureSource?.processFrame(
+            bitmap = bitmap,
+            rotationDegrees = rotationDegrees,
+            timestampNanos = timestampNanos
+        )
     }
 
     override fun start() {
@@ -166,5 +173,6 @@ class VisionFaceObservationSource(
         faceDetector = null
         _observations.value = FaceObservation.Empty
         headPoseSource?.stop()
+        handGestureSource?.stop()
     }
 }

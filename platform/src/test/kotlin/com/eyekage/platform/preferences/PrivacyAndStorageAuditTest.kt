@@ -38,7 +38,9 @@ class PrivacyAndStorageAuditTest {
         "desk_mode_enabled",
         "voice_commands_enabled",
         "posture_reminder_enabled",
-        "posture_slouch_threshold_sec"
+        "posture_slouch_threshold_sec",
+        "gesture_recognition_enabled",
+        "gesture_sensitivity"
     )
 
     @Before
@@ -71,10 +73,12 @@ class PrivacyAndStorageAuditTest {
             DataStorePreferencesRepository.KEY_DESK_MODE_ENABLED.name,
             DataStorePreferencesRepository.KEY_VOICE_COMMANDS_ENABLED.name,
             DataStorePreferencesRepository.KEY_POSTURE_REMINDER_ENABLED.name,
-            DataStorePreferencesRepository.KEY_POSTURE_SLOUCH_THRESHOLD_SEC.name
+            DataStorePreferencesRepository.KEY_POSTURE_SLOUCH_THRESHOLD_SEC.name,
+            DataStorePreferencesRepository.KEY_GESTURE_RECOGNITION_ENABLED.name,
+            DataStorePreferencesRepository.KEY_GESTURE_SENSITIVITY.name
         )
 
-        assertEquals(8, companionKeys.size)
+        assertEquals(10, companionKeys.size)
         assertEquals(allowedKeys, companionKeys.toSet())
     }
 
@@ -89,6 +93,8 @@ class PrivacyAndStorageAuditTest {
         repository.setVoiceCommandsEnabled(true)
         repository.setPostureReminderEnabled(true)
         repository.setPostureSlouchThresholdSec(15)
+        repository.setGestureRecognitionEnabled(true)
+        repository.setGestureSensitivity("HIGH")
 
         // Read all back to ensure I/O flushed
         assertEquals("mode.purple_orbit", repository.defaultModeId.first())
@@ -99,6 +105,8 @@ class PrivacyAndStorageAuditTest {
         assertTrue(repository.voiceCommandsEnabled.first())
         assertTrue(repository.postureReminderEnabled.first())
         assertEquals(15, repository.postureSlouchThresholdSec.first())
+        assertTrue(repository.gestureRecognitionEnabled.first())
+        assertEquals("HIGH", repository.gestureSensitivity.first())
 
         val forbiddenImageExts = setOf("jpg", "png", "webp", "bmp", "raw")
         val forbiddenDbExts = setOf("db", "sqlite", "sqlite-wal")

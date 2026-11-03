@@ -33,6 +33,8 @@ class DataStorePreferencesRepository(
         val KEY_VOICE_COMMANDS_ENABLED = booleanPreferencesKey("voice_commands_enabled")
         val KEY_POSTURE_REMINDER_ENABLED = booleanPreferencesKey("posture_reminder_enabled")
         val KEY_POSTURE_SLOUCH_THRESHOLD_SEC = intPreferencesKey("posture_slouch_threshold_sec")
+        val KEY_GESTURE_RECOGNITION_ENABLED = booleanPreferencesKey("gesture_recognition_enabled")
+        val KEY_GESTURE_SENSITIVITY = stringPreferencesKey("gesture_sensitivity")
 
         const val DEFAULT_MODE_ID_VALUE = "mode.normal"
         const val DEFAULT_CAMERA_ENABLED_VALUE = false
@@ -42,6 +44,8 @@ class DataStorePreferencesRepository(
         const val DEFAULT_VOICE_COMMANDS_ENABLED_VALUE = false
         const val DEFAULT_POSTURE_REMINDER_ENABLED_VALUE = false
         const val DEFAULT_POSTURE_SLOUCH_THRESHOLD_SEC_VALUE = 30
+        const val DEFAULT_GESTURE_RECOGNITION_ENABLED_VALUE = true
+        const val DEFAULT_GESTURE_SENSITIVITY_VALUE = "NORMAL"
     }
 
     override val defaultModeId: Flow<String> = dataStore.data.map { preferences ->
@@ -74,6 +78,14 @@ class DataStorePreferencesRepository(
 
     override val postureSlouchThresholdSec: Flow<Int> = dataStore.data.map { preferences ->
         preferences[KEY_POSTURE_SLOUCH_THRESHOLD_SEC] ?: DEFAULT_POSTURE_SLOUCH_THRESHOLD_SEC_VALUE
+    }
+
+    override val gestureRecognitionEnabled: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[KEY_GESTURE_RECOGNITION_ENABLED] ?: DEFAULT_GESTURE_RECOGNITION_ENABLED_VALUE
+    }
+
+    override val gestureSensitivity: Flow<String> = dataStore.data.map { preferences ->
+        preferences[KEY_GESTURE_SENSITIVITY] ?: DEFAULT_GESTURE_SENSITIVITY_VALUE
     }
 
     override suspend fun setDefaultModeId(modeId: String) {
@@ -121,6 +133,18 @@ class DataStorePreferencesRepository(
     override suspend fun setPostureSlouchThresholdSec(seconds: Int) {
         dataStore.edit { preferences ->
             preferences[KEY_POSTURE_SLOUCH_THRESHOLD_SEC] = seconds
+        }
+    }
+
+    override suspend fun setGestureRecognitionEnabled(enabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[KEY_GESTURE_RECOGNITION_ENABLED] = enabled
+        }
+    }
+
+    override suspend fun setGestureSensitivity(sensitivity: String) {
+        dataStore.edit { preferences ->
+            preferences[KEY_GESTURE_SENSITIVITY] = sensitivity
         }
     }
 }
