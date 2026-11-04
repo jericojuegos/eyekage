@@ -3,9 +3,19 @@
   <ManuallySuppressedIssues></ManuallySuppressedIssues>
   <CurrentIssues>
     <ID>ArgumentListWrapping:BlinkSchedulerTest.kt$BlinkSchedulerTest$("Blink triggered at $blinkTimeMs ms, must be between 3000ms and 7000ms", blinkTimeMs in 3000L..7000L )</ID>
+    <ID>ArgumentListWrapping:CompanionScreen.kt$(currentMotionState.gazeX, currentMotionState.gazeY)</ID>
+    <ID>ArgumentListWrapping:CompanionViewModelPostureTest.kt$CompanionViewModelPostureTest$(pitchDegrees = -15f, yawDegrees = 0f, rollDegrees = 0f, timestampNanos = 1_000_000_000L)</ID>
+    <ID>ArgumentListWrapping:CompanionViewModelPostureTest.kt$CompanionViewModelPostureTest$(pitchDegrees = -20f, yawDegrees = 0f, rollDegrees = 0f, timestampNanos = 10_000_000_000L)</ID>
+    <ID>ArgumentListWrapping:CompanionViewModelPostureTest.kt$CompanionViewModelPostureTest$(pitchDegrees = -20f, yawDegrees = 0f, rollDegrees = 0f, timestampNanos = 30_000_000_000L)</ID>
+    <ID>ArgumentListWrapping:CompanionViewModelPostureTest.kt$CompanionViewModelPostureTest$(pitchDegrees = 0f, yawDegrees = 0f, rollDegrees = 0f, timestampNanos = 1_400_000_000L)</ID>
     <ID>ArgumentListWrapping:EyeMotionEngineTest.kt$EyeMotionEngineTest$("EyelidOpenness (${state.eyelidOpenness}) must be in [0.0, 1.0]", state.eyelidOpenness in 0.0f..1.0f)</ID>
+    <ID>ArgumentListWrapping:HeadPoseTransformTest.kt$HeadPoseTransformTest$("Roll should be negative for left tilt: ${obsLeft.headPose.rollDegrees}", obsLeft.headPose.rollDegrees &lt; -12.0f)</ID>
+    <ID>ArgumentListWrapping:HeadPoseTransformTest.kt$HeadPoseTransformTest$("Roll should be positive for right tilt: ${obsRight.headPose.rollDegrees}", obsRight.headPose.rollDegrees &gt; 12.0f)</ID>
+    <ID>ArgumentListWrapping:HeadPoseTransformTest.kt$HeadPoseTransformTest$("Yaw magnitude should exceed 25 degrees: ${obsTurn.headPose.yawDegrees}", kotlin.math.abs(obsTurn.headPose.yawDegrees) &gt;= 25.0f)</ID>
     <ID>ArgumentListWrapping:OneEuroFilterTest.kt$OneEuroFilterTest$("Filtered jitter ($maxJitterFiltered) should be less than raw jitter ($maxJitterRaw)", maxJitterFiltered &lt; maxJitterRaw * 0.4f )</ID>
     <ID>ArgumentListWrapping:OneEuroFilterTest.kt$OneEuroFilterTest$("Steps to reach 90% ($stepsToReach90Percent) should be &lt;= 25", stepsToReach90Percent in 1..25 )</ID>
+    <ID>ArgumentListWrapping:PostureMonitorTest.kt$PostureMonitorTest$(PostureState.LEANING_CLOSE)</ID>
+    <ID>ArgumentListWrapping:PostureMonitorTest.kt$PostureMonitorTest$(createObservation(PostureState.LEANING_CLOSE), currentTimeMs = time)</ID>
     <ID>ArgumentListWrapping:RobotEyesCanvas.kt$(alpha = params.spec.glowColor.alpha * params.openness)</ID>
     <ID>ArgumentListWrapping:RobotEyesCanvas.kt$(params.centerX - params.eyeWidth * 0.5f + params.shiftX, params.centerY - currentEyeHeight * 0.5f + params.shiftY)</ID>
     <ID>ArgumentListWrapping:RobotEyesCanvas.kt$(params.centerX - slitWidth * 0.5f + params.shiftX, params.centerY - slitHeight * 0.5f + params.shiftY)</ID>
@@ -30,9 +40,26 @@
     <ID>ArgumentListWrapping:RobotEyesCanvas.kt$EyeIrisCoreRenderer$(scope, pupilCenterX, pupilCenterY, coreWidth, coreHeight, params.openness, params.spec.coreColor)</ID>
     <ID>ArgumentListWrapping:RobotEyesCanvas.kt$EyeIrisCoreRenderer$(scope, pupilCenterX, pupilCenterY, coreWidth, params.openness, params.spec)</ID>
     <ID>ArgumentListWrapping:SaccadeGeneratorTest.kt$SaccadeGeneratorTest$("Saccade triggered at $saccadeTimeMs ms, must be between 1500ms and 4000ms", saccadeTimeMs in 1500L..4000L )</ID>
+    <ID>ArgumentListWrapping:VisionHeadPoseSourceTest.kt$VisionHeadPoseSourceTest$("Roll should be positive for right tilt: ${obs1.headPose.rollDegrees}", obs1.headPose.rollDegrees &gt; 5f)</ID>
+    <ID>CyclomaticComplexMethod:CompanionViewModel.kt$CompanionViewModel$fun onEvent(event: CompanionUiEvent)</ID>
+    <ID>CyclomaticComplexMethod:HandGestureReactionEngine.kt$HandGestureReactionEngine$fun processObservation( observation: HandObservation, currentTimeMs: Long = System.currentTimeMillis(), isEnabled: Boolean = true ): HandGestureReaction</ID>
+    <ID>DestructuringDeclarationWithTooManyEntries:PostureSettingsCard.kt$val (pillBgColor, dotColor, statusText, textColor) = when { !isEnabled -&gt; { Tuple4( Color.White.copy(alpha = INACTIVE_PILL_ALPHA), Color.Gray, "Posture Reminders Inactive / Off", Color.White.copy(alpha = STATUS_TEXT_ALPHA) ) } postureState == PostureState.SLOUCHING_DOWN -&gt; { Tuple4( AmberAccent.copy(alpha = ACTIVE_PILL_ALPHA), AmberAccent, "▲ Slouching Detected", AmberAccent ) } postureState == PostureState.LEANING_CLOSE -&gt; { Tuple4( AmberAccent.copy(alpha = ACTIVE_PILL_ALPHA), AmberAccent, "▲ Too Close (&lt;30cm)", AmberAccent ) } postureState == PostureState.TILTED_CURIOUS -&gt; { Tuple4( CyanAccent.copy(alpha = ACTIVE_PILL_ALPHA), CyanAccent, "● Tilted (Curious)", CyanAccent ) } postureState == PostureState.TURNED_AWAY -&gt; { Tuple4( Color.White.copy(alpha = INACTIVE_PILL_ALPHA), Color.Gray, "● Turned Away", Color.White.copy(alpha = STATUS_TEXT_ALPHA) ) } else -&gt; { Tuple4( EmeraldAccent.copy(alpha = ACTIVE_PILL_ALPHA), EmeraldAccent, "● Balanced Posture", EmeraldAccent ) } }</ID>
+    <ID>LongMethod:CompanionScreen.kt$@Composable private fun BoxScope.CompanionTopControls( isCameraActive: Boolean, isVoiceActive: Boolean, postureAlert: PostureAlertState, gestureLabel: String? = null, onDismissGestureLabel: () -&gt; Unit = {}, onDismissPostureAlert: () -&gt; Unit, onToggleDebug: () -&gt; Unit, onNavigateToSettings: () -&gt; Unit )</ID>
+    <ID>LongMethod:CompanionViewModel.kt$CompanionViewModel$fun onEvent(event: CompanionUiEvent)</ID>
+    <ID>LongMethod:HandGestureSettingsCard.kt$@Composable private fun HandGestureSensitivitySection( isEnabled: Boolean, currentSensitivity: String, onSelectSensitivity: (String) -&gt; Unit )</ID>
+    <ID>LongMethod:HandGestureSettingsCard.kt$@Composable private fun HandGestureStatusPill( isEnabled: Boolean, activeGesture: HandObservation )</ID>
+    <ID>LongMethod:PostureSettingsCard.kt$@Composable private fun PostureSensitivitySection( isEnabled: Boolean, currentThresholdSec: Int, onSelectThreshold: (Int) -&gt; Unit )</ID>
+    <ID>LongMethod:PostureSettingsCard.kt$@Composable private fun PostureStatusPill( isEnabled: Boolean, postureState: PostureState )</ID>
+    <ID>LongMethod:SettingsScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun SettingsScreen( uiState: SettingsUiState, onEvent: (SettingsUiEvent) -&gt; Unit, onNavigateBack: () -&gt; Unit, modifier: Modifier = Modifier )</ID>
+    <ID>LongParameterList:CompanionScreen.kt$( isCameraActive: Boolean, isVoiceActive: Boolean, postureAlert: PostureAlertState, gestureLabel: String? = null, onDismissGestureLabel: () -&gt; Unit = {}, onDismissPostureAlert: () -&gt; Unit, onToggleDebug: () -&gt; Unit, onNavigateToSettings: () -&gt; Unit )</ID>
+    <ID>LongParameterList:CompanionViewModel.kt$CompanionViewModel$( private val preferencesRepository: PreferencesRepository, private val faceObservationSource: FaceObservationSource, private val memoryRepository: MemoryRepository, val personalityEngine: PersonalityEngine = PersonalityEngine(), val behaviorStateMachine: CompanionBehaviorStateMachine = CompanionBehaviorStateMachine(), val voiceCommandSource: VoiceCommandSource? = null, val postureObservationSource: PostureObservationSource? = null, val headPoseReactionEngine: HeadPoseReactionEngine = HeadPoseReactionEngine(), val postureMonitor: PostureMonitor = PostureMonitor(), val handGestureSource: HandGestureSource? = null, val handGestureReactionEngine: HandGestureReactionEngine = HandGestureReactionEngine() )</ID>
+    <ID>LongParameterList:HandGestureSettingsCard.kt$( isEnabled: Boolean, sensitivity: String, activeGesture: HandObservation, onToggle: (Boolean) -&gt; Unit, onSelectSensitivity: (String) -&gt; Unit, modifier: Modifier = Modifier )</ID>
+    <ID>LongParameterList:PostureSettingsCard.kt$( isEnabled: Boolean, slouchThresholdSec: Int, postureState: PostureState, onToggle: (Boolean) -&gt; Unit, onSelectThreshold: (Int) -&gt; Unit, modifier: Modifier = Modifier )</ID>
+    <ID>LongParameterList:RobotEyesCanvas.kt$( state: EyeMotionState, spec: EyeSpec = EyeSpec.Default, microExpression: MicroExpression = MicroExpression(), eyeTiltDegrees: Float = 0.0f, leftEyeOpennessMultiplier: Float = 1.0f, rightEyeOpennessMultiplier: Float = 1.0f, onPoke: ((Offset) -&gt; Unit)? = null, modifier: Modifier = Modifier )</ID>
     <ID>LongParameterList:RobotEyesCanvas.kt$EyeIrisCoreRenderer$( scope: DrawScope, pupilCenterX: Float, pupilCenterY: Float, coreWidth: Float, coreHeight: Float, openness: Float, coreColor: Color )</ID>
     <ID>LongParameterList:RobotEyesCanvas.kt$EyeIrisCoreRenderer$( scope: DrawScope, pupilCenterX: Float, pupilCenterY: Float, coreWidth: Float, coreHeight: Float, openness: Float, spec: EyeSpec )</ID>
     <ID>LongParameterList:RobotEyesCanvas.kt$EyeIrisCoreRenderer$( scope: DrawScope, pupilCenterX: Float, pupilCenterY: Float, coreWidth: Float, openness: Float, spec: EyeSpec )</ID>
+    <ID>LongParameterList:VisionHandGestureSource.kt$VisionHandGestureSource$( gesture: HandGesture, confidence: Float, rawCenterX: Float = 0.5f, rawCenterY: Float = 0.5f, rotationDegrees: Int = 0, boundingBoxArea: Float = 0.15f, timestampNanos: Long = System.nanoTime() )</ID>
     <ID>MagicNumber:AwakeningOverlay.kt$0.45f</ID>
     <ID>MagicNumber:AwakeningOverlay.kt$0.4f</ID>
     <ID>MagicNumber:AwakeningOverlay.kt$0.8f</ID>
@@ -44,6 +71,12 @@
     <ID>MagicNumber:BlinkScheduler.kt$BlinkScheduler$0.8f</ID>
     <ID>MagicNumber:BlinkScheduler.kt$BlinkScheduler$1000f</ID>
     <ID>MagicNumber:CompanionMemoryCard.kt$5</ID>
+    <ID>MagicNumber:CompanionScreen.kt$0.75f</ID>
+    <ID>MagicNumber:CompanionScreen.kt$0xFF10B981</ID>
+    <ID>MagicNumber:CompanionScreen.kt$0xFFF59E0B</ID>
+    <ID>MagicNumber:CompanionViewModel.kt$CompanionViewModel$1800L</ID>
+    <ID>MagicNumber:CompanionViewModel.kt$CompanionViewModel$1_000_000L</ID>
+    <ID>MagicNumber:CompanionViewModel.kt$CompanionViewModel$600L</ID>
     <ID>MagicNumber:EyeMotionEngine.kt$EyeMotionEngine$0.1f</ID>
     <ID>MagicNumber:EyeMotionEngine.kt$EyeMotionEngine$1000.0</ID>
     <ID>MagicNumber:EyeSpec.kt$EyeSpec$0x6622D3EE</ID>
@@ -54,7 +87,18 @@
     <ID>MagicNumber:FaceObservationTransform.kt$FaceObservationTransform$270</ID>
     <ID>MagicNumber:FaceObservationTransform.kt$FaceObservationTransform$360</ID>
     <ID>MagicNumber:FaceObservationTransform.kt$FaceObservationTransform$90</ID>
+    <ID>MagicNumber:HandGestureSettingsCard.kt$100</ID>
+    <ID>MagicNumber:HeadPoseTransform.kt$HeadPoseTransform$0.001f</ID>
+    <ID>MagicNumber:HeadPoseTransform.kt$HeadPoseTransform$0.002f</ID>
+    <ID>MagicNumber:HeadPoseTransform.kt$HeadPoseTransform$0.005f</ID>
+    <ID>MagicNumber:HeadPoseTransform.kt$HeadPoseTransform$0.01f</ID>
+    <ID>MagicNumber:HeadPoseTransform.kt$HeadPoseTransform$180</ID>
+    <ID>MagicNumber:HeadPoseTransform.kt$HeadPoseTransform$270</ID>
+    <ID>MagicNumber:HeadPoseTransform.kt$HeadPoseTransform$360</ID>
+    <ID>MagicNumber:HeadPoseTransform.kt$HeadPoseTransform$90</ID>
+    <ID>MagicNumber:HeadPoseTransform.kt$HeadPoseTransform$90f</ID>
     <ID>MagicNumber:ModePickerBottomSheet.kt$0xFF22D3EE</ID>
+    <ID>MagicNumber:PostureMonitor.kt$PostureMonitor$1000L</ID>
     <ID>MagicNumber:RobotEyesCanvas.kt$0.04f</ID>
     <ID>MagicNumber:RobotEyesCanvas.kt$0.12f</ID>
     <ID>MagicNumber:RobotEyesCanvas.kt$0.14f</ID>
@@ -81,7 +125,39 @@
     <ID>MagicNumber:RobotEyesCanvas.kt$EyeIrisCoreRenderer$0.85f</ID>
     <ID>MagicNumber:RobotEyesCanvas.kt$EyeIrisCoreRenderer$1.15f</ID>
     <ID>MagicNumber:SaccadeGenerator.kt$SaccadeGenerator$1000f</ID>
+    <ID>MagicNumber:VisionHandGestureSource.kt$VisionHandGestureSource$0.1f</ID>
+    <ID>MagicNumber:VisionHeadPoseSource.kt$VisionHeadPoseSource$0.12f</ID>
+    <ID>MagicNumber:VisionHeadPoseSource.kt$VisionHeadPoseSource$0.15f</ID>
+    <ID>MagicNumber:VisionHeadPoseSource.kt$VisionHeadPoseSource$0.22f</ID>
+    <ID>MagicNumber:VisionHeadPoseSource.kt$VisionHeadPoseSource$0.25f</ID>
+    <ID>MagicNumber:VisionHeadPoseSource.kt$VisionHeadPoseSource$0.2f</ID>
+    <ID>MagicNumber:VisionHeadPoseSource.kt$VisionHeadPoseSource$0.35f</ID>
+    <ID>MagicNumber:VisionHeadPoseSource.kt$VisionHeadPoseSource$1_000_000_000.0</ID>
+    <ID>MagicNumber:VisionHeadPoseSource.kt$VisionHeadPoseSource$3</ID>
+    <ID>MagicNumber:VisionHeadPoseSource.kt$VisionHeadPoseSource$4</ID>
+    <ID>MagicNumber:VisionHeadPoseSource.kt$VisionHeadPoseSource$5</ID>
+    <ID>MaxLineLength:CompanionScreen.kt$val effectiveTarget = if (isFrozen) com.eyekage.core.motion.GazeTarget(currentMotionState.gazeX, currentMotionState.gazeY) else output.targetGaze</ID>
+    <ID>MaxLineLength:CompanionScreen.kt$val isFrozen = uiState.handGestureReaction is HandGestureReaction.HoldStop &amp;&amp; uiState.handGestureReaction.isFrozen</ID>
+    <ID>MaxLineLength:CompanionViewModel.kt$CompanionViewModel$val now = if (obs.timestampNanos &gt; 0L) obs.timestampNanos / 1_000_000L else System.currentTimeMillis()</ID>
+    <ID>MaxLineLength:CompanionViewModelGestureTest.kt$CompanionViewModelGestureTest.FakePreferencesRepository$override suspend fun setGestureRecognitionEnabled(enabled: Boolean)</ID>
+    <ID>MaxLineLength:CompanionViewModelGestureTest.kt$CompanionViewModelGestureTest.FakePreferencesRepository$override suspend fun setPostureSlouchThresholdSec(seconds: Int)</ID>
+    <ID>MaxLineLength:CompanionViewModelPostureTest.kt$CompanionViewModelPostureTest$headPose = HeadPose(pitchDegrees = -15f, yawDegrees = 0f, rollDegrees = 0f, timestampNanos = 1_000_000_000L)</ID>
+    <ID>MaxLineLength:CompanionViewModelPostureTest.kt$CompanionViewModelPostureTest$headPose = HeadPose(pitchDegrees = -20f, yawDegrees = 0f, rollDegrees = 0f, timestampNanos = 10_000_000_000L)</ID>
+    <ID>MaxLineLength:CompanionViewModelPostureTest.kt$CompanionViewModelPostureTest$headPose = HeadPose(pitchDegrees = -20f, yawDegrees = 0f, rollDegrees = 0f, timestampNanos = 30_000_000_000L)</ID>
+    <ID>MaxLineLength:CompanionViewModelPostureTest.kt$CompanionViewModelPostureTest$headPose = HeadPose(pitchDegrees = 0f, yawDegrees = 0f, rollDegrees = 0f, timestampNanos = 1_400_000_000L)</ID>
+    <ID>MaxLineLength:CompanionViewModelPostureTest.kt$CompanionViewModelPostureTest.FakePreferencesRepository$override suspend fun setGestureRecognitionEnabled(enabled: Boolean)</ID>
+    <ID>MaxLineLength:CompanionViewModelPostureTest.kt$CompanionViewModelPostureTest.FakePreferencesRepository$override suspend fun setPostureSlouchThresholdSec(seconds: Int)</ID>
+    <ID>MaxLineLength:CompanionViewModelTest.kt$CompanionViewModelTest.FakePreferencesRepository$override suspend fun setGestureRecognitionEnabled(enabled: Boolean)</ID>
+    <ID>MaxLineLength:CompanionViewModelTest.kt$CompanionViewModelTest.FakePreferencesRepository$override suspend fun setPostureSlouchThresholdSec(seconds: Int)</ID>
+    <ID>MaxLineLength:CompanionViewModelVoiceTest.kt$CompanionViewModelVoiceTest.FakePreferencesRepository$override suspend fun setGestureRecognitionEnabled(enabled: Boolean)</ID>
+    <ID>MaxLineLength:CompanionViewModelVoiceTest.kt$CompanionViewModelVoiceTest.FakePreferencesRepository$override suspend fun setPostureSlouchThresholdSec(seconds: Int)</ID>
     <ID>MaxLineLength:EyeMotionEngineTest.kt$EyeMotionEngineTest$assertTrue("EyelidOpenness (${state.eyelidOpenness}) must be in [0.0, 1.0]", state.eyelidOpenness in 0.0f..1.0f)</ID>
+    <ID>MaxLineLength:HeadPoseReactionEngine.kt$HeadPoseReactionEngine$if</ID>
+    <ID>MaxLineLength:HeadPoseTransform.kt$HeadPoseTransform$pitchDegrees &lt;= PITCH_SLOUCH_THRESHOLD_DEGREES &amp;&amp; proximity != ProximityZone.FAR -&gt; PostureState.SLOUCHING_DOWN</ID>
+    <ID>MaxLineLength:HeadPoseTransformTest.kt$HeadPoseTransformTest$assertTrue("Roll should be negative for left tilt: ${obsLeft.headPose.rollDegrees}", obsLeft.headPose.rollDegrees &lt; -12.0f)</ID>
+    <ID>MaxLineLength:HeadPoseTransformTest.kt$HeadPoseTransformTest$assertTrue("Roll should be positive for right tilt: ${obsRight.headPose.rollDegrees}", obsRight.headPose.rollDegrees &gt; 12.0f)</ID>
+    <ID>MaxLineLength:HeadPoseTransformTest.kt$HeadPoseTransformTest$assertTrue("Yaw magnitude should exceed 25 degrees: ${obsTurn.headPose.yawDegrees}", kotlin.math.abs(obsTurn.headPose.yawDegrees) &gt;= 25.0f)</ID>
+    <ID>MaxLineLength:PostureMonitorTest.kt$PostureMonitorTest$val dismissedResult = monitor.processObservation(createObservation(PostureState.LEANING_CLOSE), currentTimeMs = time)</ID>
     <ID>MaxLineLength:RobotEyesCanvas.kt$EyeIrisCoreRenderer$PupilShape.BURST_RADIAL -&gt; drawStandardCore(scope, pupilCenterX, pupilCenterY, coreWidth * 1.15f, coreHeight * 1.15f, params.openness, params.spec.coreColor)</ID>
     <ID>MaxLineLength:RobotEyesCanvas.kt$EyeIrisCoreRenderer$PupilShape.CONCENTRIC_ORBIT -&gt; drawConcentricOrbitCore(scope, pupilCenterX, pupilCenterY, coreWidth, params.openness, params.spec)</ID>
     <ID>MaxLineLength:RobotEyesCanvas.kt$EyeIrisCoreRenderer$PupilShape.GEOMETRIC_TRACKER -&gt; drawGeometricTrackerCore(scope, pupilCenterX, pupilCenterY, coreWidth, params.openness, params.spec)</ID>
@@ -96,18 +172,63 @@
     <ID>MaxLineLength:RobotEyesCanvas.kt$colors = listOf(params.spec.glowColor.copy(alpha = params.spec.glowColor.alpha * params.openness), Color.Transparent)</ID>
     <ID>MaxLineLength:RobotEyesCanvas.kt$topLeft = Offset(params.centerX - params.eyeWidth * 0.5f + params.shiftX, params.centerY - currentEyeHeight * 0.5f + params.shiftY)</ID>
     <ID>MaxLineLength:RobotEyesCanvas.kt$topLeft = Offset(params.centerX - slitWidth * 0.5f + params.shiftX, params.centerY - slitHeight * 0.5f + params.shiftY)</ID>
+    <ID>MaxLineLength:SettingsViewModelTest.kt$SettingsViewModelTest.FakePreferencesRepository$override suspend fun setGestureRecognitionEnabled(enabled: Boolean)</ID>
+    <ID>MaxLineLength:SettingsViewModelTest.kt$SettingsViewModelTest.FakePreferencesRepository$override suspend fun setPostureSlouchThresholdSec(seconds: Int)</ID>
+    <ID>MaxLineLength:VisionHeadPoseSource.kt$VisionHeadPoseSource$smoothedPitch &lt;= HeadPoseTransform.PITCH_SLOUCH_THRESHOLD_DEGREES &amp;&amp; proximity != ProximityZone.FAR -&gt; PostureState.SLOUCHING_DOWN</ID>
+    <ID>MaxLineLength:VisionHeadPoseSourceTest.kt$VisionHeadPoseSourceTest$assertTrue("Roll should be positive for right tilt: ${obs1.headPose.rollDegrees}", obs1.headPose.rollDegrees &gt; 5f)</ID>
+    <ID>MaximumLineLength:CompanionScreen.kt$ </ID>
+    <ID>MaximumLineLength:CompanionViewModel.kt$CompanionViewModel$ </ID>
+    <ID>MaximumLineLength:CompanionViewModelGestureTest.kt$CompanionViewModelGestureTest.FakePreferencesRepository$ </ID>
+    <ID>MaximumLineLength:CompanionViewModelPostureTest.kt$CompanionViewModelPostureTest$ </ID>
+    <ID>MaximumLineLength:CompanionViewModelPostureTest.kt$CompanionViewModelPostureTest.FakePreferencesRepository$ </ID>
+    <ID>MaximumLineLength:CompanionViewModelTest.kt$CompanionViewModelTest.FakePreferencesRepository$ </ID>
+    <ID>MaximumLineLength:CompanionViewModelVoiceTest.kt$CompanionViewModelVoiceTest.FakePreferencesRepository$ </ID>
     <ID>MaximumLineLength:EyeMotionEngineTest.kt$EyeMotionEngineTest$ </ID>
+    <ID>MaximumLineLength:HeadPoseReactionEngine.kt$HeadPoseReactionEngine$ </ID>
+    <ID>MaximumLineLength:HeadPoseTransform.kt$HeadPoseTransform$ </ID>
+    <ID>MaximumLineLength:HeadPoseTransformTest.kt$HeadPoseTransformTest$ </ID>
+    <ID>MaximumLineLength:PostureMonitorTest.kt$PostureMonitorTest$ </ID>
     <ID>MaximumLineLength:RobotEyesCanvas.kt$ </ID>
     <ID>MaximumLineLength:RobotEyesCanvas.kt$EyeIrisCoreRenderer$ </ID>
+    <ID>MaximumLineLength:SettingsViewModelTest.kt$SettingsViewModelTest.FakePreferencesRepository$ </ID>
+    <ID>MaximumLineLength:VisionHeadPoseSource.kt$VisionHeadPoseSource$ </ID>
+    <ID>MaximumLineLength:VisionHeadPoseSourceTest.kt$VisionHeadPoseSourceTest$ </ID>
     <ID>NoMultipleSpaces:EyeSpec.kt$EyeSpec$ </ID>
+    <ID>NoMultipleSpaces:HeadPoseTransformTest.kt$HeadPoseTransformTest$ </ID>
+    <ID>NoMultipleSpaces:PostureObservation.kt$ProximityZone.FAR$ </ID>
+    <ID>NoMultipleSpaces:PostureObservation.kt$ProximityZone.NEAR$ </ID>
+    <ID>NoMultipleSpaces:PostureObservation.kt$ProximityZone.NORMAL$ </ID>
     <ID>NoUnusedImports:BlinkSchedulerTest.kt$com.eyekage.core.motion.BlinkSchedulerTest.kt</ID>
+    <ID>NoUnusedImports:CompanionViewModel.kt$com.eyekage.feature.companion.CompanionViewModel.kt</ID>
+    <ID>NoUnusedImports:CompanionViewModelGestureTest.kt$com.eyekage.feature.companion.CompanionViewModelGestureTest.kt</ID>
+    <ID>NoUnusedImports:CompanionViewModelPostureTest.kt$com.eyekage.feature.companion.CompanionViewModelPostureTest.kt</ID>
     <ID>NoUnusedImports:EyeModeRenderingTest.kt$com.eyekage.ui.eyes.EyeModeRenderingTest.kt</ID>
     <ID>NoUnusedImports:EyeMotionEngineTest.kt$com.eyekage.core.motion.EyeMotionEngineTest.kt</ID>
+    <ID>NoUnusedImports:HeadPoseReactionEngine.kt$com.eyekage.core.behavior.HeadPoseReactionEngine.kt</ID>
+    <ID>NoUnusedImports:PostureSettingsCardTest.kt$com.eyekage.feature.settings.PostureSettingsCardTest.kt</ID>
     <ID>NoUnusedImports:VisionFaceObservationSourceTest.kt$com.eyekage.platform.vision.VisionFaceObservationSourceTest.kt</ID>
+    <ID>NoUnusedImports:VisionHeadPoseSourceTest.kt$com.eyekage.platform.vision.VisionHeadPoseSourceTest.kt</ID>
+    <ID>ParameterListWrapping:CompanionViewModelGestureTest.kt$CompanionViewModelGestureTest.FakePreferencesRepository$(enabled: Boolean)</ID>
+    <ID>ParameterListWrapping:CompanionViewModelGestureTest.kt$CompanionViewModelGestureTest.FakePreferencesRepository$(seconds: Int)</ID>
+    <ID>ParameterListWrapping:CompanionViewModelPostureTest.kt$CompanionViewModelPostureTest.FakePreferencesRepository$(enabled: Boolean)</ID>
+    <ID>ParameterListWrapping:CompanionViewModelPostureTest.kt$CompanionViewModelPostureTest.FakePreferencesRepository$(seconds: Int)</ID>
+    <ID>ParameterListWrapping:CompanionViewModelTest.kt$CompanionViewModelTest.FakePreferencesRepository$(enabled: Boolean)</ID>
+    <ID>ParameterListWrapping:CompanionViewModelTest.kt$CompanionViewModelTest.FakePreferencesRepository$(seconds: Int)</ID>
+    <ID>ParameterListWrapping:CompanionViewModelVoiceTest.kt$CompanionViewModelVoiceTest.FakePreferencesRepository$(enabled: Boolean)</ID>
+    <ID>ParameterListWrapping:CompanionViewModelVoiceTest.kt$CompanionViewModelVoiceTest.FakePreferencesRepository$(seconds: Int)</ID>
+    <ID>ParameterListWrapping:SettingsViewModelTest.kt$SettingsViewModelTest.FakePreferencesRepository$(enabled: Boolean)</ID>
+    <ID>ParameterListWrapping:SettingsViewModelTest.kt$SettingsViewModelTest.FakePreferencesRepository$(seconds: Int)</ID>
     <ID>ReturnCount:BlinkScheduler.kt$BlinkScheduler$fun update(currentTimeMs: Long): Float</ID>
+    <ID>ReturnCount:HandGestureReactionEngine.kt$HandGestureReactionEngine$fun processObservation( observation: HandObservation, currentTimeMs: Long = System.currentTimeMillis(), isEnabled: Boolean = true ): HandGestureReaction</ID>
+    <ID>ReturnCount:HeadPoseReactionEngine.kt$HeadPoseReactionEngine$fun processObservation( observation: PostureObservation, currentTimeMs: Long = System.currentTimeMillis(), reducedMotion: Boolean = false ): HeadPoseGesture</ID>
+    <ID>ReturnCount:HeadPoseReactionEngine.kt$HeadPoseReactionEngine$private fun checkTiltGesture(rollDegrees: Float): HeadPoseGesture?</ID>
+    <ID>ReturnCount:VisionHandGestureSource.kt$VisionHandGestureSource$fun processFrame( bitmap: Bitmap, rotationDegrees: Int = 0, timestampNanos: Long = System.nanoTime() )</ID>
     <ID>TooGenericExceptionCaught:CameraXManager.kt$CameraXManager$e: Exception</ID>
     <ID>TooGenericExceptionCaught:VisionFaceObservationSource.kt$VisionFaceObservationSource$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:VisionHandGestureSource.kt$VisionHandGestureSource$e: Exception</ID>
     <ID>TooManyFunctions:CompanionBehaviorStateMachine.kt$CompanionBehaviorStateMachine</ID>
+    <ID>UnusedParameter:VisionHandGestureSource.kt$VisionHandGestureSource$imageHeight: Int</ID>
+    <ID>UnusedParameter:VisionHandGestureSource.kt$VisionHandGestureSource$imageWidth: Int</ID>
     <ID>UnusedPrivateMember:RobotEyesCanvas.kt$@Preview(name = "Crimson Tracker Mode", widthDp = 360, heightDp = 640) @Composable private fun RobotEyesCanvasPreviewCrimson()</ID>
     <ID>UnusedPrivateMember:RobotEyesCanvas.kt$@Preview(name = "Normal Mode", widthDp = 360, heightDp = 640) @Composable private fun RobotEyesCanvasPreviewNormal()</ID>
     <ID>UnusedPrivateMember:RobotEyesCanvas.kt$@Preview(name = "Purple Orbit Mode", widthDp = 360, heightDp = 640) @Composable private fun RobotEyesCanvasPreviewPurpleOrbit()</ID>
